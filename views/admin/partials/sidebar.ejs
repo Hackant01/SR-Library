@@ -1,0 +1,63 @@
+<!-- Admin Sidebar Partial -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<aside class="admin-sidebar" id="adminSidebar">
+  <a href="/admin/dashboard" class="sidebar-logo">
+    <div class="sidebar-logo-icon">📚</div>
+    <div>
+      <div class="sidebar-logo-text"><%= libraryName %></div>
+      <div class="sidebar-logo-sub">Admin Panel</div>
+    </div>
+  </a>
+
+  <nav class="sidebar-nav">
+    <div class="sidebar-section-label">Main</div>
+
+    <a href="/admin/dashboard" class="sidebar-link <%= typeof currentPage !== 'undefined' && currentPage === 'dashboard' ? 'active' : '' %>">
+      <span class="sidebar-link-icon">📊</span>
+      Dashboard
+    </a>
+
+    <a href="/admin/students" class="sidebar-link <%= typeof currentPage !== 'undefined' && currentPage === 'students' ? 'active' : '' %>">
+      <span class="sidebar-link-icon">👥</span>
+      All Students
+    </a>
+
+    <a href="/admin/students?status=pending&payment=paid" class="sidebar-link">
+      <span class="sidebar-link-icon">⏳</span>
+      Pending Approvals
+      <% if (typeof pendingCount !== 'undefined' && pendingCount > 0) { %>
+        <span class="sidebar-badge"><%= pendingCount %></span>
+      <% } %>
+    </a>
+
+    <a href="/admin/students?status=active" class="sidebar-link">
+      <span class="sidebar-link-icon">✅</span>
+      Active Students
+    </a>
+
+    <div class="sidebar-section-label">Account</div>
+
+    <a href="/admin/profile" class="sidebar-link <%= typeof currentPage !== 'undefined' && currentPage === 'profile' ? 'active' : '' %>">
+      <span class="sidebar-link-icon">👤</span>
+      My Profile
+    </a>
+
+    <form action="/admin/logout" method="POST" style="margin:0;">
+      <button type="submit" class="sidebar-link" style="width:100%;text-align:left;border:none;cursor:pointer;background:transparent;color:rgba(255,255,255,0.7);">
+        <span class="sidebar-link-icon">🚪</span>
+        Logout
+      </button>
+    </form>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="sidebar-user-avatar"><%= admin.name.charAt(0).toUpperCase() %></div>
+      <div class="sidebar-user-info">
+        <div class="sidebar-user-name"><%= admin.name %></div>
+        <div class="sidebar-user-role"><%= admin.role %></div>
+      </div>
+    </div>
+  </div>
+</aside>

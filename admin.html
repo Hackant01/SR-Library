@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Admin | SR Library</title>
+    <link rel="icon" href="images/favicon.jpg">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="app-pages.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="app-page">
+    <header class="admin-topbar">
+        <a href="index.html" class="logo-link">
+            <img src="images/logo.jpg" alt="SR Library Logo" class="nav-logo-img">
+            <span class="logo">SR Library <span class="admin-word">ADMIN</span></span>
+        </a>
+        <button class="admin-logout" id="logout-button" type="button" hidden><i class="fa-solid fa-arrow-right-from-bracket"></i> Log out</button>
+    </header>
+
+    <main class="app-main admin-main">
+        <section class="app-heading">
+            <span class="section-label">BOOKING MANAGEMENT</span>
+            <h1>Admin <span>panel</span></h1>
+            <p>Review student bookings and demo payment statuses.</p>
+        </section>
+
+        <section class="app-panel login-panel" id="login-panel">
+            <h2>Admin sign in</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="admin-password">Password</label>
+                    <input id="admin-password" name="password" type="password" autocomplete="current-password" required>
+                </div>
+                <button class="form-submit" type="submit"><i class="fa-solid fa-lock"></i> Sign in</button>
+                <p class="app-message" id="login-message" role="status"></p>
+            </form>
+        </section>
+
+        <section id="dashboard" hidden>
+            <div class="demo-notice" role="note">
+                <i class="fa-solid fa-flask"></i>
+                <span>Demo mode: “Paid (demo)” is simulated and does not represent money received.</span>
+            </div>
+            <div class="admin-stats" id="admin-stats"></div>
+            <section class="app-panel bookings-panel">
+                <div class="table-heading"><h2>Recent bookings</h2><button class="refresh-button" id="refresh-button" type="button" aria-label="Refresh bookings" title="Refresh"><i class="fa-solid fa-rotate"></i></button></div>
+                <p class="app-message" id="table-message" role="status"></p>
+                <div class="table-scroll">
+                    <table>
+                        <thead><tr><th>Student</th><th>Plan</th><th>Total</th><th>Status</th><th>Created</th></tr></thead>
+                        <tbody id="bookings-body"></tbody>
+                    </table>
+                </div>
+            </section>
+        </section>
+    </main>
+    <script src="admin.js" defer></script>
+</body>
+</html>

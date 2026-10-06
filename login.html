@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Login | SR Library</title>
+    <link rel="icon" href="images/favicon.jpg">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="app-pages.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="app-page">
+    <header class="admin-topbar">
+        <a href="index.html" class="logo-link">
+            <img src="images/logo.jpg" alt="SR Library Logo" class="nav-logo-img">
+            <span class="logo">SR Library</span>
+        </a>
+        <a class="login-home-link" href="index.html"><i class="fa-solid fa-arrow-left"></i> Home</a>
+    </header>
+
+    <main class="app-main login-main">
+        <section class="app-heading">
+            <span class="section-label">SR LIBRARY PORTAL</span>
+            <h1>Welcome <span>back</span></h1>
+            <p>Sign in to continue to your account.</p>
+        </section>
+
+        <section class="app-panel login-panel role-login-panel">
+            <div class="role-switch" aria-label="Choose account type">
+                <button type="button" data-role="student" aria-pressed="true"><i class="fa-solid fa-user-graduate"></i> Student</button>
+                <button type="button" data-role="admin" aria-pressed="false"><i class="fa-solid fa-shield-halved"></i> Admin</button>
+            </div>
+            <h2 id="form-title">Student login</h2>
+            <form id="auth-form">
+                <div class="form-group signup-only" hidden>
+                    <label for="student-name">Full name</label>
+                    <input id="student-name" name="name" autocomplete="name" minlength="2" maxlength="100">
+                </div>
+                <div class="form-group student-only">
+                    <label for="student-phone">Mobile number</label>
+                    <input id="student-phone" name="phone" type="tel" inputmode="numeric" autocomplete="tel-national" pattern="[6-9][0-9]{9}" maxlength="10" placeholder="10-digit number">
+                </div>
+                <div class="form-group">
+                    <label for="account-password">Password</label>
+                    <input id="account-password" name="password" type="password" autocomplete="current-password" required>
+                </div>
+                <button class="form-submit" type="submit" id="submit-button"><i class="fa-solid fa-right-to-bracket"></i> Sign in as student</button>
+                <p class="app-message" id="auth-message" role="status"></p>
+            </form>
+            <p class="signup-prompt" id="signup-prompt">New student? <button type="button" id="mode-toggle">Create an account</button></p>
+        </section>
+    </main>
+    <script src="login.js" defer></script>
+</body>
+</html>

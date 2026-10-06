@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="SR Self Study Zone & Library — Shahdol's most premium self-study library with AC, WiFi, CCTV, lockers and 40+ seats. Build your tomorrow today.">
+    <title>
+        <%= title %>
+    </title>
+    <link rel="icon" href="/images/logo.jpg">
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .nav-btn-student {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff !important;
+            padding: 8px 16px !important;
+            border-radius: 20px;
+            font-weight: 600 !important;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn-student:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .nav-btn-admin {
+            background: rgba(13, 27, 110, 0.6);
+            color: #fff !important;
+            padding: 8px 16px !important;
+            border-radius: 20px;
+            font-weight: 600 !important;
+            border: 1px solid rgba(255, 171, 0, 0.6);
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn-admin:hover {
+            background: rgba(255, 171, 0, 0.2);
+            color: #ffab00 !important;
+            transform: translateY(-2px);
+        }
+
+        .nav-btn-reg {
+            background: #ffab00 !important;
+            color: #0d1b6e !important;
+            padding: 8px 18px !important;
+            border-radius: 20px;
+            font-weight: 700 !important;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 171, 0, 0.4);
+        }
+
+        .nav-btn-reg:hover {
+            background: #ffd600 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 171, 0, 0.6);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ── ANNOUNCEMENT BANNER ── -->
+    <div class="announce-bar" id="announceBar">
+        <div class="announce-inner">
+            <span class="announce-icon">🎉</span>
+            <span>SR Library ab open hai! Seats limited hain — <a href="/student/register">Abhi Register Karein
+                    (₹150)</a></span>
+            <button class="announce-close"
+                onclick="this.parentElement.parentElement.style.display='none'">&times;</button>
+        </div>
+    </div>
+
+    <!-- WhatsApp Float -->
+    <a href="https://wa.me/918103485288" class="whatsapp" target="_blank" aria-label="Chat on WhatsApp">
+        <div class="whatsapp-pulse"></div>
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
+
+    <!-- Back to Top -->
+    <button class="back-to-top" id="backTop" aria-label="Back to top">
+        <i class="fa-solid fa-chevron-up"></i>
+    </button>
+
+    <!-- Toast -->
+    <div class="toast"></div>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close"><i class="fa-solid fa-xmark"></i></button>
+        <img src="" alt="Gallery Image">
+    </div>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <button class="menu-close"><i class="fa-solid fa-xmark"></i></button>
+        <a href="/" aria-current="page">Home</a>
+        <a href="/about.html">About</a>
+        <a href="/pricing.html">Pricing</a>
+        <a href="/gallery.html">Gallery</a>
+        <a href="/contact.html">Contact</a>
+        <a href="/student/login">🎓 Student Login</a>
+        <a href="/admin/login">🛡️ Admin Login</a>
+        <a href="/student/register">📝 Register Now (₹150)</a>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <a href="/" class="logo-link">
+            <img src="/images/logo.jpg" alt="SR Self Study Zone & Library Logo" class="nav-logo-img">
+            <span class="logo">SR Library</span>
+        </a>
+        <div class="nav-links">
+            <a href="/" aria-current="page">Home</a>
+            <a href="/about.html">About</a>
+            <a href="/pricing.html">Pricing</a>
+            <a href="/gallery.html">Gallery</a>
+            <a href="/contact.html">Contact</a>
+            <a href="/student/login" class="nav-btn-student"><i class="fa-solid fa-user-graduate"></i> Student Login</a>
+            <a href="/admin/login" class="nav-btn-admin"><i class="fa-solid fa-user-shield"></i> Admin Login</a>
+            <a href="/student/register" class="nav-btn-reg"><i class="fa-solid fa-pen-to-square"></i> Register</a>
+        </div>
+        <button class="hamburger" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+
+    <!-- ────────────────── HERO ────────────────── -->
+    <section class="hero" id="home">
+        <div class="hero-bg"></div>
+        <div class="hero-overlay"></div>
+        <div class="particles" id="particles"></div>
+
+        <div class="hero-content">
+            <div class="hero-logo-wrap">
+                <img src="/images/logo.jpg" alt="SR Self Study Zone & Library" class="hero-logo">
+            </div>
+
+            <div class="hero-badge">
+                <i class="fa-solid fa-star"></i>
+                Shahdol's #1 Premium Study Zone
+            </div>
+
+            <h1>
+                <span class="highlight">SR Self Study Zone</span><br>
+                &amp; Library
+            </h1>
+
+            <p class="hero-tagline">Build Your Tomorrow, Today</p>
+
+            <div class="typing-wrapper">
+                <span class="typing-text"></span><span class="typing-cursor">|</span>
+            </div>
+
+            <div class="hero-actions" style="flex-wrap:wrap;gap:12px;justify-content:center;">
+                <a href="/student/register" class="btn-primary" id="hero-register-btn">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    Register Now — ₹150
+                </a>
+                <a href="/student/login" class="btn-secondary" id="hero-student-login-btn">
+                    <i class="fa-solid fa-user-graduate"></i>
+                    Student Login
+                </a>
+                <a href="/admin/login" class="btn-secondary" style="border:1px solid rgba(255,255,255,0.4);"
+                    id="hero-admin-login-btn">
+                    <i class="fa-solid fa-user-shield"></i>
+                    Admin Login
+                </a>
+            </div>
+
+            <div class="hero-pills">
+                <span>🏆 40+ Seats</span>
+                <span>📚 1000+ Books</span>
+                <span>🔒 Lockers</span>
+                <span>❄️ Full AC</span>
+                <span>📶 High-Speed WiFi</span>
+            </div>
+        </div>
+
+        <div class="scroll-indicator">
+            <span>Scroll</span>
+            <div class="scroll-line"></div>
+        </div>
+    </section>
+
+    <!-- ────────────────── FLOATING TIMER WIDGET ────────────────── -->
+    <div class="float-timer" id="floatTimer">
+        <button class="float-timer-toggle" id="floatTimerToggle" title="Study Timer">
+            <i class="fa-solid fa-stopwatch"></i>
+            <span class="float-timer-label">Timer</span>
+        </button>
+        <div class="float-timer-panel" id="floatTimerPanel">
+            <div class="ftp-header">
+                <span>⏱ Focus Timer</span>
+                <button class="ftp-close" id="floatTimerClose"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="ftp-display" id="ftp-display">25:00</div>
+            <div class="ftp-modes">
+                <button class="ftp-mode active" data-ftp="25:00">🍅 25m</button>
+                <button class="ftp-mode" data-ftp="05:00">☕ 5m</button>
+                <button class="ftp-mode" data-ftp="15:00">🌙 15m</button>
+            </div>
+            <div class="ftp-progress">
+                <div class="ftp-bar" id="ftp-bar"></div>
+            </div>
+            <div class="ftp-controls">
+                <button class="ftp-btn ftp-start" id="ftp-start">▶</button>
+                <button class="ftp-btn ftp-pause" id="ftp-pause">⏸</button>
+                <button class="ftp-btn ftp-reset" id="ftp-reset">↺</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ────────────────── QUICK INFO STRIP ────────────────── -->
+    <div class="info-strip">
+        <div class="info-strip-inner">
+            <span>⏰ Open Daily: 6 AM – 11 PM</span>
+            <span class="strip-dot"></span>
+            <span>📍 Shahdol, Madhya Pradesh</span>
+            <span class="strip-dot"></span>
+            <span>📞 8103485288 &nbsp;|&nbsp; 7987526720</span>
+            <span class="strip-dot"></span>
+            <span>🎓 UPSC • MPPSC • SSC • Banking • JEE • NEET</span>
+            <span class="strip-dot"></span>
+            <span>⏰ Open Daily: 6 AM – 11 PM</span>
+            <span class="strip-dot"></span>
+            <span>📍 Shahdol, Madhya Pradesh</span>
+            <span class="strip-dot"></span>
+            <span>📞 8103485288 &nbsp;|&nbsp; 7987526720</span>
+            <span class="strip-dot"></span>
+            <span>🎓 UPSC • MPPSC • SSC • Banking • JEE • NEET</span>
+        </div>
+    </div>
+
+    <!-- ────────────────── POMODORO TIMER (MAIN) ────────────────── -->
+    <section class="timer-section section" id="study-timer">
+        <div class="section-header reveal">
+            <span class="section-label">⚡ Free Study Tool</span>
+            <h2 class="section-title">Use Our Free <span>Focus Timer</span> Right Now!</h2>
+            <p class="section-sub">Topper students use Pomodoro technique. Try it free here — no download needed!</p>
+        </div>
+        <div class="timer-card reveal">
+            <h3>⏱ Study Session Timer</h3>
+            <p>Track your focus sessions — used by thousands of toppers.</p>
+            <div class="timer-display" id="timer-display">25:00</div>
+            <div class="timer-label">MINUTES : SECONDS</div>
+            <div class="timer-modes">
+                <button class="timer-mode-btn active" data-mode="pomodoro">🍅 Pomodoro 25m</button>
+                <button class="timer-mode-btn" data-mode="short-break">☕ Short Break 5m</button>
+                <button class="timer-mode-btn" data-mode="long-break">🌙 Long Break 15m</button>
+            </div>
+            <div class="timer-progress">
+                <div class="timer-bar" id="timer-bar"></div>
+            </div>
+            <div class="timer-controls">
+                <button class="timer-btn start" id="timer-start">▶ Start</button>
+                <button class="timer-btn pause" id="timer-pause">⏸ Pause</button>
+                <button class="timer-btn reset" id="timer-reset">↺ Reset</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="stats-section section">
+        <div class="section-header reveal">
+            <span class="section-label">By the Numbers</span>
+            <h2 class="section-title">Trusted by <span>Serious Students</span></h2>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-box reveal">
+                <div class="stat-number" data-count="40" data-suffix="+">0+</div>
+                <div class="stat-label">Study Seats</div>
+            </div>
+            <div class="stat-box reveal">
+                <div class="stat-number" data-count="100" data-suffix="+">0+</div>
+                <div class="stat-label">Happy Students</div>
+            </div>
+            <div class="stat-box reveal">
+                <div class="stat-number" data-count="1000" data-suffix="+">0+</div>
+                <div class="stat-label">Reference Books</div>
+            </div>
+            <div class="stat-box reveal">
+                <div class="stat-number" data-count="365" data-suffix=" Days">0</div>
+                <div class="stat-label">Open Year Round</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ────────────────── FEATURES ────────────────── -->
+    <section class="section" id="features">
+        <div class="section-header reveal">
+            <span class="section-label">Premium Facilities</span>
+            <h2 class="section-title">Everything You Need to <span>Succeed</span></h2>
+            <p class="section-sub">We've built an environment where distraction is impossible and focus is inevitable.
+            </p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card reveal">
+                <div class="feature-icon">❄️</div>
+                <h3>Full Air Conditioning</h3>
+                <p>Beat the heat — study in a perfectly temperature-controlled environment all year round.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">📶</div>
+                <h3>High-Speed WiFi</h3>
+                <p>Blazing-fast internet to access online materials, lectures, and study resources seamlessly.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">🔒</div>
+                <h3>Personal Lockers</h3>
+                <p>Secure, dedicated lockers to store your books, devices, and belongings safely every day.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">📹</div>
+                <h3>CCTV Security</h3>
+                <p>24/7 surveillance for a completely safe and secure study environment. Your safety is our priority.
+                </p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">🪑</div>
+                <h3>Ergonomic Seating</h3>
+                <p>Comfortable, posture-friendly chairs and spacious desks designed for long study sessions.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">💧</div>
+                <h3>RO Drinking Water</h3>
+                <p>Purified RO water available throughout the day. Stay hydrated, stay focused.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">⚡</div>
+                <h3>24/7 Power Backup</h3>
+                <p>Uninterrupted power supply so your study sessions are never broken by power cuts.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">📚</div>
+                <h3>1000+ Reference Books</h3>
+                <p>A vast collection of UPSC, MPPSC, SSC, Banking, JEE, NEET and other competitive exam books.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ────────────────── ABOUT PREVIEW ────────────────── -->
+    <section class="section" style="padding-top:0" id="about-preview">
+        <div class="about-grid">
+            <div class="about-image-wrap reveal-left">
+                <img src="/images/gallery1.jpeg" alt="SR Library Study Room" loading="lazy">
+                <div class="about-badge">
+                    <strong>🌟</strong>
+                    Newly<br>Opened!
+                </div>
+            </div>
+            <div class="about-text reveal-right">
+                <span class="section-label">About SR Library</span>
+                <h2 class="section-title">A Place Built For <span>Serious Students</span></h2>
+                <p>SR Self Study Zone &amp; Library in Shahdol is specially designed for students preparing for UPSC,
+                    MPPSC, SSC, Banking, Railway, JEE, NEET and all other competitive examinations.</p>
+                <p>We believe that the right environment is the first step to success. That's why every detail — from
+                    our ergonomic chairs to our soundproof zones — is crafted with your success in mind.</p>
+                <ul class="about-checklist">
+                    <li><i class="fa-solid fa-check"></i> Silence &amp; No Distraction</li>
+                    <li><i class="fa-solid fa-check"></i> Private Study Cabins</li>
+                    <li><i class="fa-solid fa-check"></i> Multiple Exam Materials</li>
+                    <li><i class="fa-solid fa-check"></i> Flexible Timings</li>
+                    <li><i class="fa-solid fa-check"></i> Friendly Environment</li>
+                    <li><i class="fa-solid fa-check"></i> Open 6 AM – 11 PM</li>
+                </ul>
+                <div style="margin-top:28px">
+                    <a href="/about.html" class="btn-primary" id="about-read-btn">
+                        <i class="fa-solid fa-arrow-right"></i>
+                        Read Full Story
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ────────────────── VIDEO TOUR ────────────────── -->
+    <section class="section video-section" id="video-tour"
+        style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+        <div class="section-header reveal">
+            <span class="section-label">Virtual Tour</span>
+            <h2 class="section-title">See SR Library <span>In Action</span></h2>
+            <p class="section-sub">Take a virtual tour of Shahdol's most premium study zone. See the facilities,
+                ambiance, and environment before you visit.</p>
+        </div>
+        <div class="video-container reveal">
+            <div class="video-wrapper">
+                <video controls poster="/images/gallery1.jpeg" class="library-video"
+                    style="width:100%;border-radius:16px;display:block;">
+                    <source src="/images/lib.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            <div class="video-features">
+                <div class="video-feat-item">
+                    <i class="fa-solid fa-eye"></i>
+                    <div>
+                        <strong>See the Space</strong>
+                        <p>Tour our premium study halls and private cabins</p>
+                    </div>
+                </div>
+                <div class="video-feat-item">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <div>
+                        <strong>Feel the Safety</strong>
+                        <p>CCTV-monitored, fully secure environment</p>
+                    </div>
+                </div>
+                <div class="video-feat-item">
+                    <i class="fa-solid fa-book-open"></i>
+                    <div>
+                        <strong>Explore the Library</strong>
+                        <p>1000+ books for every competitive exam</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ────────────────── GALLERY PREVIEW ────────────────── -->
+    <section class="section" id="gallery-preview">
+        <div class="section-header reveal">
+            <span class="section-label">Gallery</span>
+            <h2 class="section-title">See Our <span>Study Environment</span></h2>
+            <p class="section-sub">A peek inside Shahdol's most premium self-study zone.</p>
+        </div>
+        <div class="gallery-grid">
+            <div class="gallery-item reveal">
+                <img src="/images/gallery1.jpeg" alt="Study Hall" loading="lazy">
+                <div class="gallery-overlay"><span>📚 Study Hall</span></div>
+                <div class="gallery-zoom"><i class="fa-solid fa-expand"></i></div>
+            </div>
+            <div class="gallery-item reveal">
+                <img src="/images/gallery3.jpeg" alt="Private Cabin" loading="lazy">
+                <div class="gallery-overlay"><span>🪑 Private Study Cabin</span></div>
+                <div class="gallery-zoom"><i class="fa-solid fa-expand"></i></div>
+            </div>
+            <div class="gallery-item reveal">
+                <img src="/images/coridoor.jpeg" alt="Library Corridor" loading="lazy">
+                <div class="gallery-overlay"><span>🏛️ Library Corridor</span></div>
+                <div class="gallery-zoom"><i class="fa-solid fa-expand"></i></div>
+            </div>
+            <div class="gallery-item reveal">
+                <img src="/images/office.jpeg" alt="Library Office" loading="lazy">
+                <div class="gallery-overlay"><span>🌟 Premium Ambiance</span></div>
+                <div class="gallery-zoom"><i class="fa-solid fa-expand"></i></div>
+            </div>
+        </div>
+        <div style="text-align:center;margin-top:32px" class="reveal">
+            <a href="/gallery.html" class="btn-secondary" id="view-gallery-btn">
+                <i class="fa-solid fa-images"></i>
+                View Full Gallery
+            </a>
+        </div>
+    </section>
+
+    <!-- ────────────────── TESTIMONIALS ────────────────── -->
+    <section class="section" id="testimonials"
+        style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+        <div class="section-header reveal">
+            <span class="section-label">Student Reviews</span>
+            <h2 class="section-title">What Our <span>Students Say</span></h2>
+            <p class="section-sub">Real feedback from students who achieved their goals with us.</p>
+        </div>
+        <div class="testimonials-wrapper reveal">
+            <div class="testimonials-track">
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">★★★★★</div>
+                    <blockquote>Best study environment in Shahdol. The silence and AC makes it easy to study for 10+
+                        hours. I cracked my SSC exam after joining SR Library!</blockquote>
+                    <div class="testimonial-author">
+                        <div class="t-avatar">R</div>
+                        <div>
+                            <div class="t-name">Rahul Sharma</div>
+                            <div class="t-role">SSC CGL Selected</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">★★★★★</div>
+                    <blockquote>The lockers, fast WiFi, and RO water — everything is top class. A true premium
+                        experience at an affordable price. Highly recommended to all aspirants!</blockquote>
+                    <div class="testimonial-author">
+                        <div class="t-avatar">P</div>
+                        <div>
+                            <div class="t-name">Priya Mishra</div>
+                            <div class="t-role">MPPSC Aspirant</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">★★★★★</div>
+                    <blockquote>I love the Full Day plan — sitting here from 6 AM to 11 PM with my reserved seat gives
+                        me a sense of ownership. My productivity shot up 3x!</blockquote>
+                    <div class="testimonial-author">
+                        <div class="t-avatar">A</div>
+                        <div>
+                            <div class="t-name">Amit Patel</div>
+                            <div class="t-role">UPSC Aspirant</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">★★★★★</div>
+                    <blockquote>The 1000+ reference books saved me thousands of rupees. No need to buy expensive books —
+                        everything is right there. Plus the atmosphere is incredibly focused.</blockquote>
+                    <div class="testimonial-author">
+                        <div class="t-avatar">S</div>
+                        <div>
+                            <div class="t-name">Sneha Gupta</div>
+                            <div class="t-role">Banking Exam Cleared</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="testimonial-controls reveal">
+            <div class="t-dot active"></div>
+            <div class="t-dot"></div>
+        </div>
+    </section>
+
+    <!-- ────────────────── PRICING PREVIEW ────────────────── -->
+    <section class="section" id="pricing-preview">
+        <div class="section-header reveal">
+            <span class="section-label">Library Plans</span>
+            <h2 class="section-title">Affordable Plans for <span>Every Student</span></h2>
+            <p class="section-sub">Choose the plan that fits your study schedule. Registration fee ₹150 (one time only).
+            </p>
+        </div>
+        <div class="pricing-grid">
+            <div class="price-card reveal">
+                <div class="price-icon">🌅</div>
+                <h3>4 Hours</h3>
+                <div class="price-row"><span>1 Month</span><span class="amount">₹500</span></div>
+                <div class="price-row"><span>2 Months</span><span class="amount">₹900</span></div>
+                <div class="price-row"><span>3 Months</span><span class="amount">₹1300</span></div>
+                <a href="/student/register" class="price-cta" id="price-4hr-btn">Register (₹150)</a>
+            </div>
+            <div class="price-card reveal">
+                <div class="price-icon">☀️</div>
+                <h3>6 Hours</h3>
+                <div class="price-row"><span>1 Month</span><span class="amount">₹700</span></div>
+                <div class="price-row"><span>2 Months</span><span class="amount">₹1300</span></div>
+                <div class="price-row"><span>3 Months</span><span class="amount">₹1900</span></div>
+                <a href="/student/register" class="price-cta" id="price-6hr-btn">Register (₹150)</a>
+            </div>
+            <div class="price-card reveal">
+                <div class="price-icon">🌇</div>
+                <h3>8 Hours</h3>
+                <div class="price-row"><span>1 Month</span><span class="amount">₹900</span></div>
+                <div class="price-row"><span>2 Months</span><span class="amount">₹1700</span></div>
+                <div class="price-row"><span>3 Months</span><span class="amount">₹2500</span></div>
+                <a href="/student/register" class="price-cta" id="price-8hr-btn">Register (₹150)</a>
+            </div>
+            <div class="price-card popular reveal">
+                <div class="price-icon">🌟</div>
+                <h3>Full Day</h3>
+                <div class="price-row"><span>Unreserved 1M</span><span class="amount">₹1000</span></div>
+                <div class="price-row"><span>Reserved 1M</span><span class="amount">₹1100</span></div>
+                <div class="price-row"><span>Reserved 3M</span><span class="amount">₹3000</span></div>
+                <a href="/fullday.html" class="price-cta" id="price-fullday-btn">View Details</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ────────────────── CTA BANNER ────────────────── -->
+    <section class="cta-banner reveal">
+        <div class="cta-banner-content">
+            <img src="/images/logo.jpg" alt="SR Library Logo" class="cta-logo">
+            <div class="cta-text">
+                <h2>Ready to Start Your <span>Success Journey?</span></h2>
+                <p>Join 100+ students already studying at SR Self Study Zone & Library, Shahdol</p>
+            </div>
+            <div class="cta-actions">
+                <a href="/student/register" class="btn-primary" id="cta-register-btn">
+                    <i class="fa-solid fa-pen-to-square"></i> Register Now — ₹150
+                </a>
+                <a href="https://wa.me/918103485288" target="_blank" class="btn-secondary" id="cta-whatsapp-btn">
+                    <i class="fa-brands fa-whatsapp"></i> WhatsApp Us
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ────────────────── FOOTER ────────────────── -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <a href="/" class="logo-link">
+                    <img src="/images/logo.jpg" alt="SR Library Logo" class="footer-logo-img">
+                    <div class="logo" style="display:inline-block">SR Library</div>
+                </a>
+                <p>Build Your Tomorrow, Today. Shahdol's most premium self-study zone for competitive exam aspirants.
+                </p>
+                <div class="footer-social">
+                    <a href="https://wa.me/918103485288" class="social-btn" target="_blank" aria-label="WhatsApp"><i
+                            class="fa-brands fa-whatsapp"></i></a>
+                    <a href="https://www.instagram.com/sr_self_study_zone_and_library?igsh=ZTg3MWJrOHRra3I2&utm_source=qr"
+                        class="social-btn" target="_blank" aria-label="Instagram"><i
+                            class="fa-brands fa-instagram"></i></a>
+                    <a href="mailto:srselfstudyzone@gmail.com" class="social-btn" aria-label="Email"><i
+                            class="fa-solid fa-envelope"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about.html">About Us</a></li>
+                    <li><a href="/pricing.html">Pricing</a></li>
+                    <li><a href="/gallery.html">Gallery</a></li>
+                    <li><a href="/contact.html">Contact</a></li>
+                    <li><a href="/student/login">Student Login</a></li>
+                    <li><a href="/admin/login">Admin Portal</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Exams Covered</h4>
+                <ul>
+                    <li><a href="#">UPSC / IAS</a></li>
+                    <li><a href="#">MPPSC</a></li>
+                    <li><a href="#">SSC / CGL</a></li>
+                    <li><a href="#">Banking / IBPS</a></li>
+                    <li><a href="#">JEE / NEET</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© <%= currentYear %> SR Self Study Zone &amp; Library. All Rights Reserved.</span>
+            <span>Made with ❤️ in Shahdol, M.P.</span>
+        </div>
+    </footer>
+
+    <script src="/mobile.js"></script>
+</body>
+
+</html>

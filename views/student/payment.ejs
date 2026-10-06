@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Complete Payment | <%= libraryName %></title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/responsive.css" />
+  <style>
+    .payment-page {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0d1b6e 0%, #1a237e 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .payment-card {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      width: 100%;
+      max-width: 520px;
+      overflow: hidden;
+    }
+    .payment-header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      padding: 28px 32px;
+      text-align: center;
+      color: #fff;
+    }
+    .payment-amount {
+      font-size: 56px;
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1;
+      margin: 8px 0;
+    }
+    .payment-body { padding: 28px 32px; }
+    .pay-info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+    .pay-info-row:last-child { border: none; }
+    .pay-info-row span:first-child { color: var(--text-muted); font-weight: 500; }
+    .pay-info-row span:last-child { font-weight: 600; }
+    .secure-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 13px;
+      margin-top: 16px;
+    }
+  </style>
+</head>
+<body>
+<div class="payment-page">
+  <div class="payment-card">
+    <div class="payment-header">
+      <div style="font-size:36px;">💳</div>
+      <h1 style="color:#fff;font-size:20px;margin-top:8px;">Complete Your Registration</h1>
+      <div class="payment-amount">₹150</div>
+      <p style="color:rgba(255,255,255,0.7);font-size:14px;">One-time Library Registration Fee</p>
+    </div>
+
+    <div class="payment-body">
+      <div class="alert alert-info mb-24" style="font-size:13px;">
+        <span>📋</span>
+        <span>Your details have been saved. Complete the payment below to create your account.</span>
+      </div>
+
+      <div class="pay-info-row">
+        <span>Name</span>
+        <span><%= student.fullName %></span>
+      </div>
+      <div class="pay-info-row">
+        <span>Email</span>
+        <span><%= student.email %></span>
+      </div>
+      <div class="pay-info-row">
+        <span>Mobile</span>
+        <span><%= student.mobile %></span>
+      </div>
+      <div class="pay-info-row">
+        <span>College</span>
+        <span><%= student.college %></span>
+      </div>
+      <div class="pay-info-row" style="margin-top:12px;">
+        <span>Registration Fee</span>
+        <span style="font-size:18px;color:var(--primary);">₹150.00</span>
+      </div>
+
+      <button
+        id="payNowBtn"
+        class="btn btn-primary btn-lg btn-block"
+        style="margin-top:24px;"
+        onclick="initiatePayment()"
+      >
+        💳 Pay ₹150 — Secure Payment
+      </button>
+
+      <div class="secure-badge">
+        🔒 Secured by Razorpay &nbsp;|&nbsp; 256-bit SSL Encrypted
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Razorpay SDK -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+  const razorpayKeyId = '<%= razorpayKeyId %>';
+  const orderData = {
+    id: '<%= order.id %>',
+    amount: <%= order.amount %>,
+    currency: '<%= order.currency %>'
+  };
+  const studentData = {
+    name: '<%= student.fullName %>',
+    email: '<%= student.email %>',
+    contact: '<%= student.mobile %>'
+  };
+  const baseUrl = '<%= baseUrl %>';
+
+  function initiatePayment() {
+    const btn = document.getElementById('payNowBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Opening payment...';
+
+    const options = {
+      key: razorpayKeyId,
+      amount: orderData.amount,
+      currency: orderData.currency,
+      name: '<%= libraryName %>',
+      description: 'Library Registration Fee',
+      order_id: orderData.id,
+      prefill: {
+        name: studentData.name,
+        email: studentData.email,
+        contact: studentData.contact
+      },
+      theme: { color: '#1a237e' },
+      handler: function(response) {
+        // Verify on server
+        fetch('/student/payment/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature
+          })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            window.location.href = '/student/registration-success';
+          } else {
+            alert('Payment verification failed: ' + data.message);
+            btn.disabled = false;
+            btn.innerHTML = '💳 Pay ₹150 — Secure Payment';
+          }
+        })
+        .catch(() => {
+          alert('Network error. Please contact support with your payment ID: ' + response.razorpay_payment_id);
+          btn.disabled = false;
+          btn.innerHTML = '💳 Pay ₹150 — Secure Payment';
+        });
+      },
+      modal: {
+        ondismiss: function() {
+          btn.disabled = false;
+          btn.innerHTML = '💳 Pay ₹150 — Secure Payment';
+        }
+      }
+    };
+
+    const rzp = new Razorpay(options);
+    rzp.on('payment.failed', function(response) {
+      alert('Payment failed: ' + response.error.description);
+      btn.disabled = false;
+      btn.innerHTML = '💳 Pay ₹150 — Secure Payment';
+    });
+    rzp.open();
+  }
+</script>
+</body>
+</html>

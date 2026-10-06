@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Login | <%= libraryName %>
+  </title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/responsive.css" />
+</head>
+
+<body>
+  <div class="auth-page">
+    <div class="auth-card">
+      <div class="auth-card-header">
+        <div style="font-size:40px;">📚</div>
+        <h1>
+          <%= libraryName %>
+        </h1>
+        <p>Student Portal Login</p>
+      </div>
+      <div class="auth-card-body">
+        <% if (error) { %>
+          <div class="alert alert-danger">
+            <span>⚠️</span>
+            <%= error %>
+          </div>
+          <% } %>
+
+            <form id="studentLoginForm" action="/student/login" method="POST" novalidate>
+              <div class="form-group">
+                <label class="form-label" for="email">Email Address</label>
+                <input type="email" id="email" name="email" class="form-control"
+                  placeholder="Enter your registered email" required autocomplete="email" />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="password">Password</label>
+                <div style="position:relative;">
+                  <input type="password" id="password" name="password" class="form-control"
+                    placeholder="Enter your password" required />
+                  <button type="button" onclick="togglePwd('password',this)"
+                    style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:18px;">👁</button>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-lg btn-block" id="loginBtn">
+                🔑 Login
+              </button>
+            </form>
+
+            <div style="text-align:center;margin-top:24px;padding-top:20px;border-top:1px solid var(--border);">
+              <p style="color:var(--text-muted);font-size:14px;margin-bottom:12px;">Don't have an account?</p>
+              <a href="/student/register" class="btn btn-outline btn-block" id="go-register">
+                📝 Register Now — ₹150
+              </a>
+            </div>
+
+            <div style="text-align:center;margin-top:16px;">
+              <a href="/" style="font-size:13px;color:var(--text-muted);">← Back to Home</a>
+            </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function togglePwd(id, btn) {
+      const input = document.getElementById(id);
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = '🙈';
+      } else {
+        input.type = 'password';
+        btn.textContent = '👁';
+      }
+    }
+
+    document.getElementById('studentLoginForm').addEventListener('submit', function (e) {
+      const btn = document.getElementById('loginBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Logging in...';
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Student Dashboard | SR Library</title>
+    <link rel="icon" href="images/favicon.jpg">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="app-pages.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="app-page">
+    <header class="admin-topbar">
+        <a href="index.html" class="logo-link">
+            <img src="images/logo.jpg" alt="SR Library Logo" class="nav-logo-img">
+            <span class="logo">SR Library <span class="student-word">STUDENT</span></span>
+        </a>
+        <button class="admin-logout" id="logout-button" type="button"><i class="fa-solid fa-arrow-right-from-bracket"></i> Log out</button>
+    </header>
+
+    <main class="app-main student-main">
+        <section class="app-heading">
+            <span class="section-label">STUDENT ACCOUNT</span>
+            <h1>Hello, <span id="student-name">student</span></h1>
+            <p id="student-phone"></p>
+        </section>
+        <div class="demo-notice" role="note">
+            <i class="fa-solid fa-circle-info"></i>
+            <span>Payment records show demo status only. No real payment is processed on this website.</span>
+        </div>
+        <section class="app-panel bookings-panel">
+            <div class="table-heading">
+                <h2>My bookings</h2>
+                <a class="student-pricing-link" href="pricing.html"><i class="fa-solid fa-plus"></i> Browse plans</a>
+            </div>
+            <p class="app-message" id="student-message" role="status"></p>
+            <div class="table-scroll">
+                <table>
+                    <thead><tr><th>Plan</th><th>Amount</th><th>Status</th><th>Created</th></tr></thead>
+                    <tbody id="student-bookings"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+    <script src="student.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Profile | <%= libraryName %></title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/responsive.css" />
+</head>
+<body>
+<nav style="background:var(--primary);height:60px;display:flex;align-items:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,0.2);">
+  <div style="max-width:1200px;margin:0 auto;padding:0 24px;width:100%;display:flex;align-items:center;justify-content:space-between;">
+    <a href="/student/dashboard" style="color:#fff;font-family:var(--font-display);font-size:18px;font-weight:700;">← Back to Dashboard</a>
+    <form action="/student/logout" method="POST">
+      <button type="submit" class="btn btn-sm" style="background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.2);">Logout</button>
+    </form>
+  </div>
+</nav>
+
+<div style="max-width:900px;margin:32px auto;padding:0 24px;">
+  <h1 style="font-size:clamp(1.4rem,3vw,2rem);margin-bottom:8px;">👤 My Profile</h1>
+  <p style="color:var(--text-muted);font-size:15px;margin-bottom:28px;">Your complete registration details</p>
+
+  <div style="display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:start;">
+    <!-- Avatar -->
+    <div class="card" style="padding:28px;text-align:center;min-width:200px;">
+      <div class="avatar-circle" style="width:80px;height:80px;font-size:32px;margin:0 auto 16px;">
+        <%= student.fullName.charAt(0).toUpperCase() %>
+      </div>
+      <div style="font-weight:700;font-size:17px;"><%= student.fullName %></div>
+      <div style="color:var(--text-muted);font-size:13px;margin:4px 0 12px;"><%= student.email %></div>
+      <% if (student.studentId) { %>
+        <div style="background:var(--primary);color:#fff;border-radius:var(--radius);padding:8px;font-weight:700;font-size:15px;"><%= student.studentId %></div>
+      <% } %>
+      <div style="margin-top:12px;">
+        <% if (student.accountStatus === 'active') { %>
+          <span class="badge badge-success">✓ Active</span>
+        <% } else if (student.accountStatus === 'pending') { %>
+          <span class="badge badge-warning">⏳ Pending</span>
+        <% } else { %>
+          <span class="badge badge-danger">✗ Inactive</span>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Details -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">📋 Registration Details</div>
+      </div>
+      <div class="card-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+          <div>
+            <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Full Name</div>
+            <div style="font-weight:600;"><%= student.fullName %></div>
+          </div>
+          <div>
+            <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Parent's Name</div>
+            <div style="font-weight:600;"><%= student.parentName %></div>
+          </div>
+          <div>
+            <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Date of Birth</div>
+            <div style="font-weight:600;"><%= new Date(student.dateOfBirth).toLocaleDateString('en-IN') %></div>
+          </div>
+          <div>
+            <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Gender</div>
+            <div style="font-weight:600;text-transform:capitalize;"><%= student.gender %></div>
+          </div>
+          <div>
+            <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Mobile</div>
+            <div style="font-weight:600;"><%= student.mobile %></div>
+          </div>
+          <div>
+            <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Email</div>
+            <div style="font-weight:600;"><%= student.email %></div>
+          </div>
+
+          <div style="grid-column:1/-1;">
+            <div style="height:1px;background:var(--border);margin:8px 0 16px;"></div>
+          </div>
+
+          <div style="grid-column:1/-1;">
+            <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Address</div>
+            <div style="font-weight:600;"><%= student.address %>, <%= student.city %>, <%= student.state %> — <%= student.pincode %></div>
+          </div>
+          <div>
+            <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">College</div>
+            <div style="font-weight:600;"><%= student.college %></div>
+          </div>
+          <div>
+            <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Course</div>
+            <div style="font-weight:600;"><%= student.course %></div>
+          </div>
+          <div>
+            <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Semester / Year</div>
+            <div style="font-weight:600;"><%= student.semester %></div>
+          </div>
+          <div>
+            <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Joining Date</div>
+            <div style="font-weight:600;"><%= new Date(student.joiningDate).toLocaleDateString('en-IN', {day:'2-digit',month:'long',year:'numeric'}) %></div>
+          </div>
+
+          <div style="grid-column:1/-1;">
+            <div style="height:1px;background:var(--border);margin:8px 0 16px;"></div>
+          </div>
+
+          <div>
+            <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Registration Date</div>
+            <div style="font-weight:600;"><%= new Date(student.registrationDate).toLocaleDateString('en-IN', {day:'2-digit',month:'long',year:'numeric'}) %></div>
+          </div>
+          <div>
+            <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Payment Status</div>
+            <div>
+              <% if (student.paymentStatus === 'paid') { %>
+                <span class="badge badge-success">✓ Paid — ₹150</span>
+              <% } else { %>
+                <span class="badge badge-warning">Pending</span>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

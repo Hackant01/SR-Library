@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Contact SR Self Study Zone & Library — Address, phone, email and Google Map. Located in Shahdol M.P.">
+    <title>Contact | SR Self Study Zone & Library</title>
+    <link rel="icon" href="images/favicon.jpg">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+
+    <a href="https://wa.me/918103485288" class="whatsapp" target="_blank">
+        <div class="whatsapp-pulse"></div>
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
+    <button class="back-to-top" id="backTop"><i class="fa-solid fa-chevron-up"></i></button>
+    <div class="toast"></div>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <button class="menu-close"><i class="fa-solid fa-xmark"></i></button>
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="gallery.html">Gallery</a>
+        <a href="contact.html" aria-current="page">Contact</a>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <a href="index.html" class="logo-link">
+            <img src="images/logo.jpg" alt="SR Library Logo" class="nav-logo-img">
+            <span class="logo">SR Library</span>
+        </a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/about.html">About</a>
+            <a href="/pricing.html">Pricing</a>
+            <a href="/gallery.html">Gallery</a>
+            <a href="/contact.html" aria-current="page">Contact</a>
+            <a href="/student/login">Student Login</a>
+            <a href="/student/register" style="color:var(--gold);font-weight:700;">Register (₹150)</a>
+        </div>
+        <button class="hamburger"><span></span><span></span><span></span></button>
+    </nav>
+
+    <!-- Page Hero -->
+    <div class="page-hero">
+        <h1>Get in <span style="color:var(--gold)">Touch</span></h1>
+        <p>We'd love to hear from you</p>
+    </div>
+
+    <!-- Contact Section -->
+    <section class="section">
+        <div class="section-header reveal">
+            <span class="section-label">Contact Us</span>
+            <h2 class="section-title">Reach Out <span>Anytime</span></h2>
+            <p class="section-sub">Have a question? Want to visit? Drop us a message or call us directly.</p>
+        </div>
+
+        <div class="contact-grid">
+            <!-- Info -->
+            <div class="contact-info reveal-left">
+                <h3>Contact Information</h3>
+                <p>Visit us, call us or send us a message. We're always happy to help.</p>
+
+                <div class="contact-item">
+                    <div class="contact-icon"><i class="fa-solid fa-location-dot"></i></div>
+                    <div class="contact-detail">
+                        <strong>Address</strong>
+                        <span>SR Villa, Ward 16, Gharaula Mohalla, Tara Road, Near Swastik Gold, Shahdol (M.P.)</span>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon"><i class="fa-solid fa-phone"></i></div>
+                    <div class="contact-detail">
+                        <strong>Phone</strong>
+                        <span>8103485288 &nbsp;|&nbsp; 7987526720</span>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon"><i class="fa-solid fa-envelope"></i></div>
+                    <div class="contact-detail">
+                        <strong>Email</strong>
+                        <span>srselfstudyzone@gmail.com</span>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon"><i class="fa-solid fa-clock"></i></div>
+                    <div class="contact-detail">
+                        <strong>Opening Hours</strong>
+                        <span>Daily: 6:00 AM – 11:00 PM</span>
+                    </div>
+                </div>
+
+                <div style="margin-top:28px">
+                    <a href="/student/register" class="btn-primary">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                        Register Now — ₹150
+                    </a>
+                </div>
+            </div>
+
+            <!-- Form -->
+            <div class="contact-form reveal-right">
+                <h3>Send Us a Message</h3>
+                <form id="contact-form" action="https://api.web3forms.com/submit" method="POST" novalidate>
+                    <input type="hidden" name="access_key" value="128bf6df-b725-481d-8a89-0430e164421e">
+                    <div class="form-group">
+                        <label for="fname">Full Name</label>
+                        <input type="text" id="fname" name="name" placeholder="Your full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="fphone">Phone Number</label>
+                        <input type="tel" id="fphone" name="phone" placeholder="10-digit mobile number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="femail">Email (Optional)</label>
+                        <input type="email" id="femail" name="email" placeholder="your@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="fmsg">Message</label>
+                        <textarea id="fmsg" name="message" placeholder="Ask about plans, seats, facilities…"
+                            required></textarea>
+                    </div>
+                    <button type="submit" class="form-submit">
+                        <i class="fa-solid fa-paper-plane"></i> Send Message
+                    </button>
+                    <div class="form-msg"></div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Map -->
+    <section class="map-section">
+        <h2>Find Us On Map</h2>
+        <div class="map-container">
+            <iframe src="https://www.google.com/maps?q=SR%20Self%20Study%20Zone%20Library%20Shahdol&output=embed"
+                width="100%" height="420" style="border:0;" allowfullscreen loading="lazy">
+            </iframe>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <a href="index.html" class="logo-link">
+                    <img src="images/logo.jpg" alt="SR Library Logo" class="footer-logo-img">
+                    <div class="logo" style="display:inline-block">SR Library</div>
+                </a>
+                <p>Build Your Tomorrow, Today. Shahdol's premium self-study zone.</p>
+                <div class="footer-social">
+                    <a href="https://wa.me/918103485288" class="social-btn" target="_blank"><i
+                            class="fa-brands fa-whatsapp"></i></a>
+                    <a href="https://www.instagram.com/sr_self_study_zone_and_library?igsh=ZTg3MWJrOHRra3I2&utm_source=qr"
+                        class="social-btn" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="mailto:srselfstudyzone@gmail.com" class="social-btn"><i
+                            class="fa-solid fa-envelope"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="pricing.html">Pricing</a></li>
+                    <li><a href="gallery.html">Gallery</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2026 SR Self Study Zone & Library. All Rights Reserved.</span>
+            <span>Made with ❤️ in Shahdol, M.P.</span>
+        </div>
+    </footer>
+
+    <script src="mobile.js"></script>
+</body>
+
+</html>

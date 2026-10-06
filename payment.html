@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Choose an SR Library study plan and create a demo booking.">
+    <title>Book a Study Plan | SR Library</title>
+    <link rel="icon" href="images/favicon.jpg">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="app-pages.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="app-page">
+    <nav class="navbar app-navbar">
+        <a href="index.html" class="logo-link">
+            <img src="images/logo.jpg" alt="SR Library Logo" class="nav-logo-img">
+            <span class="logo">SR Library</span>
+        </a>
+        <div class="nav-links"><a href="pricing.html">Pricing</a><a href="index.html">Home</a></div>
+    </nav>
+
+    <main class="app-main">
+        <section class="app-heading">
+            <span class="section-label">STUDY PLAN BOOKING</span>
+            <h1>Reserve your <span>study seat</span></h1>
+            <p>Select a plan and enter your contact details.</p>
+        </section>
+
+        <div class="demo-notice" role="note">
+            <i class="fa-solid fa-circle-info"></i>
+            <span><strong>Demo checkout only.</strong> No money will be charged and no real payment is processed.</span>
+        </div>
+
+        <section class="app-panel checkout-panel">
+            <form id="checkout-form">
+                <div class="app-form-grid">
+                    <div class="form-group">
+                        <label for="plan">Study plan</label>
+                        <select id="plan" name="plan" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="duration">Duration / seat type</label>
+                        <select id="duration" name="duration" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="name">Student name</label>
+                        <input id="name" name="name" autocomplete="name" minlength="2" maxlength="100" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Mobile number</label>
+                        <input id="phone" name="phone" type="tel" inputmode="numeric" autocomplete="tel-national" pattern="[6-9][0-9]{9}" maxlength="10" placeholder="10-digit number" required>
+                    </div>
+                </div>
+
+                <div class="price-summary" aria-live="polite">
+                    <div><span id="summary-plan">Plan</span><strong id="plan-amount">₹0</strong></div>
+                    <div><span>One-time registration</span><strong id="registration-amount">₹150</strong></div>
+                    <div class="summary-total"><span>Total</span><strong id="total-amount">₹0</strong></div>
+                </div>
+
+                <button class="form-submit" type="submit"><i class="fa-solid fa-clipboard-check"></i> Create Demo Booking</button>
+                <p class="app-message" id="checkout-message" role="status"></p>
+            </form>
+
+            <div class="demo-payment" id="demo-payment" hidden>
+                <div class="success-mark"><i class="fa-solid fa-check"></i></div>
+                <h2>Booking created</h2>
+                <p>Your booking is saved as pending. Continue to record a simulated payment for this demo.</p>
+                <button class="form-submit" type="button" id="demo-pay-button"><i class="fa-solid fa-flask"></i> Simulate Payment</button>
+                <p class="app-message" id="payment-message" role="status"></p>
+            </div>
+        </section>
+        <a class="app-back-link" href="pricing.html"><i class="fa-solid fa-arrow-left"></i> Back to pricing</a>
+    </main>
+
+    <script src="payment.js" defer></script>
+</body>
+</html>
