@@ -123,12 +123,20 @@
               <div style="font-weight:600;margin-top:4px;text-transform:capitalize;"><%= student.gender %></div>
             </div>
             <div>
-              <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">College</div>
-              <div style="font-weight:600;margin-top:4px;"><%= student.college %></div>
+              <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">Education</div>
+              <div style="font-weight:600;margin-top:4px;"><%= student.educationLevel || student.course || 'Undergraduate' %></div>
             </div>
             <div>
-              <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">Course</div>
-              <div style="font-weight:600;margin-top:4px;"><%= student.course %> — <%= student.semester %></div>
+              <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">Preparing For</div>
+              <div style="font-weight:600;margin-top:4px;"><%= student.preparingFor || 'Competitive Exams' %></div>
+            </div>
+            <div>
+              <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">Membership Slot</div>
+              <div style="font-weight:600;margin-top:4px;"><%= student.membershipSlot || 'Full Day' %> (<%= student.slotTiming || '6 AM - 10 PM' %>)</div>
+            </div>
+            <div>
+              <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">ID Proof</div>
+              <div style="font-weight:600;margin-top:4px;"><%= student.idProofType || 'Aadhaar' %>: <%= student.idProofNumber || 'Verified' %></div>
             </div>
           </div>
         </div>

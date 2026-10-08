@@ -604,7 +604,8 @@
     transform: translateX(-100%);
   }
 
-  .admin-sidebar.open {
+  .admin-sidebar.open,
+  .admin-sidebar.active {
     transform: translateX(0);
   }
 
@@ -640,7 +641,8 @@
     z-index: 899;
   }
 
-  .sidebar-overlay.open {
+  .sidebar-overlay.open,
+  .sidebar-overlay.active {
     display: block;
   }
 }

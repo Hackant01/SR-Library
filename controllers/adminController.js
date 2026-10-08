@@ -72,25 +72,20 @@ const postLogout = (req, res) => {
 };
 
 // ─── Dashboard ───────────────────────────────────────────────────────────────
-// ─── Dashboard ───────────────────────────────────────────────────────────────
 const getDashboard = async (req, res) => {
   try {
     const [
       totalStudents,
       activeStudents,
       pendingCashPayments,
-      onlinePayments,
-      cashPayments,
       pendingApprovals,
       pendingCashStudents,
       recentStudents,
-      totalPaidCount,
+      paymentAggregation,
     ] = await Promise.all([
       Student.countDocuments(),
       Student.countDocuments({ accountStatus: 'active' }),
       Student.countDocuments({ paymentMethod: 'cash', paymentStatus: 'pending' }),
-      Student.countDocuments({ paymentMethod: 'online', paymentStatus: 'paid' }),
-      Student.countDocuments({ paymentMethod: 'cash', paymentStatus: 'paid' }),
       Student.countDocuments({ approvalStatus: 'pending' }),
       Student.find({ paymentMethod: 'cash', paymentStatus: 'pending' })
         .sort({ createdAt: -1 })
@@ -100,10 +95,36 @@ const getDashboard = async (req, res) => {
         .sort({ createdAt: -1 })
         .limit(10)
         .select('fullName email mobile studentId createdAt joiningDate paymentMethod paymentStatus approvalStatus accountStatus'),
-      Student.countDocuments({ paymentStatus: 'paid' }),
+      // Dynamic revenue and payment counts from actual MongoDB Payment records where status = 'paid'
+      Payment.aggregate([
+        { $match: { status: 'paid' } },
+        {
+          $group: {
+            _id: '$paymentMethod',
+            totalRevenue: { $sum: '$amount' },
+            count: { $sum: 1 },
+          },
+        },
+      ]),
     ]);
 
-    const totalRevenue = totalPaidCount * 150;
+    let onlineRevenue = 0;
+    let onlinePayments = 0;
+    let cashRevenue = 0;
+    let cashPayments = 0;
+
+    paymentAggregation.forEach((item) => {
+      if (item._id === 'online') {
+        onlineRevenue = item.totalRevenue || 0;
+        onlinePayments = item.count || 0;
+      } else if (item._id === 'cash') {
+        cashRevenue = item.totalRevenue || 0;
+        cashPayments = item.count || 0;
+      }
+    });
+
+    const totalRevenue = onlineRevenue + cashRevenue;
+    const totalPaidRegistrations = onlinePayments + cashPayments;
 
     res.render('admin/dashboard', {
       title: 'Admin Dashboard',
@@ -114,7 +135,10 @@ const getDashboard = async (req, res) => {
         pendingCashPayments,
         onlinePayments,
         cashPayments,
+        onlineRevenue,
+        cashRevenue,
         totalRevenue,
+        totalPaidCount: totalPaidRegistrations,
         pendingApprovals,
       },
       pendingCashStudents,
@@ -133,7 +157,7 @@ const getStudents = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 15;
     const skip = (page - 1) * limit;
-    const search = req.query.search || '';
+    const search = (req.query.search || '').trim();
     const status = req.query.status || '';
     const method = req.query.method || '';
     const payment = req.query.payment || '';
@@ -155,9 +179,17 @@ const getStudents = async (req, res) => {
     if (payment) query.paymentStatus = payment;
     if (approval) query.approvalStatus = approval;
 
+    // Sorting options
+    let sortObj = { createdAt: -1 };
+    if (sortBy === 'createdAt') sortObj = { createdAt: 1 };
+    else if (sortBy === 'fullName') sortObj = { fullName: 1 };
+    else if (sortBy === '-fullName') sortObj = { fullName: -1 };
+    else if (sortBy === '-joiningDate') sortObj = { joiningDate: -1 };
+    else if (sortBy === 'joiningDate') sortObj = { joiningDate: 1 };
+
     const [students, total] = await Promise.all([
       Student.find(query)
-        .sort(sortBy)
+        .sort(sortObj)
         .skip(skip)
         .limit(limit)
         .select('-password'),
@@ -279,7 +311,7 @@ const markCashPaymentReceived = async (req, res) => {
     student.paymentStatus = 'paid';
     student.approvalStatus = 'approved';
     student.accountStatus = 'active';
-    await student.save();
+    await student.save({ validateModifiedOnly: true });
 
     // Find or create Payment record
     let payment = await Payment.findOne({ student: student._id });
@@ -307,11 +339,11 @@ const markCashPaymentReceived = async (req, res) => {
     try {
       await sendStudentIdEmail(student);
       student.emailStatus = 'sent';
-      await student.save();
+      await student.save({ validateModifiedOnly: true });
     } catch (emailErr) {
       console.error('Email send failed on cash verification:', emailErr.message);
       student.emailStatus = 'failed';
-      await student.save();
+      await student.save({ validateModifiedOnly: true });
     }
 
     res.json({
@@ -417,32 +449,181 @@ const rejectStudent = async (req, res) => {
   }
 };
 
-// ─── Deactivate ──────────────────────────────────────────────────────────────
-const deactivateStudent = async (req, res) => {
+// ─── Activate Student ────────────────────────────────────────────────────────
+const activateStudent = async (req, res) => {
   try {
     const student = await Student.findById(req.params.id);
-    if (!student) return res.status(404).json({ success: false, message: 'Student not found' });
+    if (!student) {
+      return res.status(404).json({ success: false, message: 'Student record not found' });
+    }
 
-    student.accountStatus = 'inactive';
-    await student.save();
+    student.accountStatus = 'active';
+    await student.save({ validateModifiedOnly: true });
 
-    res.json({ success: true, message: 'Student deactivated' });
+    res.json({
+      success: true,
+      message: `Account activated for ${student.fullName}. The student can now log in.`,
+      accountStatus: 'active',
+    });
   } catch (err) {
-    res.status(500).json({ success: false, message: 'Server error' });
+    console.error('Activate student error:', err);
+    res.status(500).json({ success: false, message: err.message || 'Server error activating student' });
   }
 };
 
-// ─── Delete ──────────────────────────────────────────────────────────────────
+// ─── Deactivate Student ──────────────────────────────────────────────────────
+const deactivateStudent = async (req, res) => {
+  try {
+    const student = await Student.findById(req.params.id);
+    if (!student) {
+      return res.status(404).json({ success: false, message: 'Student record not found' });
+    }
+
+    student.accountStatus = 'inactive';
+    await student.save({ validateModifiedOnly: true });
+
+    res.json({
+      success: true,
+      message: `Account deactivated for ${student.fullName}. The student can no longer log in.`,
+      accountStatus: 'inactive',
+    });
+  } catch (err) {
+    console.error('Deactivate student error:', err);
+    res.status(500).json({ success: false, message: err.message || 'Server error deactivating student' });
+  }
+};
+
+// ─── Delete Student ──────────────────────────────────────────────────────────
 const deleteStudent = async (req, res) => {
   try {
     const student = await Student.findByIdAndDelete(req.params.id);
-    if (!student) return res.status(404).json({ success: false, message: 'Student not found' });
+    if (!student) {
+      return res.status(404).json({ success: false, message: 'Student not found or already deleted' });
+    }
 
+    // Delete related payment records appropriately
     await Payment.deleteMany({ student: req.params.id });
 
-    res.json({ success: true, message: 'Student deleted successfully' });
+    res.json({
+      success: true,
+      message: `Student "${student.fullName}" (${student.studentId || 'N/A'}) deleted successfully`,
+    });
   } catch (err) {
-    res.status(500).json({ success: false, message: 'Server error' });
+    console.error('Delete student error:', err);
+    res.status(500).json({ success: false, message: err.message || 'Server error deleting student' });
+  }
+};
+
+// ─── Print Registration Form ─────────────────────────────────────────────────
+const printStudentForm = async (req, res) => {
+  try {
+    const student = await Student.findById(req.params.id).select('-password');
+    if (!student) {
+      return res.status(404).render('error', {
+        title: 'Student Not Found',
+        message: 'Could not find the requested student record to print.',
+      });
+    }
+
+    const payment = await Payment.findOne({ student: student._id }).populate('cashVerifiedBy', 'name email');
+
+    res.render('admin/print-form', {
+      title: `Membership Form - ${student.fullName} (${student.studentId || 'LIB'})`,
+      student,
+      payment,
+      libraryName: process.env.LIBRARY_NAME || 'SR SELF STUDY ZONE & LIBRARY',
+    });
+  } catch (err) {
+    console.error('Print form error:', err);
+    res.status(500).render('error', {
+      title: 'Server Error',
+      message: 'Failed to generate registration form for printing.',
+    });
+  }
+};
+
+// ─── Payments Dashboard ───────────────────────────────────────────────────────
+const getPayments = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 15;
+    const skip = (page - 1) * limit;
+    const method = req.query.method || '';
+    const status = req.query.status || '';
+
+    const query = {};
+    if (method) query.paymentMethod = method;
+    if (status) query.status = status;
+
+    const [
+      payments,
+      total,
+      paymentAggregation,
+      pendingCashPayments,
+    ] = await Promise.all([
+      Payment.find(query)
+        .populate('student', 'fullName email mobile studentId')
+        .populate('cashVerifiedBy', 'name email')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      Payment.countDocuments(query),
+      Payment.aggregate([
+        { $match: { status: 'paid' } },
+        {
+          $group: {
+            _id: '$paymentMethod',
+            totalRevenue: { $sum: '$amount' },
+            count: { $sum: 1 },
+          },
+        },
+      ]),
+      Student.countDocuments({ paymentMethod: 'cash', paymentStatus: 'pending' }),
+    ]);
+
+    let onlineRevenue = 0;
+    let onlineCount = 0;
+    let cashRevenue = 0;
+    let cashCount = 0;
+
+    paymentAggregation.forEach((item) => {
+      if (item._id === 'online') {
+        onlineRevenue = item.totalRevenue || 0;
+        onlineCount = item.count || 0;
+      } else if (item._id === 'cash') {
+        cashRevenue = item.totalRevenue || 0;
+        cashCount = item.count || 0;
+      }
+    });
+
+    const totalRevenue = onlineRevenue + cashRevenue;
+    const totalPaidCount = onlineCount + cashCount;
+    const totalPages = Math.ceil(total / limit);
+
+    res.render('admin/payments', {
+      title: 'Payment Dashboard & Records',
+      admin: req.admin,
+      payments,
+      total,
+      page,
+      totalPages,
+      limit,
+      method,
+      status,
+      stats: {
+        totalRevenue,
+        onlineRevenue,
+        cashRevenue,
+        pendingCashPayments,
+        totalPaidCount,
+        onlineCount,
+        cashCount,
+      },
+      libraryName: process.env.LIBRARY_NAME || 'SR Library',
+    });
+  } catch (err) {
+    console.error('Get payments error:', err);
+    res.status(500).render('error', { title: 'Error', message: 'Failed to load payments' });
   }
 };
 
@@ -458,7 +639,7 @@ const resendEmail = async (req, res) => {
 
     await sendStudentIdEmail(student);
     student.emailStatus = 'sent';
-    await student.save();
+    await student.save({ validateModifiedOnly: true });
 
     res.json({ success: true, message: 'Email resent successfully' });
   } catch (err) {
@@ -482,11 +663,14 @@ module.exports = {
   postLogout,
   getDashboard,
   getStudents,
+  getPayments,
   getStudentDetail,
+  printStudentForm,
   assignStudentId,
   markCashPaymentReceived,
   approveStudent,
   rejectStudent,
+  activateStudent,
   deactivateStudent,
   deleteStudent,
   resendEmail,

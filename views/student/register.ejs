@@ -3,38 +3,41 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Register for <%= libraryName %> - Fill in your details to create your library account." />
+  <meta name="description" content="Register for <%= libraryName %> - Library Membership Registration Form." />
   <title><%= title %> | <%= libraryName %></title>
   <link rel="stylesheet" href="/css/style.css" />
   <link rel="stylesheet" href="/css/responsive.css" />
 </head>
 <body>
 
-<!-- Mini Navbar -->
-<nav class="navbar" style="position:sticky;">
-  <div class="nav-container">
-    <a href="/" class="nav-logo">📚 <span><%= libraryName %></span></a>
+<!-- Navbar -->
+<nav class="navbar" style="position:sticky;top:0;z-index:100;background:var(--surface,#fff);box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+  <div class="nav-container" style="display:flex;justify-content:space-between;align-items:center;padding:12px 24px;">
+    <a href="/" class="nav-logo" style="text-decoration:none;display:flex;align-items:center;gap:8px;font-weight:700;color:var(--primary,#1e293b);font-size:18px;">
+      📚 <span><%= libraryName %></span>
+    </a>
     <div class="nav-actions">
-      <a href="/student/login" class="btn btn-ghost btn-sm">Already Registered? Login</a>
+      <a href="/student/login" class="btn btn-ghost btn-sm" style="font-weight:600;">Already Registered? Login</a>
     </div>
   </div>
 </nav>
 
-<div class="registration-page">
-  <div class="registration-container">
+<div class="registration-page" style="padding:40px 16px;background:var(--bg,#f8fafc);min-height:calc(100vh - 65px);">
+  <div class="registration-container" style="max-width:760px;margin:0 auto;">
 
-    <div class="registration-header">
-      <h1 style="font-size:clamp(1.6rem,3vw,2.2rem);margin-bottom:8px;">📝 Student Registration</h1>
-      <p style="color:var(--text-muted);font-size:15px;">Fill in your details below to create your library account. Registration is free.</p>
+    <div class="registration-header" style="text-align:center;margin-bottom:28px;">
+      <div style="font-size:12px;font-weight:700;letter-spacing:1.5px;color:var(--primary,#4f46e5);text-transform:uppercase;margin-bottom:6px;">SR SELF STUDY ZONE & LIBRARY</div>
+      <h1 style="font-size:clamp(1.5rem,3vw,2rem);margin-bottom:8px;color:#0f172a;font-weight:800;">📝 Membership Registration Form</h1>
+      <p style="color:var(--text-muted,#64748b);font-size:14px;max-width:560px;margin:0 auto;">Fill in your details below to register for library membership. Please ensure all details are accurate.</p>
     </div>
 
     <!-- Error alerts -->
     <% if (errors && errors.length > 0) { %>
-      <div class="alert alert-danger" id="error-alert">
-        <span style="font-size:18px;">⚠️</span>
+      <div class="alert alert-danger" id="error-alert" style="margin-bottom:24px;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:16px;border-radius:10px;display:flex;gap:12px;">
+        <span style="font-size:20px;">⚠️</span>
         <div>
           <strong>Please fix the following errors:</strong>
-          <ul style="margin-top:6px;padding-left:16px;">
+          <ul style="margin-top:6px;padding-left:18px;font-size:13.5px;">
             <% errors.forEach(err => { %>
               <li><%= err %></li>
             <% }) %>
@@ -45,35 +48,35 @@
 
     <form id="registrationForm" action="/student/register" method="POST" novalidate>
 
-      <!-- Section 1: Personal Info -->
-      <div class="card mb-24">
-        <div class="card-header">
-          <div class="card-title">👤 Personal Information</div>
-          <span class="badge badge-gray">Step 1 of 3</span>
+      <!-- 1. PERSONAL INFORMATION -->
+      <div class="card mb-24" style="background:#fff;border-radius:12px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,0.05);overflow:hidden;margin-bottom:20px;">
+        <div class="card-header" style="padding:16px 20px;border-bottom:1px solid #f1f5f9;background:#f8fafc;display:flex;justify-content:space-between;align-items:center;">
+          <div class="card-title" style="font-weight:700;font-size:15px;color:#0f172a;">👤 1. PERSONAL INFORMATION</div>
+          <span class="badge" style="background:#e0e7ff;color:#4338ca;font-size:11px;padding:3px 8px;border-radius:4px;font-weight:600;">Personal</span>
         </div>
-        <div class="card-body">
-          <div class="form-row">
+        <div class="card-body" style="padding:20px;">
+          <div class="form-row" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:16px;margin-bottom:16px;">
             <div class="form-group">
-              <label class="form-label" for="fullName">Full Name <span class="required">*</span></label>
+              <label class="form-label" for="fullName" style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#334155;">Full Name <span class="required" style="color:#ef4444;">*</span></label>
               <input type="text" id="fullName" name="fullName" class="form-control" placeholder="Enter your full name"
-                value="<%= formData.fullName || '' %>" required autocomplete="name" />
+                value="<%= formData.fullName || '' %>" required autocomplete="name" style="width:100%;padding:10px 14px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;" />
             </div>
             <div class="form-group">
-              <label class="form-label" for="parentName">Father's / Mother's Name <span class="required">*</span></label>
-              <input type="text" id="parentName" name="parentName" class="form-control" placeholder="Enter parent's name"
-                value="<%= formData.parentName || '' %>" required />
+              <label class="form-label" for="parentName" style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#334155;">Parent / Guardian Name <span class="required" style="color:#ef4444;">*</span></label>
+              <input type="text" id="parentName" name="parentName" class="form-control" placeholder="Father's or Mother's name"
+                value="<%= formData.parentName || '' %>" required style="width:100%;padding:10px 14px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;" />
             </div>
           </div>
 
-          <div class="form-row">
+          <div class="form-row" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:16px;margin-bottom:16px;">
             <div class="form-group">
-              <label class="form-label" for="dateOfBirth">Date of Birth <span class="required">*</span></label>
+              <label class="form-label" for="dateOfBirth" style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#334155;">Date of Birth <span class="required" style="color:#ef4444;">*</span></label>
               <input type="date" id="dateOfBirth" name="dateOfBirth" class="form-control"
-                value="<%= formData.dateOfBirth || '' %>" required max="<%= new Date().toISOString().split('T')[0] %>" />
+                value="<%= formData.dateOfBirth || '' %>" required max="<%= new Date().toISOString().split('T')[0] %>" style="width:100%;padding:10px 14px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;" />
             </div>
             <div class="form-group">
-              <label class="form-label" for="gender">Gender <span class="required">*</span></label>
-              <select id="gender" name="gender" class="form-control" required>
+              <label class="form-label" for="gender" style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#334155;">Gender <span class="required" style="color:#ef4444;">*</span></label>
+              <select id="gender" name="gender" class="form-control" required style="width:100%;padding:10px 14px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;background:#fff;">
                 <option value="">-- Select Gender --</option>
                 <option value="male" <%= formData.gender === 'male' ? 'selected' : '' %>>Male</option>
                 <option value="female" <%= formData.gender === 'female' ? 'selected' : '' %>>Female</option>
@@ -82,170 +85,256 @@
             </div>
           </div>
 
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label" for="mobile">Mobile Number <span class="required">*</span></label>
-              <input type="tel" id="mobile" name="mobile" class="form-control" placeholder="10-digit mobile number"
-                value="<%= formData.mobile || '' %>" required maxlength="10" pattern="[6-9][0-9]{9}" />
-              <span class="form-text">Indian mobile number (starts with 6-9)</span>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="email">Email Address <span class="required">*</span></label>
-              <input type="email" id="email" name="email" class="form-control" placeholder="your@email.com"
-                value="<%= formData.email || '' %>" required autocomplete="email" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Section 2: Address -->
-      <div class="card mb-24">
-        <div class="card-header">
-          <div class="card-title">📍 Address & Academic Details</div>
-          <span class="badge badge-gray">Step 2 of 3</span>
-        </div>
-        <div class="card-body">
           <div class="form-group">
-            <label class="form-label" for="address">Address <span class="required">*</span></label>
-            <input type="text" id="address" name="address" class="form-control" placeholder="House no., Street, Area"
-              value="<%= formData.address || '' %>" required />
+            <label class="form-label" for="address" style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#334155;">Residential Address <span class="required" style="color:#ef4444;">*</span></label>
+            <textarea id="address" name="address" class="form-control" rows="2" placeholder="House no., Street, Area, City, State, Pincode"
+              required style="width:100%;padding:10px 14px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;resize:vertical;"><%= formData.address || '' %></textarea>
           </div>
+        </div>
+      </div>
 
-          <div class="form-row-3">
+      <!-- 2. CONTACT DETAILS -->
+      <div class="card mb-24" style="background:#fff;border-radius:12px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,0.05);overflow:hidden;margin-bottom:20px;">
+        <div class="card-header" style="padding:16px 20px;border-bottom:1px solid #f1f5f9;background:#f8fafc;display:flex;justify-content:space-between;align-items:center;">
+          <div class="card-title" style="font-weight:700;font-size:15px;color:#0f172a;">📞 2. CONTACT DETAILS</div>
+          <span class="badge" style="background:#e0f2fe;color:#0369a1;font-size:11px;padding:3px 8px;border-radius:4px;font-weight:600;">Contact</span>
+        </div>
+        <div class="card-body" style="padding:20px;">
+          <div class="form-row" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:16px;margin-bottom:16px;">
             <div class="form-group">
-              <label class="form-label" for="city">City <span class="required">*</span></label>
-              <input type="text" id="city" name="city" class="form-control" placeholder="City"
-                value="<%= formData.city || '' %>" required />
+              <label class="form-label" for="mobile" style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#334155;">Contact Number <span class="required" style="color:#ef4444;">*</span></label>
+              <input type="tel" id="mobile" name="mobile" class="form-control" placeholder="10-digit mobile number"
+                value="<%= formData.mobile || '' %>" required maxlength="10" pattern="[6-9][0-9]{9}" style="width:100%;padding:10px 14px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;" />
+              <span class="form-text" style="font-size:11px;color:#64748b;margin-top:4px;display:block;">Primary 10-digit mobile number</span>
             </div>
             <div class="form-group">
-              <label class="form-label" for="state">State <span class="required">*</span></label>
-              <select id="state" name="state" class="form-control" required>
-                <option value="">-- Select State --</option>
-                <% const states = ['Andhra Pradesh','Arunachal Pradesh','Assam','Bihar','Chhattisgarh','Goa','Gujarat','Haryana','Himachal Pradesh','Jharkhand','Karnataka','Kerala','Madhya Pradesh','Maharashtra','Manipur','Meghalaya','Mizoram','Nagaland','Odisha','Punjab','Rajasthan','Sikkim','Tamil Nadu','Telangana','Tripura','Uttar Pradesh','Uttarakhand','West Bengal','Delhi','Jammu & Kashmir','Ladakh','Puducherry','Chandigarh','Dadra & Nagar Haveli','Daman & Diu','Lakshadweep','Andaman & Nicobar']; %>
-                <% states.forEach(s => { %>
-                  <option value="<%= s %>" <%= formData.state === s ? 'selected' : '' %>><%= s %></option>
-                <% }) %>
+              <label class="form-label" for="emergencyContact" style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#334155;">Emergency Contact Number <span class="required" style="color:#ef4444;">*</span></label>
+              <input type="tel" id="emergencyContact" name="emergencyContact" class="form-control" placeholder="Guardian or alternate mobile"
+                value="<%= formData.emergencyContact || '' %>" required maxlength="10" pattern="[6-9][0-9]{9}" style="width:100%;padding:10px 14px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;" />
+              <span class="form-text" style="font-size:11px;color:#64748b;margin-top:4px;display:block;">Parent/guardian contact for emergencies</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="email" style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#334155;">Email Address <span class="required" style="color:#ef4444;">*</span></label>
+            <input type="email" id="email" name="email" class="form-control" placeholder="yourname@gmail.com"
+              value="<%= formData.email || '' %>" required autocomplete="email" style="width:100%;padding:10px 14px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;" />
+            <span class="form-text" style="font-size:11px;color:#64748b;margin-top:4px;display:block;">Used for portal login and membership confirmation</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. IDENTIFICATION -->
+      <div class="card mb-24" style="background:#fff;border-radius:12px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,0.05);overflow:hidden;margin-bottom:20px;">
+        <div class="card-header" style="padding:16px 20px;border-bottom:1px solid #f1f5f9;background:#f8fafc;display:flex;justify-content:space-between;align-items:center;">
+          <div class="card-title" style="font-weight:700;font-size:15px;color:#0f172a;">🆔 3. IDENTIFICATION</div>
+          <span class="badge" style="background:#fef3c7;color:#92400e;font-size:11px;padding:3px 8px;border-radius:4px;font-weight:600;">ID Proof</span>
+        </div>
+        <div class="card-body" style="padding:20px;">
+          <div class="form-row" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:16px;">
+            <div class="form-group">
+              <label class="form-label" for="idProofType" style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#334155;">ID Proof <span class="required" style="color:#ef4444;">*</span></label>
+              <select id="idProofType" name="idProofType" class="form-control" required style="width:100%;padding:10px 14px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;background:#fff;">
+                <option value="">-- Select ID Proof --</option>
+                <option value="Aadhaar Card" <%= formData.idProofType === 'Aadhaar Card' ? 'selected' : '' %>>Aadhaar Card</option>
+                <option value="PAN Card" <%= formData.idProofType === 'PAN Card' ? 'selected' : '' %>>PAN Card</option>
+                <option value="Voter ID" <%= formData.idProofType === 'Voter ID' ? 'selected' : '' %>>Voter ID Card</option>
+                <option value="Driving License" <%= formData.idProofType === 'Driving License' ? 'selected' : '' %>>Driving License</option>
+                <option value="College ID" <%= formData.idProofType === 'College ID' ? 'selected' : '' %>>College / Student ID</option>
+                <option value="Passport" <%= formData.idProofType === 'Passport' ? 'selected' : '' %>>Passport</option>
+                <option value="Other" <%= formData.idProofType === 'Other' ? 'selected' : '' %>>Other Govt ID</option>
               </select>
             </div>
             <div class="form-group">
-              <label class="form-label" for="pincode">Pincode <span class="required">*</span></label>
-              <input type="text" id="pincode" name="pincode" class="form-control" placeholder="6-digit pincode"
-                value="<%= formData.pincode || '' %>" required maxlength="6" pattern="\d{6}" />
+              <label class="form-label" for="idProofNumber" style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#334155;">ID Proof Number <span class="required" style="color:#ef4444;">*</span></label>
+              <input type="text" id="idProofNumber" name="idProofNumber" class="form-control" placeholder="e.g. 12-digit Aadhaar / ID Number"
+                value="<%= formData.idProofNumber || '' %>" required style="width:100%;padding:10px 14px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;" />
             </div>
           </div>
+        </div>
+      </div>
 
-          <div class="form-row">
+      <!-- 4. EDUCATION -->
+      <div class="card mb-24" style="background:#fff;border-radius:12px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,0.05);overflow:hidden;margin-bottom:20px;">
+        <div class="card-header" style="padding:16px 20px;border-bottom:1px solid #f1f5f9;background:#f8fafc;display:flex;justify-content:space-between;align-items:center;">
+          <div class="card-title" style="font-weight:700;font-size:15px;color:#0f172a;">🎓 4. EDUCATION</div>
+          <span class="badge" style="background:#dcfce7;color:#166534;font-size:11px;padding:3px 8px;border-radius:4px;font-weight:600;">Academic</span>
+        </div>
+        <div class="card-body" style="padding:20px;">
+          <div class="form-row" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:16px;">
             <div class="form-group">
-              <label class="form-label" for="college">College / Institution Name <span class="required">*</span></label>
-              <input type="text" id="college" name="college" class="form-control" placeholder="Your college/school name"
-                value="<%= formData.college || '' %>" required />
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="course">Course <span class="required">*</span></label>
-              <input type="text" id="course" name="course" class="form-control" placeholder="e.g. B.Tech, B.Sc, BA"
-                value="<%= formData.course || '' %>" required />
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label" for="semester">Semester / Year <span class="required">*</span></label>
-              <select id="semester" name="semester" class="form-control" required>
-                <option value="">-- Select --</option>
-                <% ['1st Semester','2nd Semester','3rd Semester','4th Semester','5th Semester','6th Semester','7th Semester','8th Semester','1st Year','2nd Year','3rd Year','4th Year'].forEach(s => { %>
-                  <option value="<%= s %>" <%= formData.semester === s ? 'selected' : '' %>><%= s %></option>
-                <% }) %>
+              <label class="form-label" for="educationLevel" style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#334155;">Education Level <span class="required" style="color:#ef4444;">*</span></label>
+              <select id="educationLevel" name="educationLevel" class="form-control" required style="width:100%;padding:10px 14px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;background:#fff;">
+                <option value="">-- Select Education Level --</option>
+                <option value="High School (10th)" <%= formData.educationLevel === 'High School (10th)' ? 'selected' : '' %>>High School (10th)</option>
+                <option value="Intermediate (12th)" <%= formData.educationLevel === 'Intermediate (12th)' ? 'selected' : '' %>>Intermediate (12th)</option>
+                <option value="Undergraduate" <%= formData.educationLevel === 'Undergraduate' ? 'selected' : '' %>>Undergraduate (UG)</option>
+                <option value="Postgraduate" <%= formData.educationLevel === 'Postgraduate' ? 'selected' : '' %>>Postgraduate (PG)</option>
+                <option value="Diploma" <%= formData.educationLevel === 'Diploma' ? 'selected' : '' %>>Diploma</option>
+                <option value="Graduate" <%= formData.educationLevel === 'Graduate' ? 'selected' : '' %>>Graduate</option>
+                <option value="Other" <%= formData.educationLevel === 'Other' ? 'selected' : '' %>>Other</option>
               </select>
             </div>
             <div class="form-group">
-              <label class="form-label" for="joiningDate">Joining Date <span class="required">*</span></label>
+              <label class="form-label" for="preparingFor" style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#334155;">Preparing For <span class="required" style="color:#ef4444;">*</span></label>
+              <select id="preparingFor" name="preparingFor" class="form-control" required style="width:100%;padding:10px 14px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;background:#fff;">
+                <option value="">-- Select Exam / Goal --</option>
+                <option value="UPSC / Civil Services" <%= formData.preparingFor === 'UPSC / Civil Services' ? 'selected' : '' %>>UPSC / Civil Services</option>
+                <option value="State PSC / MPPSC / UPPSC" <%= formData.preparingFor === 'State PSC / MPPSC / UPPSC' ? 'selected' : '' %>>State PSC / MPPSC / UPPSC</option>
+                <option value="SSC / CGL / CHSL" <%= formData.preparingFor === 'SSC / CGL / CHSL' ? 'selected' : '' %>>SSC / CGL / CHSL</option>
+                <option value="Banking / IBPS / SBI" <%= formData.preparingFor === 'Banking / IBPS / SBI' ? 'selected' : '' %>>Banking / IBPS / SBI</option>
+                <option value="Railways / RRB" <%= formData.preparingFor === 'Railways / RRB' ? 'selected' : '' %>>Railways / RRB</option>
+                <option value="NEET / Medical" <%= formData.preparingFor === 'NEET / Medical' ? 'selected' : '' %>>NEET / Medical</option>
+                <option value="JEE / Engineering" <%= formData.preparingFor === 'JEE / Engineering' ? 'selected' : '' %>>JEE / Engineering</option>
+                <option value="Judiciary / Law / CLAT" <%= formData.preparingFor === 'Judiciary / Law / CLAT' ? 'selected' : '' %>>Judiciary / Law / CLAT</option>
+                <option value="Teaching / CTET / NET" <%= formData.preparingFor === 'Teaching / CTET / NET' ? 'selected' : '' %>>Teaching / CTET / NET</option>
+                <option value="Defence / NDA / CDS" <%= formData.preparingFor === 'Defence / NDA / CDS' ? 'selected' : '' %>>Defence / NDA / CDS</option>
+                <option value="Self Study / General Studies" <%= formData.preparingFor === 'Self Study / General Studies' ? 'selected' : '' %>>Self Study / General Studies</option>
+                <option value="Other" <%= formData.preparingFor === 'Other' ? 'selected' : '' %>>Other</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. MEMBERSHIP DETAILS -->
+      <div class="card mb-24" style="background:#fff;border-radius:12px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,0.05);overflow:hidden;margin-bottom:20px;">
+        <div class="card-header" style="padding:16px 20px;border-bottom:1px solid #f1f5f9;background:#f8fafc;display:flex;justify-content:space-between;align-items:center;">
+          <div class="card-title" style="font-weight:700;font-size:15px;color:#0f172a;">📚 5. MEMBERSHIP DETAILS</div>
+          <span class="badge" style="background:#f3e8ff;color:#7e22ce;font-size:11px;padding:3px 8px;border-radius:4px;font-weight:600;">Plan & Slot</span>
+        </div>
+        <div class="card-body" style="padding:20px;">
+          <div class="form-row" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:16px;margin-bottom:16px;">
+            <div class="form-group">
+              <label class="form-label" for="membershipSlot" style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#334155;">Membership Slot <span class="required" style="color:#ef4444;">*</span></label>
+              <select id="membershipSlot" name="membershipSlot" class="form-control" required style="width:100%;padding:10px 14px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;background:#fff;">
+                <option value="">-- Select Membership Slot --</option>
+                <option value="Full Day Slot (Unlimited)" <%= formData.membershipSlot === 'Full Day Slot (Unlimited)' ? 'selected' : '' %>>Full Day Slot (Unlimited)</option>
+                <option value="Morning Slot" <%= formData.membershipSlot === 'Morning Slot' ? 'selected' : '' %>>Morning Slot</option>
+                <option value="Afternoon Slot" <%= formData.membershipSlot === 'Afternoon Slot' ? 'selected' : '' %>>Afternoon Slot</option>
+                <option value="Evening Slot" <%= formData.membershipSlot === 'Evening Slot' ? 'selected' : '' %>>Evening Slot</option>
+                <option value="4 Hours Slot" <%= formData.membershipSlot === '4 Hours Slot' ? 'selected' : '' %>>4 Hours Slot</option>
+                <option value="6 Hours Slot" <%= formData.membershipSlot === '6 Hours Slot' ? 'selected' : '' %>>6 Hours Slot</option>
+                <option value="8 Hours Slot" <%= formData.membershipSlot === '8 Hours Slot' ? 'selected' : '' %>>8 Hours Slot</option>
+                <option value="Reserved Seat Slot" <%= formData.membershipSlot === 'Reserved Seat Slot' ? 'selected' : '' %>>Reserved Seat Slot</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="subscriptionPlan" style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#334155;">Subscription Plan <span class="required" style="color:#ef4444;">*</span></label>
+              <select id="subscriptionPlan" name="subscriptionPlan" class="form-control" required style="width:100%;padding:10px 14px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;background:#fff;">
+                <option value="">-- Select Plan --</option>
+                <option value="1 Month Plan" <%= formData.subscriptionPlan === '1 Month Plan' ? 'selected' : '' %>>1 Month Plan</option>
+                <option value="2 Months Plan" <%= formData.subscriptionPlan === '2 Months Plan' ? 'selected' : '' %>>2 Months Plan</option>
+                <option value="3 Months Plan" <%= formData.subscriptionPlan === '3 Months Plan' ? 'selected' : '' %>>3 Months Plan</option>
+                <option value="6 Months Plan" <%= formData.subscriptionPlan === '6 Months Plan' ? 'selected' : '' %>>6 Months Plan</option>
+                <option value="1 Year Plan" <%= formData.subscriptionPlan === '1 Year Plan' ? 'selected' : '' %>>1 Year Plan</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:16px;">
+            <div class="form-group">
+              <label class="form-label" for="slotTiming" style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#334155;">Slot Timing <span class="required" style="color:#ef4444;">*</span></label>
+              <select id="slotTiming" name="slotTiming" class="form-control" required style="width:100%;padding:10px 14px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;background:#fff;">
+                <option value="">-- Select Slot Timing --</option>
+                <option value="6:00 AM - 10:00 AM" <%= formData.slotTiming === '6:00 AM - 10:00 AM' ? 'selected' : '' %>>6:00 AM - 10:00 AM (Morning 4h)</option>
+                <option value="10:00 AM - 2:00 PM" <%= formData.slotTiming === '10:00 AM - 2:00 PM' ? 'selected' : '' %>>10:00 AM - 2:00 PM (Noon 4h)</option>
+                <option value="2:00 PM - 6:00 PM" <%= formData.slotTiming === '2:00 PM - 6:00 PM' ? 'selected' : '' %>>2:00 PM - 6:00 PM (Evening 4h)</option>
+                <option value="6:00 PM - 10:00 PM" <%= formData.slotTiming === '6:00 PM - 10:00 PM' ? 'selected' : '' %>>6:00 PM - 10:00 PM (Night 4h)</option>
+                <option value="6:00 AM - 2:00 PM" <%= formData.slotTiming === '6:00 AM - 2:00 PM' ? 'selected' : '' %>>6:00 AM - 2:00 PM (Day 8h)</option>
+                <option value="2:00 PM - 10:00 PM" <%= formData.slotTiming === '2:00 PM - 10:00 PM' ? 'selected' : '' %>>2:00 PM - 10:00 PM (Night 8h)</option>
+                <option value="6:00 AM - 10:00 PM (Full Day)" <%= formData.slotTiming === '6:00 AM - 10:00 PM (Full Day)' ? 'selected' : '' %>>6:00 AM - 10:00 PM (Full Day Open)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="joiningDate" style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#334155;">Joining Date <span class="required" style="color:#ef4444;">*</span></label>
               <input type="date" id="joiningDate" name="joiningDate" class="form-control"
-                value="<%= formData.joiningDate || '' %>" required />
+                value="<%= formData.joiningDate || new Date().toISOString().split('T')[0] %>" required style="width:100%;padding:10px 14px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;" />
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Section 3: Password -->
-      <div class="card mb-24">
-        <div class="card-header">
-          <div class="card-title">🔐 Account Security</div>
-          <span class="badge badge-gray">Step 3 of 3</span>
+      <!-- 6. ACCOUNT SECURITY (Password - Case-Sensitive) -->
+      <div class="card mb-24" style="background:#fff;border-radius:12px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,0.05);overflow:hidden;margin-bottom:20px;">
+        <div class="card-header" style="padding:16px 20px;border-bottom:1px solid #f1f5f9;background:#f8fafc;display:flex;justify-content:space-between;align-items:center;">
+          <div class="card-title" style="font-weight:700;font-size:15px;color:#0f172a;">🔐 6. CREATE YOUR PORTAL PASSWORD</div>
+          <span class="badge" style="background:#f1f5f9;color:#475569;font-size:11px;padding:3px 8px;border-radius:4px;font-weight:600;">Secure & Case-Sensitive</span>
         </div>
-        <div class="card-body">
-          <div class="form-row">
+        <div class="card-body" style="padding:20px;">
+          <div class="form-row" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:16px;">
             <div class="form-group">
-              <label class="form-label" for="password">Password <span class="required">*</span></label>
+              <label class="form-label" for="password" style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#334155;">Create Password <span class="required" style="color:#ef4444;">*</span></label>
               <div style="position:relative;">
-                <input type="password" id="password" name="password" class="form-control" placeholder="Create a strong password" required minlength="8" />
-                <button type="button" class="toggle-password" data-target="password" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:18px;">👁</button>
+                <input type="password" id="password" name="password" class="form-control" placeholder="Create a strong password" required minlength="6" style="width:100%;padding:10px 38px 10px 14px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;" />
+                <button type="button" class="toggle-password" data-target="password" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#94a3b8;font-size:16px;">👁</button>
               </div>
-              <div id="password-strength" style="margin-top:6px;"></div>
-              <span class="form-text">Min 8 chars, 1 uppercase, 1 lowercase, 1 number</span>
+              <div id="password-strength" style="margin-top:4px;"></div>
+              <span class="form-text" style="font-size:11px;color:#64748b;margin-top:2px;display:block;">Passwords are case-sensitive.</span>
             </div>
             <div class="form-group">
-              <label class="form-label" for="confirmPassword">Confirm Password <span class="required">*</span></label>
+              <label class="form-label" for="confirmPassword" style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#334155;">Confirm Password <span class="required" style="color:#ef4444;">*</span></label>
               <div style="position:relative;">
-                <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="Confirm your password" required />
-                <button type="button" class="toggle-password" data-target="confirmPassword" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:18px;">👁</button>
+                <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="Confirm your password" required style="width:100%;padding:10px 38px 10px 14px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;" />
+                <button type="button" class="toggle-password" data-target="confirmPassword" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#94a3b8;font-size:16px;">👁</button>
               </div>
-              <span id="password-match-msg" class="form-text"></span>
+              <span id="password-match-msg" class="form-text" style="font-size:12px;margin-top:4px;display:block;"></span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Section 4: Registration Fee & Payment Method -->
-      <div class="card mb-24" style="border: 2px solid var(--primary-light, #e0e7ff);">
-        <div class="card-header" style="background: linear-gradient(135deg, rgba(79, 70, 229, 0.05), rgba(124, 58, 237, 0.05));">
-          <div class="card-title">💳 Registration Fee & Payment Method</div>
-          <span class="badge" style="background:#e0e7ff;color:#4338ca;font-weight:700;">Step 4 of 4</span>
+      <!-- 7. PAYMENT METHOD (Online ₹150 vs Cash ₹150) -->
+      <div class="card mb-24" style="background:#fff;border-radius:12px;border:2px solid #e0e7ff;box-shadow:0 1px 3px rgba(0,0,0,0.05);overflow:hidden;margin-bottom:20px;">
+        <div class="card-header" style="padding:16px 20px;border-bottom:1px solid #eef2ff;background:linear-gradient(135deg,rgba(79,70,229,0.05),rgba(99,102,241,0.05));display:flex;justify-content:space-between;align-items:center;">
+          <div class="card-title" style="font-weight:700;font-size:15px;color:#312e81;">💳 7. REGISTRATION FEE & PAYMENT METHOD</div>
+          <span class="badge" style="background:#e0e7ff;color:#4338ca;font-weight:700;">₹150.00 Fixed</span>
         </div>
-        <div class="card-body">
-          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;padding:16px;background:var(--surface-2, #f8fafc);border-radius:10px;border:1px solid var(--border, #e2e8f0);margin-bottom:20px;">
+        <div class="card-body" style="padding:20px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;margin-bottom:18px;">
             <div>
-              <div style="font-weight:700;font-size:16px;color:#1e293b;">Fixed Registration Fee</div>
-              <div style="font-size:13px;color:var(--text-muted);margin-top:2px;">One-time fee for Library Membership & Student ID card</div>
+              <div style="font-weight:700;font-size:15px;color:#1e293b;">Registration Fee</div>
+              <div style="font-size:12px;color:#64748b;margin-top:2px;">One-time membership registration fee</div>
             </div>
-            <div style="font-size:26px;font-weight:800;color:var(--primary, #4f46e5);">₹150.00</div>
+            <div style="font-size:24px;font-weight:800;color:#4f46e5;">₹150.00</div>
           </div>
 
-          <label class="form-label" style="font-size:14px;font-weight:700;color:#1e293b;margin-bottom:12px;display:block;">
-            Select Payment Method <span class="required">*</span>
+          <label style="font-size:13px;font-weight:700;color:#1e293b;margin-bottom:10px;display:block;">
+            Select Payment Method <span class="required" style="color:#ef4444;">*</span>
           </label>
 
-          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:16px;margin-bottom:16px;" id="paymentMethodGrid">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:14px;margin-bottom:16px;" id="paymentMethodGrid">
             <!-- Option 1: Online Payment -->
-            <label class="payment-method-card active" id="cardMethodOnline" style="cursor:pointer;display:block;border:2px solid #4f46e5;border-radius:12px;padding:18px;background:#f5f3ff;transition:all 0.2s;">
-              <div style="display:flex;align-items:flex-start;gap:12px;">
+            <label class="payment-method-card active" id="cardMethodOnline" style="cursor:pointer;display:block;border:2px solid #4f46e5;border-radius:10px;padding:16px;background:#f5f3ff;transition:all 0.2s;">
+              <div style="display:flex;align-items:flex-start;gap:10px;">
                 <input type="radio" name="paymentMethod" value="online" id="payMethodOnline" checked style="margin-top:3px;accent-color:#4f46e5;width:18px;height:18px;" />
                 <div>
-                  <div style="font-weight:700;font-size:15px;color:#1e293b;">💳 Online Payment (₹150)</div>
-                  <div style="font-size:12px;color:#6b21a8;font-weight:700;margin-top:2px;">⚡ Instant Activation</div>
-                  <div style="font-size:12px;color:var(--text-muted);margin-top:6px;line-height:1.4;">
-                    Pay via UPI (GPay/PhonePe), Card, or Netbanking. Verified on server. Automatically approved & active for immediate login!
+                  <div style="font-weight:700;font-size:14.5px;color:#1e293b;">💳 Online Payment (₹150)</div>
+                  <div style="font-size:11.5px;color:#6b21a8;font-weight:700;margin-top:2px;">⚡ Instant Activation & Login</div>
+                  <div style="font-size:12px;color:#64748b;margin-top:4px;line-height:1.4;">
+                    Pay ₹150 via UPI / Card / Netbanking. Verified on server. Automatically approved & active for immediate login!
                   </div>
                 </div>
               </div>
             </label>
 
             <!-- Option 2: Cash Payment -->
-            <label class="payment-method-card" id="cardMethodCash" style="cursor:pointer;display:block;border:2px solid #cbd5e1;border-radius:12px;padding:18px;background:#fff;transition:all 0.2s;">
-              <div style="display:flex;align-items:flex-start;gap:12px;">
+            <label class="payment-method-card" id="cardMethodCash" style="cursor:pointer;display:block;border:2px solid #cbd5e1;border-radius:10px;padding:16px;background:#fff;transition:all 0.2s;">
+              <div style="display:flex;align-items:flex-start;gap:10px;">
                 <input type="radio" name="paymentMethod" value="cash" id="payMethodCash" style="margin-top:3px;accent-color:#4f46e5;width:18px;height:18px;" />
                 <div>
-                  <div style="font-weight:700;font-size:15px;color:#1e293b;">💵 Cash Payment (₹150)</div>
-                  <div style="font-size:12px;color:#b45309;font-weight:700;margin-top:2px;">⏳ Pay at Library Desk</div>
-                  <div style="font-size:12px;color:var(--text-muted);margin-top:6px;line-height:1.4;">
-                    Submit registration now and pay ₹150 in cash at the counter. Account activates after admin verifies your payment.
+                  <div style="font-weight:700;font-size:14.5px;color:#1e293b;">💵 Cash Payment (₹150)</div>
+                  <div style="font-size:11.5px;color:#b45309;font-weight:700;margin-top:2px;">⏳ Pay at Library Desk</div>
+                  <div style="font-size:12px;color:#64748b;margin-top:4px;line-height:1.4;">
+                    Submit registration now and pay ₹150 cash at the counter. Account activates after admin confirms payment.
                   </div>
                 </div>
               </div>
             </label>
           </div>
 
-          <div id="methodNoticeBox" style="padding:14px 16px;border-radius:8px;font-size:13px;line-height:1.5;background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;margin-bottom:12px;">
-            ✅ <strong>Online Payment Selected:</strong> Pay ₹150 through our secure gateway. Your payment will be verified by the server, unique Student ID created, and you can log in immediately.
+          <div id="methodNoticeBox" style="padding:12px 14px;border-radius:8px;font-size:13px;line-height:1.5;background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;margin-bottom:8px;">
+            ✅ <strong>Online Payment Selected:</strong> Pay ₹150 through our gateway. Student ID generated and account activated immediately upon verification!
           </div>
 
           <input type="hidden" id="orderId" name="orderId" value="" />
@@ -254,7 +343,23 @@
         </div>
       </div>
 
-      <button type="button" class="btn btn-primary btn-lg btn-block" id="proceedPayBtn" style="font-size:16px;font-weight:700;padding:16px;">
+      <!-- 8. DECLARATION -->
+      <div class="card mb-24" style="background:#fff;border-radius:12px;border:1.5px solid #cbd5e1;box-shadow:0 1px 3px rgba(0,0,0,0.05);overflow:hidden;margin-bottom:24px;">
+        <div class="card-header" style="padding:14px 20px;border-bottom:1px solid #f1f5f9;background:#f8fafc;">
+          <div class="card-title" style="font-weight:700;font-size:14px;color:#0f172a;">📜 DECLARATION</div>
+        </div>
+        <div class="card-body" style="padding:18px 20px;">
+          <label style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;user-select:none;">
+            <input type="checkbox" id="declaration" name="declaration" required checked style="margin-top:3px;width:18px;height:18px;accent-color:#4f46e5;flex-shrink:0;" />
+            <span style="font-size:13.5px;color:#334155;line-height:1.5;font-weight:500;">
+              "I hereby declare that the information provided is correct and I agree to abide by the rules of the library." <span class="required" style="color:#ef4444;">*</span>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Submit / Proceed Button -->
+      <button type="button" class="btn btn-primary btn-lg btn-block" id="proceedPayBtn" style="width:100%;font-size:16px;font-weight:700;padding:16px;border-radius:10px;background:#4f46e5;color:#fff;border:none;cursor:pointer;box-shadow:0 4px 14px rgba(79,70,229,0.3);transition:all 0.2s;">
         <span id="btnSubmitText">💳 Proceed to Pay ₹150 Online →</span>
       </button>
 
@@ -262,13 +367,13 @@
   </div>
 </div>
 
-<!-- ₹150 Payment Gateway Modal -->
+<!-- ₹150 Payment Gateway Simulation Modal -->
 <div id="paymentModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.7);z-index:9999;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px);">
   <div style="background:#ffffff;border-radius:16px;max-width:440px;width:100%;overflow:hidden;box-shadow:0 20px 40px rgba(0,0,0,0.25);animation:modalFadeIn 0.3s ease;">
     <!-- Modal Header -->
     <div style="background:linear-gradient(135deg, #1e293b, #0f172a);color:#fff;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;">
       <div>
-        <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#94a3b8;"><%= libraryName %> • Payment</div>
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#94a3b8;"><%= libraryName %> • Payment Gateway</div>
         <div style="font-size:18px;font-weight:700;margin-top:2px;">Registration Fee</div>
       </div>
       <div style="text-align:right;">

@@ -1,18 +1,19 @@
-const { isValidEmail, isValidMobile, isValidPassword, isValidPincode } = require('../utils/validators');
+const { isValidEmail, isValidMobile } = require('../utils/validators');
 
 /**
- * Validates student registration form data
+ * Validates student registration form data for the Library Membership Registration Form
  * Returns an array of error messages
  */
 const validateStudentRegistration = (data) => {
   const errors = [];
 
+  // Personal Information
   if (!data.fullName || data.fullName.trim().length < 2) {
     errors.push('Full name must be at least 2 characters');
   }
 
   if (!data.parentName || data.parentName.trim().length < 2) {
-    errors.push("Father's/Mother's name must be at least 2 characters");
+    errors.push("Parent/Guardian name must be at least 2 characters");
   }
 
   if (!data.dateOfBirth) {
@@ -21,7 +22,7 @@ const validateStudentRegistration = (data) => {
     const dob = new Date(data.dateOfBirth);
     const now = new Date();
     const age = (now - dob) / (365.25 * 24 * 60 * 60 * 1000);
-    if (age < 5 || age > 100) {
+    if (isNaN(age) || age < 5 || age > 100) {
       errors.push('Please enter a valid date of birth');
     }
   }
@@ -30,52 +31,71 @@ const validateStudentRegistration = (data) => {
     errors.push('Please select a valid gender');
   }
 
+  if (!data.address || data.address.trim().length < 5) {
+    errors.push('Please enter a valid residential address');
+  }
+
+  // Contact Details
   if (!data.mobile || !isValidMobile(data.mobile.trim())) {
-    errors.push('Please enter a valid 10-digit mobile number');
+    errors.push('Please enter a valid 10-digit contact number');
+  }
+
+  if (!data.emergencyContact || !isValidMobile(data.emergencyContact.trim())) {
+    errors.push('Please enter a valid 10-digit emergency contact number');
   }
 
   if (!data.email || !isValidEmail(data.email.trim())) {
     errors.push('Please enter a valid email address');
   }
 
-  if (!data.password || !isValidPassword(data.password)) {
-    errors.push('Password must be at least 8 characters with uppercase, lowercase, and a number');
+  // Identification
+  if (!data.idProofType || data.idProofType.trim().length < 2) {
+    errors.push('Please select or specify ID Proof type');
+  }
+
+  if (!data.idProofNumber || data.idProofNumber.trim().length < 2) {
+    errors.push('Please enter ID Proof number');
+  }
+
+  // Education
+  if (!data.educationLevel || data.educationLevel.trim().length < 2) {
+    errors.push('Please select or enter Education Level');
+  }
+
+  if (!data.preparingFor || data.preparingFor.trim().length < 2) {
+    errors.push('Please specify what you are preparing for');
+  }
+
+  // Membership Details
+  if (!data.membershipSlot || data.membershipSlot.trim().length < 2) {
+    errors.push('Please select a Membership Slot');
+  }
+
+  if (!data.subscriptionPlan || data.subscriptionPlan.trim().length < 2) {
+    errors.push('Please select a Subscription Plan');
+  }
+
+  if (!data.slotTiming || data.slotTiming.trim().length < 2) {
+    errors.push('Please select or specify Slot Timing');
+  }
+
+  if (!data.joiningDate) {
+    errors.push('Joining date is required');
+  }
+
+  // Password & Security
+  if (!data.password || data.password.length < 6) {
+    errors.push('Password must be at least 6 characters');
   }
 
   if (data.password !== data.confirmPassword) {
     errors.push('Passwords do not match');
   }
 
-  if (!data.address || data.address.trim().length < 5) {
-    errors.push('Please enter a valid address');
-  }
-
-  if (!data.city || data.city.trim().length < 2) {
-    errors.push('City is required');
-  }
-
-  if (!data.state || data.state.trim().length < 2) {
-    errors.push('State is required');
-  }
-
-  if (!data.pincode || !isValidPincode(data.pincode.trim())) {
-    errors.push('Please enter a valid 6-digit pincode');
-  }
-
-  if (!data.college || data.college.trim().length < 2) {
-    errors.push('College/Institution name is required');
-  }
-
-  if (!data.course || data.course.trim().length < 2) {
-    errors.push('Course is required');
-  }
-
-  if (!data.semester || data.semester.trim().length < 1) {
-    errors.push('Semester/Year is required');
-  }
-
-  if (!data.joiningDate) {
-    errors.push('Joining date is required');
+  // Declaration
+  const declarationAccepted = data.declaration === 'on' || data.declaration === 'true' || data.declaration === true || data.declarationAccepted === true;
+  if (!declarationAccepted) {
+    errors.push('You must accept the declaration to proceed with registration');
   }
 
   return errors;

@@ -135,33 +135,153 @@ async function rejectStudent(id, name, btn) {
   }
 }
 
-// ─── Delete Student Action ────────────────────────────────────────────────────
-async function deleteStudent(id, nameOrBtn, maybeBtn) {
+// ─── Delete Student Confirmation Modal ─────────────────────────────────────────
+function confirmDeleteStudent(id, name = 'Student') {
+  // Remove any existing modal
+  const existingModal = document.getElementById('deleteConfirmModal');
+  if (existingModal) existingModal.remove();
+
+  const modalHtml = `
+    <div id="deleteConfirmModal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.65);backdrop-filter:blur(4px);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;">
+      <div style="background:#ffffff;border-radius:16px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);width:100%;max-width:440px;overflow:hidden;border:1px solid #e2e8f0;animation:modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);">
+        
+        <div style="background:#fee2e2;border-bottom:1px solid #fecaca;padding:20px 24px;display:flex;align-items:center;gap:14px;">
+          <div style="width:44px;height:44px;border-radius:12px;background:#ef4444;color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🗑️</div>
+          <div>
+            <h3 style="margin:0;font-size:17px;font-weight:700;color:#991b1b;">Delete Student</h3>
+            <div style="font-size:12px;color:#b91c1c;margin-top:2px;">Permanent Database Deletion</div>
+          </div>
+        </div>
+
+        <div style="padding:22px 24px;">
+          <p style="font-size:15px;color:#1e293b;font-weight:600;margin:0 0 10px 0;line-height:1.5;">
+            Are you sure you want to permanently delete this student?
+          </p>
+
+          <div style="background:#f8fafc;padding:10px 14px;border-radius:8px;border:1px solid #e2e8f0;font-size:13px;color:#475569;margin-bottom:16px;">
+            <strong>Student:</strong> ${name}
+          </div>
+
+          <p style="font-size:12.5px;color:#64748b;margin:0 0 20px 0;line-height:1.4;">
+            This will permanently remove the student record and related payment history from MongoDB. This action cannot be undone.
+          </p>
+
+          <div style="display:flex;gap:12px;justify-content:flex-end;">
+            <button 
+              type="button" 
+              id="cancelDeleteBtn"
+              class="btn btn-ghost" 
+              style="padding:10px 18px;font-weight:600;border:1px solid #cbd5e1;background:#fff;"
+            >
+              Cancel
+            </button>
+            <button 
+              type="button" 
+              id="executeDeleteBtn"
+              class="btn btn-danger" 
+              style="background:#dc2626;border-color:#dc2626;color:#ffffff;padding:10px 20px;font-weight:700;display:flex;align-items:center;gap:8px;"
+            >
+              <span>Delete Student</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  `;
+
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+  const modalEl = document.getElementById('deleteConfirmModal');
+  const cancelBtn = document.getElementById('cancelDeleteBtn');
+  const executeBtn = document.getElementById('executeDeleteBtn');
+
+  cancelBtn.addEventListener('click', () => modalEl.remove());
+  modalEl.addEventListener('click', (e) => {
+    if (e.target === modalEl) modalEl.remove();
+  });
+
+  executeBtn.addEventListener('click', async () => {
+    executeBtn.disabled = true;
+    executeBtn.innerHTML = '<span>⏳ Deleting...</span>';
+
+    try {
+      const res = await fetch(`/admin/students/${id}/delete`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      });
+
+      if (res.status === 401) {
+        alert('Your admin session has expired. Please log in again.');
+        window.location.href = '/admin/login';
+        return;
+      }
+
+      const data = await res.json();
+      modalEl.remove();
+
+      if (data.success) {
+        showToast('✅ ' + (data.message || 'Student permanently deleted'), 'success');
+
+        // Remove row from table without manual page reload
+        const row = document.getElementById(`student-row-${id}`);
+        if (row) {
+          row.style.transition = 'all 0.4s ease';
+          row.style.opacity = '0';
+          row.style.transform = 'translateX(20px)';
+          setTimeout(() => {
+            row.remove();
+            // Update total counter if present
+            const countEl = document.getElementById('totalStudentsCount');
+            if (countEl) {
+              const currentCount = parseInt(countEl.textContent, 10);
+              if (!isNaN(currentCount) && currentCount > 0) {
+                countEl.textContent = currentCount - 1;
+              }
+            }
+          }, 400);
+        } else {
+          // If deleted from student-details page, redirect back to list
+          setTimeout(() => {
+            window.location.href = '/admin/students';
+          }, 800);
+        }
+      } else {
+        showToast('❌ ' + (data.message || 'Failed to delete student'), 'danger');
+      }
+    } catch (err) {
+      console.error('Delete error:', err);
+      modalEl.remove();
+      showToast('❌ Error deleting student: ' + err.message, 'danger');
+    }
+  });
+}
+
+// Fallback wrapper for old delete calls
+function deleteStudent(id, nameOrBtn, maybeBtn) {
   let name = '';
-  let btn = null;
   if (typeof nameOrBtn === 'string') {
     name = nameOrBtn;
-    btn = maybeBtn;
-  } else {
-    btn = nameOrBtn;
   }
+  confirmDeleteStudent(id, name);
+}
 
-  const confirmMsg = name
-    ? `Are you sure you want to permanently DELETE "${name}"? This action cannot be undone.`
-    : 'Are you sure you want to permanently DELETE this student record? This cannot be undone.';
-
-  if (!window.confirm(confirmMsg)) {
-    return;
-  }
+// ─── Deactivate Student Action ────────────────────────────────────────────────
+async function deactivateStudent(id, name, btn) {
+  const confirmMsg = 'Are you sure you want to deactivate this student account?';
+  if (!window.confirm(confirmMsg)) return;
 
   if (btn) {
     btn.disabled = true;
     btn.dataset.origText = btn.innerHTML;
-    btn.innerHTML = '⏳ Deleting...';
+    btn.innerHTML = '⏳...';
   }
 
   try {
-    const res = await fetch(`/admin/students/${id}/delete`, {
+    const res = await fetch(`/admin/students/${id}/deactivate`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -177,43 +297,49 @@ async function deleteStudent(id, nameOrBtn, maybeBtn) {
 
     const data = await res.json();
     if (data.success) {
-      showToast('✅ ' + (data.message || 'Student record deleted successfully'), 'success');
-      const row = document.getElementById(`student-row-${id}`);
-      if (row) {
-        row.style.transition = 'opacity 0.4s';
-        row.style.opacity = '0';
-        setTimeout(() => {
-          row.remove();
-          location.reload();
-        }, 500);
-      } else {
-        setTimeout(() => (window.location.href = '/admin/students'), 1000);
+      showToast('✅ ' + data.message, 'success');
+
+      // Update UI dynamically
+      const statusCell = document.getElementById(`account-status-cell-${id}`);
+      if (statusCell) {
+        statusCell.innerHTML = '<span class="badge badge-gray">Inactive</span>';
+      }
+      const detailBadge = document.getElementById('detail-account-badge');
+      if (detailBadge) {
+        detailBadge.className = 'badge badge-gray';
+        detailBadge.textContent = 'Account Inactive';
+      }
+
+      // Flip button to Activate
+      const toggleBtn = document.getElementById(`status-btn-${id}`) || document.getElementById('detail-toggle-btn') || btn;
+      if (toggleBtn) {
+        toggleBtn.disabled = false;
+        toggleBtn.className = toggleBtn.classList.contains('btn-block') ? 'btn btn-success btn-block' : 'btn btn-sm btn-success';
+        toggleBtn.style.background = '#10b981';
+        toggleBtn.style.color = '#fff';
+        toggleBtn.innerHTML = '▶ Activate';
+        toggleBtn.title = 'Activate Account';
+        toggleBtn.onclick = function() { activateStudent(id, name, this); };
       }
     } else {
-      showToast('❌ ' + (data.message || 'Delete failed'), 'danger');
+      showToast('❌ ' + (data.message || 'Deactivation failed'), 'danger');
       if (btn) {
         btn.disabled = false;
-        btn.innerHTML = btn.dataset.origText || '🗑';
+        btn.innerHTML = btn.dataset.origText || '⏸ Deactivate';
       }
     }
   } catch (err) {
-    console.error('Delete error:', err);
+    console.error('Deactivate error:', err);
     showToast('❌ Error: ' + err.message, 'danger');
     if (btn) {
       btn.disabled = false;
-      btn.innerHTML = btn.dataset.origText || '🗑';
+      btn.innerHTML = btn.dataset.origText || '⏸ Deactivate';
     }
   }
 }
 
-// ─── Deactivate Student Action ────────────────────────────────────────────────
-async function deactivateStudent(id, name, btn) {
-  const confirmMsg = name
-    ? `Deactivate account for "${name}"? They will lose access to the student portal.`
-    : 'Deactivate this account? The student will lose access.';
-
-  if (!window.confirm(confirmMsg)) return;
-
+// ─── Activate Student Action ──────────────────────────────────────────────────
+async function activateStudent(id, name, btn) {
   if (btn) {
     btn.disabled = true;
     btn.dataset.origText = btn.innerHTML;
@@ -221,26 +347,59 @@ async function deactivateStudent(id, name, btn) {
   }
 
   try {
-    const res = await fetch(`/admin/students/${id}/deactivate`, {
+    const res = await fetch(`/admin/students/${id}/activate`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
     });
+
+    if (res.status === 401) {
+      alert('Your admin session has expired. Please log in again.');
+      window.location.href = '/admin/login';
+      return;
+    }
+
     const data = await res.json();
     if (data.success) {
       showToast('✅ ' + data.message, 'success');
-      setTimeout(() => location.reload(), 1000);
+
+      // Update UI dynamically
+      const statusCell = document.getElementById(`account-status-cell-${id}`);
+      if (statusCell) {
+        statusCell.innerHTML = '<span class="badge badge-success">✓ Active</span>';
+      }
+      const detailBadge = document.getElementById('detail-account-badge');
+      if (detailBadge) {
+        detailBadge.className = 'badge badge-success';
+        detailBadge.textContent = '✓ Account Active';
+      }
+
+      // Flip button to Deactivate
+      const toggleBtn = document.getElementById(`status-btn-${id}`) || document.getElementById('detail-toggle-btn') || btn;
+      if (toggleBtn) {
+        toggleBtn.disabled = false;
+        toggleBtn.className = toggleBtn.classList.contains('btn-block') ? 'btn btn-warning btn-block' : 'btn btn-sm btn-warning';
+        toggleBtn.style.background = '';
+        toggleBtn.style.color = '';
+        toggleBtn.innerHTML = '⏸ Deactivate';
+        toggleBtn.title = 'Deactivate Account';
+        toggleBtn.onclick = function() { deactivateStudent(id, name, this); };
+      }
     } else {
-      showToast('❌ ' + data.message, 'danger');
+      showToast('❌ ' + (data.message || 'Activation failed'), 'danger');
       if (btn) {
         btn.disabled = false;
-        btn.innerHTML = btn.dataset.origText || '⏸ Deactivate';
+        btn.innerHTML = btn.dataset.origText || '▶ Activate';
       }
     }
   } catch (err) {
+    console.error('Activate error:', err);
     showToast('❌ Error: ' + err.message, 'danger');
     if (btn) {
       btn.disabled = false;
-      btn.innerHTML = btn.dataset.origText || '⏸ Deactivate';
+      btn.innerHTML = btn.dataset.origText || '▶ Activate';
     }
   }
 }
@@ -258,18 +417,25 @@ async function resendEmail(id, name, btn) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
     });
+
+    if (res.status === 401) {
+      alert('Your admin session has expired. Please log in again.');
+      window.location.href = '/admin/login';
+      return;
+    }
+
     const data = await res.json();
     if (data.success) {
       showToast('✅ ' + data.message, 'success');
     } else {
-      showToast('❌ ' + data.message, 'danger');
+      showToast('❌ ' + (data.message || 'Failed to send email'), 'danger');
     }
   } catch (err) {
     showToast('❌ Error sending email: ' + err.message, 'danger');
   }
   if (btn) {
     btn.disabled = false;
-    btn.innerHTML = btn.dataset.origText || '📧 Email';
+    btn.innerHTML = btn.dataset.origText || '📧 Resend Email';
   }
 }
 
@@ -277,8 +443,9 @@ async function resendEmail(id, name, btn) {
 async function doAction(action, id, btn) {
   if (action === 'approve') return approveStudent(id, '', btn);
   if (action === 'reject') return rejectStudent(id, '', btn);
-  if (action === 'delete') return deleteStudent(id, btn);
+  if (action === 'delete') return confirmDeleteStudent(id, '');
   if (action === 'deactivate') return deactivateStudent(id, '', btn);
+  if (action === 'activate') return activateStudent(id, '', btn);
   if (action === 'mark-cash') return openCashModal(id);
 }
 
@@ -295,7 +462,7 @@ function openCashModal(studentId, studentName = 'Student') {
         <div style="background:linear-gradient(135deg, #059669 0%, #047857 100%);color:#ffffff;padding:24px;display:flex;align-items:center;gap:14px;">
           <div style="width:48px;height:48px;border-radius:12px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:24px;">💵</div>
           <div>
-            <h3 style="margin:0;font-size:18px;font-weight:700;color:#ffffff;">Approve Cash & Send Email</h3>
+            <h3 style="margin:0;font-size:18px;font-weight:700;color:#ffffff;">Mark Cash Payment Received</h3>
             <div style="font-size:13px;opacity:0.9;margin-top:2px;">Verify ₹150 Fee & Activate Student Account</div>
           </div>
         </div>
@@ -314,7 +481,7 @@ function openCashModal(studentId, studentName = 'Student') {
             Confirm that ₹150 cash has been received from this student?
           </p>
           <p style="font-size:13px;color:#64748b;margin:-8px 0 16px 0;line-height:1.4;">
-            This will mark payment as PAID, set account to ACTIVE, and immediately send the activation email with Student ID and login details.
+            This will mark payment as PAID, set account to ACTIVE, and immediately send the activation confirmation email with Student ID.
           </p>
 
           <div style="margin-bottom:16px;">
@@ -345,7 +512,7 @@ function openCashModal(studentId, studentName = 'Student') {
               class="btn btn-success" 
               style="background:#059669;border-color:#059669;color:#ffffff;padding:10px 22px;font-weight:700;display:flex;align-items:center;gap:8px;"
             >
-              <span>✓ Approve & Send Email</span>
+              <span>✓ Mark Cash Received</span>
             </button>
           </div>
         </div>
@@ -398,14 +565,13 @@ function openCashModal(studentId, studentName = 'Student') {
       } else {
         showToast('❌ ' + (data.message || 'Verification failed'), 'danger');
         confirmBtn.disabled = false;
-        confirmBtn.innerHTML = '<span>Confirm Payment</span>';
+        confirmBtn.innerHTML = '<span>✓ Mark Cash Received</span>';
       }
     } catch (err) {
       console.error('Cash confirmation error:', err);
       showToast('❌ Error: ' + err.message, 'danger');
       confirmBtn.disabled = false;
-      confirmBtn.innerHTML = '<span>Confirm Payment</span>';
+      confirmBtn.innerHTML = '<span>✓ Mark Cash Received</span>';
     }
   });
 }
-

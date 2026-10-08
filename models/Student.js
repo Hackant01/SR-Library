@@ -47,38 +47,83 @@ const studentSchema = new mongoose.Schema(
     },
     address: {
       type: String,
-      required: [true, 'Address is required'],
+      required: [true, 'Residential address is required'],
       trim: true,
     },
+    emergencyContact: {
+      type: String,
+      required: [true, 'Emergency contact number is required'],
+      trim: true,
+    },
+    idProofType: {
+      type: String,
+      required: [true, 'ID Proof type is required'],
+      trim: true,
+    },
+    idProofNumber: {
+      type: String,
+      required: [true, 'ID Proof number is required'],
+      trim: true,
+    },
+    educationLevel: {
+      type: String,
+      required: [true, 'Education level is required'],
+      trim: true,
+    },
+    preparingFor: {
+      type: String,
+      required: [true, 'Preparing for is required'],
+      trim: true,
+    },
+    membershipSlot: {
+      type: String,
+      required: [true, 'Membership slot is required'],
+      trim: true,
+    },
+    subscriptionPlan: {
+      type: String,
+      required: [true, 'Subscription plan is required'],
+      trim: true,
+    },
+    slotTiming: {
+      type: String,
+      required: [true, 'Slot timing is required'],
+      trim: true,
+    },
+    declarationAccepted: {
+      type: Boolean,
+      default: true,
+    },
+    // Legacy optional fields for backward compatibility with existing records
     city: {
       type: String,
-      required: [true, 'City is required'],
       trim: true,
+      default: '',
     },
     state: {
       type: String,
-      required: [true, 'State is required'],
       trim: true,
+      default: '',
     },
     pincode: {
       type: String,
-      required: [true, 'Pincode is required'],
       trim: true,
+      default: '',
     },
     college: {
       type: String,
-      required: [true, 'College/Institution name is required'],
       trim: true,
+      default: '',
     },
     course: {
       type: String,
-      required: [true, 'Course is required'],
       trim: true,
+      default: '',
     },
     semester: {
       type: String,
-      required: [true, 'Semester/Year is required'],
       trim: true,
+      default: '',
     },
     joiningDate: {
       type: Date,

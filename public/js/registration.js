@@ -183,6 +183,14 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      // Check declaration checkbox
+      const declarationCheckbox = document.getElementById('declaration');
+      if (declarationCheckbox && !declarationCheckbox.checked) {
+        alert('Please accept the declaration rules to proceed with registration.');
+        declarationCheckbox.focus();
+        return;
+      }
+
       const isCash = payMethodCash && payMethodCash.checked;
 
       if (isCash) {

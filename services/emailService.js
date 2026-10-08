@@ -158,34 +158,34 @@ const sendStudentIdEmail = async (student) => {
   const mailOptions = {
     from: `"${process.env.EMAIL_FROM_NAME || 'SR Library'}" <${process.env.EMAIL_USER}>`,
     to: student.email,
-    subject: `Library Registration Successful - Student ID: ${student.studentId}`,
+    subject: 'Congratulations! Your Library Registration is Confirmed',
     html: htmlContent,
     text: `
 Dear ${student.fullName},
 
-Congratulations! Your library registration has been completed and your account is now active.
+Congratulations!
 
-STUDENT DETAILS:
-----------------
-Student Name: ${student.fullName}
-Student ID: ${student.studentId}
-Email: ${student.email}
-Registration Date: ${registrationDate}
-Joining Date: ${joiningDate}
-Registration Fee: ₹${student.registrationFee || 150}
-Payment Method: ${(student.paymentMethod || 'Online').toUpperCase()}
-Payment Status: PAID
-Approval Status: APPROVED
-Account Status: ACTIVE
+Your registration with ${process.env.LIBRARY_NAME || 'SR Library'} has been successfully completed.
 
-LOGIN INSTRUCTIONS:
--------------------
-You can now immediately log in to the SR Library student portal using:
-Login URL: /student/login
-Username / Email: ${student.email}
-Password: (The password you chose during registration)
+Student ID:
+${student.studentId}
 
-Please keep your Student ID safe for all future reference.
+Registration Date:
+${registrationDate}
+
+Joining Date:
+${joiningDate}
+
+Payment Method:
+${student.paymentMethod === 'cash' ? 'Cash' : 'Online'}
+
+Payment Status:
+Paid
+
+Account Status:
+Active
+
+Please keep your Student ID safe for future library services.
 
 Regards,
 ${process.env.LIBRARY_NAME || 'SR Library'} Administration

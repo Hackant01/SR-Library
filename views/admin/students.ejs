@@ -17,15 +17,16 @@
     <div class="admin-topbar">
       <button class="admin-sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">☰</button>
       <div class="admin-topbar-title">Manage Students</div>
-      <div style="font-size:13px;color:var(--text-muted);"><%= total %> total records</div>
+      <div style="font-size:13px;color:var(--text-muted);"><span id="totalStudentsCount"><%= total %></span> total records</div>
     </div>
 
     <div class="admin-content">
 
-      <!-- Toolbar -->
+      <!-- Toolbar: Search & Filters -->
       <form id="filterForm" method="GET" action="/admin/students">
-        <div class="admin-table-toolbar">
-          <div class="search-input-wrapper">
+        <div class="admin-table-toolbar" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+          <!-- Search input -->
+          <div class="search-input-wrapper" style="flex:1;min-width:240px;">
             <span class="search-icon">🔍</span>
             <input
               type="text"
@@ -37,32 +38,44 @@
             />
           </div>
 
+          <!-- Payment Method Filter -->
           <select name="method" class="form-control filter-select" onchange="this.form.submit()">
-            <option value="">All Methods</option>
-            <option value="online" <%= (typeof method !== 'undefined' && method === 'online') ? 'selected' : '' %>>💳 Online Payment</option>
-            <option value="cash" <%= (typeof method !== 'undefined' && method === 'cash') ? 'selected' : '' %>>💵 Cash Payment</option>
+            <option value="">Payment Method: All</option>
+            <option value="online" <%= (typeof method !== 'undefined' && method === 'online') ? 'selected' : '' %>>Online</option>
+            <option value="cash" <%= (typeof method !== 'undefined' && method === 'cash') ? 'selected' : '' %>>Cash</option>
           </select>
 
-          <select name="status" class="form-control filter-select" onchange="this.form.submit()">
-            <option value="">All Account Statuses</option>
-            <option value="pending" <%= status === 'pending' ? 'selected' : '' %>>⏳ Pending</option>
-            <option value="active" <%= status === 'active' ? 'selected' : '' %>>✓ Active</option>
-            <option value="rejected" <%= status === 'rejected' ? 'selected' : '' %>>✗ Rejected</option>
-            <option value="inactive" <%= status === 'inactive' ? 'selected' : '' %>>Inactive</option>
-          </select>
-
+          <!-- Payment Status Filter -->
           <select name="payment" class="form-control filter-select" onchange="this.form.submit()">
-            <option value="">All Payment Statuses</option>
+            <option value="">Payment Status: All</option>
             <option value="paid" <%= payment === 'paid' ? 'selected' : '' %>>Paid</option>
             <option value="pending" <%= payment === 'pending' ? 'selected' : '' %>>Pending</option>
             <option value="failed" <%= payment === 'failed' ? 'selected' : '' %>>Failed</option>
           </select>
 
+          <!-- Account Status Filter -->
+          <select name="status" class="form-control filter-select" onchange="this.form.submit()">
+            <option value="">Account Status: All</option>
+            <option value="active" <%= status === 'active' ? 'selected' : '' %>>Active</option>
+            <option value="pending" <%= status === 'pending' ? 'selected' : '' %>>Pending</option>
+            <option value="inactive" <%= status === 'inactive' ? 'selected' : '' %>>Inactive</option>
+            <option value="rejected" <%= status === 'rejected' ? 'selected' : '' %>>Rejected</option>
+          </select>
+
+          <!-- Approval Status Filter -->
+          <select name="approval" class="form-control filter-select" onchange="this.form.submit()">
+            <option value="">Approval Status: All</option>
+            <option value="approved" <%= approval === 'approved' ? 'selected' : '' %>>Approved</option>
+            <option value="pending" <%= approval === 'pending' ? 'selected' : '' %>>Pending</option>
+            <option value="rejected" <%= approval === 'rejected' ? 'selected' : '' %>>Rejected</option>
+          </select>
+
+          <!-- Sort Filter -->
           <select name="sort" class="form-control filter-select" onchange="this.form.submit()">
             <option value="-createdAt" <%= sortBy === '-createdAt' ? 'selected' : '' %>>Newest First</option>
             <option value="createdAt" <%= sortBy === 'createdAt' ? 'selected' : '' %>>Oldest First</option>
             <option value="fullName" <%= sortBy === 'fullName' ? 'selected' : '' %>>Name A-Z</option>
-            <option value="-joiningDate" <%= sortBy === '-joiningDate' ? 'selected' : '' %>>Joining Date</option>
+            <option value="-fullName" <%= sortBy === '-fullName' ? 'selected' : '' %>>Name Z-A</option>
           </select>
 
           <button type="submit" class="btn btn-primary btn-sm">Filter</button>
@@ -70,7 +83,7 @@
         </div>
       </form>
 
-      <!-- Table -->
+      <!-- Student Table Card -->
       <div class="card">
         <div class="table-wrapper">
           <table class="table" id="studentsTable">
@@ -87,7 +100,7 @@
                 <th>Payment Status</th>
                 <th>Approval Status</th>
                 <th>Account Status</th>
-                <th style="min-width:180px;">Actions</th>
+                <th style="min-width:280px;">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -130,7 +143,7 @@
                   </td>
                   <td>
                     <% if (s.paymentStatus === 'paid') { %>
-                      <span class="badge badge-success">✓ Paid (₹150)</span>
+                      <span class="badge badge-success">✓ Paid</span>
                     <% } else if (s.paymentStatus === 'failed') { %>
                       <span class="badge badge-danger">Failed</span>
                     <% } else { %>
@@ -146,7 +159,7 @@
                       <span class="badge badge-warning">Pending</span>
                     <% } %>
                   </td>
-                  <td>
+                  <td id="account-status-cell-<%= s._id %>">
                     <% if (s.accountStatus === 'active') { %>
                       <span class="badge badge-success">✓ Active</span>
                     <% } else if (s.accountStatus === 'pending') { %>
@@ -158,42 +171,39 @@
                     <% } %>
                   </td>
                   <td>
-                    <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
-                      <!-- Always View Details -->
+                    <div class="action-btn-group" id="action-group-<%= s._id %>" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+                      <!-- Details Button -->
                       <a href="/admin/students/<%= s._id %>" class="btn btn-sm btn-info" title="View Details">👁 Details</a>
 
-                      <% if (s.accountStatus === 'pending' || s.approvalStatus === 'pending') { %>
-                        <!-- Any Pending Student: Clearly display Approve & Send Email alongside Reject -->
-                        <% if (s.paymentMethod === 'cash') { %>
-                          <button 
-                            class="btn btn-sm btn-success" 
-                            onclick="openCashModal('<%= s._id %>','<%= s.fullName %>')" 
-                            title="Approve Cash & Send Email"
-                            style="background:#059669;color:#fff;border:none;font-weight:600;"
-                          >
-                            ✓ Approve & Send Email
-                          </button>
-                        <% } else { %>
-                          <button 
-                            class="btn btn-sm btn-success" 
-                            onclick="approveStudent('<%= s._id %>','<%= s.fullName %>', this)" 
-                            title="Approve & Send Email"
-                            style="background:#10b981;color:#fff;border:none;font-weight:600;"
-                          >
-                            ✓ Approve & Send Email
-                          </button>
-                        <% } %>
-                        <button class="btn btn-sm btn-danger" onclick="rejectStudent('<%= s._id %>','<%= s.fullName %>', this)" title="Reject Application">✗ Reject</button>
-                      <% } else if (s.accountStatus === 'active') { %>
-                        <button class="btn btn-sm btn-warning" onclick="deactivateStudent('<%= s._id %>','<%= s.fullName %>', this)" title="Deactivate">⏸ Deactivate</button>
-                        <button class="btn btn-sm btn-ghost" onclick="resendEmail('<%= s._id %>','<%= s.fullName %>', this)" title="Resend Email">📧 Email</button>
-                      <% } else if (s.accountStatus === 'rejected') { %>
-                        <button class="btn btn-sm btn-success" onclick="approveStudent('<%= s._id %>','<%= s.fullName %>', this)" title="Re-approve & Activate">✓ Approve</button>
-                      <% } else { %>
-                        <button class="btn btn-sm btn-success" onclick="approveStudent('<%= s._id %>','<%= s.fullName %>', this)" title="Activate">✓ Activate</button>
+                      <!-- Print Button -->
+                      <a href="/admin/students/<%= s._id %>/print" target="_blank" class="btn btn-sm btn-primary" title="Print Membership Form" style="background:#4f46e5;color:#fff;">🖨️ Print</a>
+
+                      <!-- Pending Cash Action (if cash pending) -->
+                      <% if (s.paymentMethod === 'cash' && s.paymentStatus === 'pending') { %>
+                        <button 
+                          class="btn btn-sm btn-success" 
+                          onclick="openCashModal('<%= s._id %>','<%= s.fullName %>')" 
+                          title="Mark Cash Payment Received"
+                          style="background:#059669;color:#fff;font-weight:600;"
+                        >
+                          💵 Mark Cash Paid
+                        </button>
                       <% } %>
 
-                      <button class="btn btn-sm btn-danger" onclick="deleteStudent('<%= s._id %>','<%= s.fullName %>', this)" title="Delete">🗑</button>
+                      <!-- Activate / Deactivate Toggle -->
+                      <% if (s.accountStatus === 'active') { %>
+                        <button class="btn btn-sm btn-warning" id="status-btn-<%= s._id %>" onclick="deactivateStudent('<%= s._id %>','<%= s.fullName %>', this)" title="Deactivate Account">⏸ Deactivate</button>
+                      <% } else { %>
+                        <button class="btn btn-sm btn-success" id="status-btn-<%= s._id %>" onclick="activateStudent('<%= s._id %>','<%= s.fullName %>', this)" title="Activate Account" style="background:#10b981;color:#fff;">▶ Activate</button>
+                      <% } %>
+
+                      <!-- Email Button -->
+                      <button class="btn btn-sm btn-ghost" onclick="resendEmail('<%= s._id %>','<%= s.fullName %>', this)" title="<%= s.emailStatus === 'sent' ? 'Resend Confirmation Email' : 'Send Confirmation Email' %>">
+                        <%= s.emailStatus === 'sent' ? '📧 Resend Email' : '📧 Send Email' %>
+                      </button>
+
+                      <!-- Delete Button -->
+                      <button class="btn btn-sm btn-danger" onclick="confirmDeleteStudent('<%= s._id %>','<%= s.fullName %>')" title="Permanently Delete Student">🗑 Delete</button>
                     </div>
                   </td>
                 </tr>
@@ -207,18 +217,20 @@
         <% if (totalPages > 1) { %>
         <div style="padding:16px 20px;border-top:1px solid var(--border);">
           <div class="pagination">
+            <% const baseQuery = `search=${encodeURIComponent(search)}&method=${encodeURIComponent(method)}&status=${encodeURIComponent(status)}&payment=${encodeURIComponent(payment)}&approval=${encodeURIComponent(approval)}&sort=${encodeURIComponent(sortBy)}`; %>
+            
             <% if (page > 1) { %>
-              <a href="?page=1&search=<%= search %>&status=<%= status %>&payment=<%= payment %>&sort=<%= sortBy %>" class="page-btn">«</a>
-              <a href="?page=<%= page-1 %>&search=<%= search %>&status=<%= status %>&payment=<%= payment %>&sort=<%= sortBy %>" class="page-btn">‹</a>
+              <a href="?page=1&<%= baseQuery %>" class="page-btn">«</a>
+              <a href="?page=<%= page-1 %>&<%= baseQuery %>" class="page-btn">‹</a>
             <% } %>
 
             <% for (let p = Math.max(1, page-2); p <= Math.min(totalPages, page+2); p++) { %>
-              <a href="?page=<%= p %>&search=<%= search %>&status=<%= status %>&payment=<%= payment %>&sort=<%= sortBy %>" class="page-btn <%= p === page ? 'active' : '' %>"><%= p %></a>
+              <a href="?page=<%= p %>&<%= baseQuery %>" class="page-btn <%= p === page ? 'active' : '' %>"><%= p %></a>
             <% } %>
 
             <% if (page < totalPages) { %>
-              <a href="?page=<%= page+1 %>&search=<%= search %>&status=<%= status %>&payment=<%= payment %>&sort=<%= sortBy %>" class="page-btn">›</a>
-              <a href="?page=<%= totalPages %>&search=<%= search %>&status=<%= status %>&payment=<%= payment %>&sort=<%= sortBy %>" class="page-btn">»</a>
+              <a href="?page=<%= page+1 %>&<%= baseQuery %>" class="page-btn">›</a>
+              <a href="?page=<%= totalPages %>&<%= baseQuery %>" class="page-btn">»</a>
             <% } %>
           </div>
           <div style="text-align:center;font-size:13px;color:var(--text-muted);margin-top:8px;">
@@ -241,7 +253,7 @@ if (searchInput) {
   let searchTimer;
   searchInput.addEventListener('input', function() {
     clearTimeout(searchTimer);
-    searchTimer = setTimeout(() => document.getElementById('filterForm')?.submit(), 600);
+    searchTimer = setTimeout(() => document.getElementById('filterForm')?.submit(), 700);
   });
 }
 </script>

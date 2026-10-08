@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Membership Form - <%= student.fullName %> (<%= student.studentId || 'SR-LIB' %>)</title>
+  <style>
+    /* Reset & Base Styles */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Arial, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f1f5f9;
+      color: #0f172a;
+      line-height: 1.4;
+      font-size: 13px;
+      padding: 20px;
+    }
+
+    /* Screen Action Bar (hidden when printed) */
+    .screen-actions {
+      max-width: 800px;
+      margin: 0 auto 20px auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #1e293b;
+      color: #ffffff;
+      padding: 12px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 6px;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s ease;
+    }
+
+    .btn-back {
+      background: rgba(255,255,255,0.15);
+      color: #ffffff;
+    }
+    .btn-back:hover {
+      background: rgba(255,255,255,0.25);
+    }
+
+    .btn-print {
+      background: #22c55e;
+      color: #ffffff;
+    }
+    .btn-print:hover {
+      background: #16a34a;
+    }
+
+    /* A4 Form Sheet */
+    .form-sheet {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 28px 34px;
+      border-radius: 4px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      border: 1px solid #cbd5e1;
+    }
+
+    /* Form Header */
+    .form-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      border-bottom: 2px solid #0f172a;
+      padding-bottom: 14px;
+      margin-bottom: 16px;
+    }
+
+    .form-logo {
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+      padding: 2px;
+    }
+
+    .header-text {
+      flex: 1;
+      text-align: center;
+    }
+
+    .header-org-title {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: #0f172a;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    .header-form-title {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #334155;
+      text-transform: uppercase;
+      background: #f1f5f9;
+      display: inline-block;
+      padding: 3px 18px;
+      border-radius: 4px;
+      border: 1px solid #cbd5e1;
+      margin-top: 4px;
+    }
+
+    .id-tag {
+      text-align: right;
+      min-width: 140px;
+    }
+
+    .id-tag-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #64748b;
+      letter-spacing: 1px;
+    }
+
+    .id-tag-val {
+      font-family: monospace;
+      font-size: 15px;
+      font-weight: 800;
+      color: #0f172a;
+      border: 1px dashed #0f172a;
+      padding: 4px 8px;
+      border-radius: 4px;
+      margin-top: 2px;
+      display: inline-block;
+    }
+
+    /* Section Styles */
+    .section-title {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      background: #0f172a;
+      color: #ffffff;
+      padding: 4px 8px;
+      margin-top: 12px;
+      margin-bottom: 6px;
+      border-radius: 2px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px 16px;
+      padding: 2px 4px;
+    }
+
+    .form-grid.grid-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .form-field {
+      display: flex;
+      align-items: baseline;
+      border-bottom: 1px dotted #cbd5e1;
+      padding-bottom: 3px;
+      font-size: 12.5px;
+    }
+
+    .field-label {
+      font-weight: 600;
+      color: #475569;
+      min-width: 130px;
+      flex-shrink: 0;
+    }
+
+    .field-value {
+      color: #0f172a;
+      font-weight: 500;
+      flex: 1;
+      word-break: break-word;
+    }
+
+    .field-full {
+      grid-column: 1 / -1;
+    }
+
+    /* Declaration Box */
+    .declaration-box {
+      margin-top: 14px;
+      border: 1px solid #cbd5e1;
+      padding: 10px 12px;
+      border-radius: 4px;
+      background: #fafafa;
+    }
+
+    .declaration-text {
+      font-size: 11.5px;
+      font-style: italic;
+      color: #334155;
+      line-height: 1.4;
+      margin-bottom: 24px;
+    }
+
+    .sig-row {
+      display: flex;
+      justify-content: flex-end;
+      align-items: flex-end;
+    }
+
+    .sig-box {
+      text-align: center;
+      min-width: 200px;
+      border-top: 1px solid #0f172a;
+      padding-top: 4px;
+      font-weight: 600;
+      font-size: 11.5px;
+    }
+
+    /* Office Use Only Box */
+    .office-box {
+      margin-top: 14px;
+      border: 1.5px solid #0f172a;
+      padding: 10px 14px;
+      border-radius: 4px;
+      background: #ffffff;
+    }
+
+    .office-title {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #0f172a;
+      border-bottom: 1px solid #cbd5e1;
+      padding-bottom: 4px;
+      margin-bottom: 8px;
+    }
+
+    .office-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 12px;
+    }
+
+    .office-fields {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px 14px;
+    }
+
+    .stamp-box {
+      border: 1px dashed #94a3b8;
+      border-radius: 4px;
+      min-height: 80px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #94a3b8;
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 8px;
+      text-align: center;
+    }
+
+    /* Print Styles */
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 10mm 12mm 10mm 12mm;
+      }
+
+      body {
+        background: #ffffff !important;
+        padding: 0 !important;
+        font-size: 12px;
+        color: #000000 !important;
+      }
+
+      .screen-actions {
+        display: none !important;
+      }
+
+      .form-sheet {
+        max-width: 100% !important;
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+      }
+
+      .section-title {
+        background: #000000 !important;
+        color: #ffffff !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .header-form-title {
+        background: #f1f5f9 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .declaration-box {
+        background: #ffffff !important;
+        border-color: #000000 !important;
+      }
+
+      .office-box {
+        border-color: #000000 !important;
+      }
+
+      .stamp-box {
+        border-color: #000000 !important;
+        color: #555555 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Screen Action Bar -->
+  <div class="screen-actions">
+    <div>
+      <strong>SR Library Registration Document</strong>
+      <span style="font-size:12px;opacity:0.8;margin-left:8px;">Ready for printing (A4 Format)</span>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <a href="/admin/students" class="btn btn-back">← Back to Students</a>
+      <button onclick="window.print()" class="btn btn-print">🖨️ Print Form Now</button>
+    </div>
+  </div>
+
+  <!-- A4 Printable Form Sheet -->
+  <div class="form-sheet">
+
+    <!-- Header -->
+    <div class="form-header">
+      <img src="/images/logo.jpg" alt="SR Library Logo" class="form-logo" onerror="this.style.display='none'" />
+      <div class="header-text">
+        <h1 class="header-org-title">SR SELF STUDY ZONE & LIBRARY</h1>
+        <div class="header-form-title">MEMBERSHIP REGISTRATION FORM</div>
+      </div>
+      <div class="id-tag">
+        <div class="id-tag-label">Student ID</div>
+        <div class="id-tag-val"><%= student.studentId || 'NOT ASSIGNED' %></div>
+      </div>
+    </div>
+
+    <!-- 1. PERSONAL INFORMATION -->
+    <div class="section-title">PERSONAL INFORMATION</div>
+    <div class="form-grid">
+      <div class="form-field">
+        <span class="field-label">Full Name:</span>
+        <span class="field-value"><strong><%= student.fullName %></strong></span>
+      </div>
+      <div class="form-field">
+        <span class="field-label">Parent/Guardian Name:</span>
+        <span class="field-value"><%= student.parentName %></span>
+      </div>
+      <div class="form-field">
+        <span class="field-label">Date of Birth:</span>
+        <span class="field-value"><%= new Date(student.dateOfBirth).toLocaleDateString('en-IN', {day:'2-digit',month:'long',year:'numeric'}) %></span>
+      </div>
+      <div class="form-field">
+        <span class="field-label">Gender:</span>
+        <span class="field-value" style="text-transform:capitalize;"><%= student.gender %></span>
+      </div>
+      <div class="form-field field-full">
+        <span class="field-label">Residential Address:</span>
+        <span class="field-value"><%= student.address %><%= student.city ? ', ' + student.city : '' %><%= student.state ? ', ' + student.state : '' %><%= student.pincode ? ' - ' + student.pincode : '' %></span>
+      </div>
+    </div>
+
+    <!-- 2. CONTACT DETAILS -->
+    <div class="section-title">CONTACT DETAILS</div>
+    <div class="form-grid grid-3">
+      <div class="form-field">
+        <span class="field-label">Contact Number:</span>
+        <span class="field-value"><%= student.mobile %></span>
+      </div>
+      <div class="form-field">
+        <span class="field-label">Emergency Contact:</span>
+        <span class="field-value"><%= student.emergencyContact || 'N/A' %></span>
+      </div>
+      <div class="form-field">
+        <span class="field-label">Email Address:</span>
+        <span class="field-value"><%= student.email %></span>
+      </div>
+    </div>
+
+    <!-- 3. IDENTIFICATION -->
+    <div class="section-title">IDENTIFICATION</div>
+    <div class="form-grid">
+      <div class="form-field">
+        <span class="field-label">ID Proof:</span>
+        <span class="field-value"><%= student.idProofType || 'Aadhaar Card' %></span>
+      </div>
+      <div class="form-field">
+        <span class="field-label">ID Proof Number:</span>
+        <span class="field-value" style="font-family:monospace;font-weight:600;"><%= student.idProofNumber || 'N/A' %></span>
+      </div>
+    </div>
+
+    <!-- 4. EDUCATION -->
+    <div class="section-title">EDUCATION</div>
+    <div class="form-grid">
+      <div class="form-field">
+        <span class="field-label">Education Level:</span>
+        <span class="field-value"><%= student.educationLevel || (student.course ? student.course + (student.semester ? ' (' + student.semester + ')' : '') : 'Undergraduate') %></span>
+      </div>
+      <div class="form-field">
+        <span class="field-label">Preparing For:</span>
+        <span class="field-value"><%= student.preparingFor || 'Competitive Exams / Self Study' %></span>
+      </div>
+    </div>
+
+    <!-- 5. MEMBERSHIP DETAILS -->
+    <div class="section-title">MEMBERSHIP DETAILS</div>
+    <div class="form-grid">
+      <div class="form-field">
+        <span class="field-label">Membership Slot:</span>
+        <span class="field-value"><%= student.membershipSlot || 'Full Day Slot' %></span>
+      </div>
+      <div class="form-field">
+        <span class="field-label">Subscription Plan:</span>
+        <span class="field-value"><%= student.subscriptionPlan || '1 Month Plan' %></span>
+      </div>
+      <div class="form-field">
+        <span class="field-label">Slot Timing:</span>
+        <span class="field-value"><%= student.slotTiming || '6:00 AM - 10:00 PM' %></span>
+      </div>
+      <div class="form-field">
+        <span class="field-label">Joining Date:</span>
+        <span class="field-value"><%= new Date(student.joiningDate).toLocaleDateString('en-IN', {day:'2-digit',month:'long',year:'numeric'}) %></span>
+      </div>
+    </div>
+
+    <!-- 6. STUDENT / LIBRARY DETAILS -->
+    <div class="section-title">STUDENT / LIBRARY DETAILS</div>
+    <div class="form-grid">
+      <div class="form-field">
+        <span class="field-label">Student ID:</span>
+        <span class="field-value"><strong style="font-family:monospace;"><%= student.studentId || 'LIB' %></strong></span>
+      </div>
+      <div class="form-field">
+        <span class="field-label">Registration Date:</span>
+        <span class="field-value"><%= new Date(student.registrationDate || student.createdAt).toLocaleDateString('en-IN', {day:'2-digit',month:'long',year:'numeric'}) %></span>
+      </div>
+      <div class="form-field">
+        <span class="field-label">Payment Method:</span>
+        <span class="field-value" style="text-transform:uppercase;"><%= student.paymentMethod || 'Online' %></span>
+      </div>
+      <div class="form-field">
+        <span class="field-label">Payment Status:</span>
+        <span class="field-value" style="text-transform:uppercase;"><strong><%= student.paymentStatus || 'Pending' %></strong></span>
+      </div>
+      <div class="form-field">
+        <span class="field-label">Account Status:</span>
+        <span class="field-value" style="text-transform:uppercase;"><%= student.accountStatus || 'Pending' %></span>
+      </div>
+      <div class="form-field">
+        <span class="field-label">Registration Fee:</span>
+        <span class="field-value"><strong>₹150</strong></span>
+      </div>
+    </div>
+
+    <!-- 7. DECLARATION -->
+    <div class="declaration-box">
+      <div style="font-weight:700;font-size:11px;margin-bottom:4px;text-transform:uppercase;color:#0f172a;">Declaration</div>
+      <div class="declaration-text">
+        "I hereby declare that the information provided is correct, and I agree to abide by the rules of the library."
+      </div>
+      <div class="sig-row">
+        <div class="sig-box">
+          Student Signature: ___________________
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. FOR OFFICE USE ONLY -->
+    <div class="office-box">
+      <div class="office-title">FOR OFFICE USE ONLY</div>
+      <div class="office-grid">
+        <div class="office-fields">
+          <div class="form-field">
+            <span class="field-label">Seat Number:</span>
+            <span class="field-value">___________________</span>
+          </div>
+          <div class="form-field">
+            <span class="field-label">Registration Fee:</span>
+            <span class="field-value"><strong>₹150</strong></span>
+          </div>
+          <div class="form-field">
+            <span class="field-label">Payment Status:</span>
+            <span class="field-value" style="text-transform:capitalize;"><%= student.paymentStatus === 'paid' ? 'Paid' : 'Pending Verification' %></span>
+          </div>
+          <div class="form-field">
+            <span class="field-label">Amount Paid:</span>
+            <span class="field-value"><%= student.paymentStatus === 'paid' ? '₹150' : '___________________' %></span>
+          </div>
+          <div class="form-field">
+            <span class="field-label">Verified By:</span>
+            <span class="field-value"><%= payment && payment.cashVerifiedBy ? payment.cashVerifiedBy.name : (student.paymentStatus === 'paid' ? 'Admin / Online' : '___________________') %></span>
+          </div>
+          <div class="form-field">
+            <span class="field-label">Admin Signature:</span>
+            <span class="field-value">___________________</span>
+          </div>
+          <div class="form-field field-full">
+            <span class="field-label">Date:</span>
+            <span class="field-value"><%= new Date().toLocaleDateString('en-IN', {day:'2-digit',month:'long',year:'numeric'}) %></span>
+          </div>
+        </div>
+        <div class="stamp-box">
+          Library Stamp
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Automatically trigger browser print dialog after render
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        window.print();
+      }, 350);
+    });
+  </script>
+</body>
+</html>

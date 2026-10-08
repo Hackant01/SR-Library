@@ -19,73 +19,54 @@
         <a href="/admin/students" style="color:var(--text-muted);font-weight:400;">Students</a>
         &nbsp;/&nbsp; <%= student.fullName %>
       </div>
+      <div style="display:flex;gap:10px;">
+        <a href="/admin/students/<%= student._id %>/print" target="_blank" class="btn btn-primary btn-sm" style="background:#4f46e5;">
+          🖨️ Print Registration Form
+        </a>
+      </div>
     </div>
 
     <div class="admin-content">
 
-      <!-- Status Banner -->
       <!-- Status Banners -->
       <% if (student.paymentMethod === 'cash' && student.paymentStatus === 'pending') { %>
-      <div style="background:linear-gradient(135deg,#f59e0b,#d97706);border-radius:var(--radius-lg);padding:22px 26px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;color:#fff;">
+      <div style="background:linear-gradient(135deg,#f59e0b,#d97706);border-radius:var(--radius-lg);padding:20px 24px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;color:#fff;">
         <div style="display:flex;align-items:center;gap:14px;">
           <span style="font-size:32px;">💵</span>
           <div>
-            <div style="font-weight:800;font-size:18px;">Cash Payment Pending Admin Verification</div>
-            <div style="color:rgba(255,255,255,0.9);font-size:14px;margin-top:2px;">
-              Student selected Cash payment • Amount Due: <strong>₹150</strong> • Student ID: <strong><%= student.studentId %></strong>
+            <div style="font-weight:800;font-size:17px;">Cash Payment Pending Desk Verification</div>
+            <div style="color:rgba(255,255,255,0.9);font-size:13px;margin-top:2px;">
+              Student selected Cash payment • Amount Due: <strong>₹150</strong> • Student ID: <strong><%= student.studentId || 'LIB' %></strong>
             </div>
           </div>
         </div>
         <div style="display:flex;gap:10px;">
           <button class="btn btn-success" onclick="openCashModal('<%= student._id %>', '<%= student.fullName %>')" style="background:#059669;border:none;padding:10px 20px;font-weight:700;">
-            ✓ Approve & Send Email
-          </button>
-          <button class="btn btn-danger" onclick="doAction('reject','<%= student._id %>', this)" style="background:#ef4444;border:none;padding:10px 20px;font-weight:700;">
-            ✗ Reject
+            ✓ Mark Cash Paid & Activate
           </button>
         </div>
       </div>
-      <% } else if (student.accountStatus === 'pending') { %>
-      <div style="background:linear-gradient(135deg,#f59e0b,#d97706);border-radius:var(--radius-lg);padding:22px 26px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;color:#fff;">
+      <% } else if (student.accountStatus === 'inactive') { %>
+      <div style="background:linear-gradient(135deg,#64748b,#475569);border-radius:var(--radius-lg);padding:18px 22px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;color:#fff;">
         <div style="display:flex;align-items:center;gap:14px;">
-          <span style="font-size:32px;">⏳</span>
+          <span style="font-size:28px;">⏸</span>
           <div>
-            <div style="font-weight:800;font-size:18px;">Application Pending Admin Approval</div>
-            <div style="color:rgba(255,255,255,0.9);font-size:14px;margin-top:2px;">
-              Fee Paid • Generated Student ID: <strong><%= student.studentId || 'LIB2026' %></strong>
-            </div>
-          </div>
-        </div>
-        <div style="display:flex;gap:10px;">
-          <button class="btn btn-success" onclick="doAction('approve','<%= student._id %>', this)" style="background:#10b981;border:none;padding:10px 20px;font-weight:700;">
-            ✓ Approve & Send Email
-          </button>
-          <button class="btn btn-danger" onclick="doAction('reject','<%= student._id %>', this)" style="background:#ef4444;border:none;padding:10px 20px;font-weight:700;">
-            ✗ Reject Application
-          </button>
-        </div>
-      </div>
-      <% } else if (student.accountStatus === 'rejected') { %>
-      <div style="background:linear-gradient(135deg,#dc2626,#991b1b);border-radius:var(--radius-lg);padding:20px 24px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;color:#fff;">
-        <div style="display:flex;align-items:center;gap:14px;">
-          <span style="font-size:28px;">✗</span>
-          <div>
-            <div style="font-weight:700;font-size:17px;">Application Rejected</div>
+            <div style="font-weight:700;font-size:16px;">Account Inactive</div>
             <div style="color:rgba(255,255,255,0.85);font-size:13px;margin-top:2px;">
-              This student registration was rejected. You can re-approve if needed.
+              This student is currently deactivated and cannot log in to the student portal.
             </div>
           </div>
         </div>
-        <button class="btn btn-success" onclick="doAction('approve','<%= student._id %>', this)">
-          ✓ Re-Approve Student
+        <button class="btn btn-success" onclick="activateStudent('<%= student._id %>','<%= student.fullName %>', this)" style="background:#10b981;border:none;">
+          ▶ Activate Account
         </button>
       </div>
       <% } else if (student.accountStatus === 'active') { %>
-      <div style="background:linear-gradient(135deg,#059669,#047857);border-radius:var(--radius-lg);padding:20px 24px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;color:#fff;">
+      <div style="background:linear-gradient(135deg,#059669,#047857);border-radius:var(--radius-lg);padding:18px 22px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;color:#fff;">
         <div style="display:flex;align-items:center;gap:14px;">
           <span style="font-size:28px;">✅</span>
           <div>
-            <div style="font-weight:700;font-size:17px;">
+            <div style="font-weight:700;font-size:16px;">
               Account Active • <%= student.paymentMethod === 'online' ? 'Online Payment Verified' : 'Cash Payment Verified' %> (₹150)
             </div>
             <div style="color:rgba(255,255,255,0.9);font-size:13px;margin-top:2px;">
@@ -95,24 +76,24 @@
         </div>
         <div style="display:flex;gap:10px;">
           <button class="btn btn-sm btn-ghost" onclick="resendEmail('<%= student._id %>','<%= student.fullName %>', this)" style="color:#fff;border-color:rgba(255,255,255,0.5);">📧 Resend Email</button>
-          <button class="btn btn-sm btn-warning" onclick="doAction('deactivate','<%= student._id %>', this)">⏸ Deactivate</button>
+          <button class="btn btn-sm btn-warning" onclick="deactivateStudent('<%= student._id %>','<%= student.fullName %>', this)">⏸ Deactivate</button>
         </div>
       </div>
       <% } %>
 
       <div class="detail-grid">
-        <!-- Left: Profile Card -->
+        <!-- Left: Profile Summary Card & Actions -->
         <div>
           <div class="detail-sidebar-card mb-24">
             <div class="detail-avatar"><%= student.fullName.charAt(0).toUpperCase() %></div>
             <h2 style="font-size:18px;margin-bottom:4px;"><%= student.fullName %></h2>
-            <p style="color:var(--text-muted);font-size:13px;margin-bottom:16px;"><%= student.email %></p>
+            <p style="color:var(--text-muted);font-size:13px;margin-bottom:14px;"><%= student.email %></p>
 
             <% if (student.studentId) { %>
-              <div style="background:var(--primary);color:#fff;border-radius:var(--radius);padding:10px;font-weight:700;font-size:16px;letter-spacing:2px;margin-bottom:14px;"><%= student.studentId %></div>
+              <div style="background:var(--primary);color:#fff;border-radius:var(--radius);padding:10px;font-weight:700;font-size:16px;letter-spacing:2px;margin-bottom:14px;font-family:monospace;"><%= student.studentId %></div>
             <% } %>
 
-            <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+            <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;">
               <!-- Payment Method Badge -->
               <span class="badge" style="justify-content:center;padding:7px;<%= student.paymentMethod === 'online' ? 'background:#e0f2fe;color:#0369a1;' : 'background:#fef3c7;color:#92400e;' %> font-weight:700;">
                 <%= student.paymentMethod === 'online' ? '💳 Online Payment' : '💵 Cash Payment' %>
@@ -120,7 +101,7 @@
 
               <!-- Payment Status Badge -->
               <% if (student.paymentStatus === 'paid') { %>
-                <span class="badge badge-success" style="justify-content:center;padding:7px;">✓ ₹150 Paid</span>
+                <span class="badge badge-success" style="justify-content:center;padding:7px;">✓ Paid (₹150)</span>
               <% } else { %>
                 <span class="badge badge-warning" style="justify-content:center;padding:7px;background:#fff7ed;color:#c2410c;">⏳ Payment Pending (₹150)</span>
               <% } %>
@@ -135,101 +116,158 @@
               <% } %>
 
               <!-- Account Status Badge -->
-              <% if (student.accountStatus === 'active') { %>
-                <span class="badge badge-success" style="justify-content:center;padding:7px;">✓ Account Active</span>
-              <% } else if (student.accountStatus === 'pending') { %>
-                <span class="badge badge-warning" style="justify-content:center;padding:7px;background:#fff8e1;color:#b78103;border:1px solid #ffe082;">⏳ Account Pending</span>
-              <% } else if (student.accountStatus === 'rejected') { %>
-                <span class="badge badge-danger" style="justify-content:center;padding:7px;">✗ Account Rejected</span>
-              <% } else { %>
-                <span class="badge badge-gray" style="justify-content:center;padding:7px;">Account Inactive</span>
-              <% } %>
+              <span id="detail-account-badge" class="badge <%= student.accountStatus === 'active' ? 'badge-success' : (student.accountStatus === 'pending' ? 'badge-warning' : 'badge-gray') %>" style="justify-content:center;padding:7px;">
+                <%= student.accountStatus === 'active' ? '✓ Account Active' : (student.accountStatus === 'pending' ? '⏳ Account Pending' : 'Account Inactive') %>
+              </span>
             </div>
 
-            <!-- Action Buttons -->
-            <div class="action-buttons-grid">
-              <% if (student.accountStatus === 'pending' || student.approvalStatus === 'pending') { %>
-                <% if (student.paymentMethod === 'cash') { %>
-                  <button class="btn btn-success btn-sm btn-block" onclick="openCashModal('<%= student._id %>', '<%= student.fullName %>')" style="background:#059669;color:#fff;font-weight:700;">✓ Approve & Send Email</button>
-                <% } else { %>
-                  <button class="btn btn-success btn-sm btn-block" onclick="doAction('approve','<%= student._id %>', this)" style="background:#10b981;color:#fff;font-weight:700;">✓ Approve & Send Email</button>
-                <% } %>
-                <button class="btn btn-danger btn-sm btn-block" onclick="doAction('reject','<%= student._id %>', this)">✗ Reject</button>
-              <% } else if (student.accountStatus === 'active') { %>
-                <button class="btn btn-warning btn-sm btn-block" onclick="doAction('deactivate','<%= student._id %>', this)">⏸ Deactivate</button>
-                <button class="btn btn-info btn-sm btn-block" onclick="resendEmail('<%= student._id %>','<%= student.fullName %>', this)">📧 Resend Email</button>
-              <% } else if (student.accountStatus === 'rejected') { %>
-                <button class="btn btn-success btn-sm btn-block" onclick="doAction('approve','<%= student._id %>', this)">✓ Re-Approve & Activate</button>
-              <% } else { %>
-                <button class="btn btn-success btn-sm btn-block" onclick="doAction('approve','<%= student._id %>', this)">✓ Approve</button>
+            <!-- Action Buttons Grid -->
+            <div class="action-buttons-grid" style="display:flex;flex-direction:column;gap:8px;">
+              <a href="/admin/students/<%= student._id %>/print" target="_blank" class="btn btn-primary btn-block" style="background:#4f46e5;color:#fff;text-align:center;">
+                🖨️ Print Registration Form
+              </a>
+
+              <% if (student.paymentMethod === 'cash' && student.paymentStatus === 'pending') { %>
+                <button class="btn btn-success btn-block" onclick="openCashModal('<%= student._id %>', '<%= student.fullName %>')" style="background:#059669;color:#fff;font-weight:700;">
+                  💵 Mark Cash Payment Received
+                </button>
               <% } %>
-              <button class="btn btn-danger btn-sm btn-block" onclick="deleteStudent('<%= student._id %>', '<%= student.fullName %>', this)">🗑 Delete</button>
+
+              <% if (student.accountStatus === 'active') { %>
+                <button class="btn btn-warning btn-block" id="detail-toggle-btn" onclick="deactivateStudent('<%= student._id %>','<%= student.fullName %>', this)">
+                  ⏸ Deactivate Account
+                </button>
+              <% } else { %>
+                <button class="btn btn-success btn-block" id="detail-toggle-btn" onclick="activateStudent('<%= student._id %>','<%= student.fullName %>', this)">
+                  ▶ Activate Account
+                </button>
+              <% } %>
+
+              <button class="btn btn-ghost btn-block" onclick="resendEmail('<%= student._id %>','<%= student.fullName %>', this)">
+                📧 <%= student.emailStatus === 'sent' ? 'Resend Confirmation Email' : 'Send Confirmation Email' %>
+              </button>
+
+              <button class="btn btn-danger btn-block" onclick="confirmDeleteStudent('<%= student._id %>', '<%= student.fullName %>')">
+                🗑 Delete Student
+              </button>
             </div>
           </div>
         </div>
 
-        <!-- Right: Details -->
+        <!-- Right: 8 Organized Information Sections -->
         <div>
+
+          <!-- 1. Personal Information -->
           <div class="card mb-24">
             <div class="card-header"><div class="card-title">👤 Personal Information</div></div>
             <div class="card-body">
               <table class="detail-info-table">
-                <tr><td>Full Name</td><td><%= student.fullName %></td></tr>
-                <tr><td>Parent's Name</td><td><%= student.parentName %></td></tr>
-                <tr><td>Date of Birth</td><td><%= new Date(student.dateOfBirth).toLocaleDateString('en-IN') %></td></tr>
+                <tr><td>Full Name</td><td><strong><%= student.fullName %></strong></td></tr>
+                <tr><td>Parent/Guardian Name</td><td><%= student.parentName %></td></tr>
+                <tr><td>Date of Birth</td><td><%= new Date(student.dateOfBirth).toLocaleDateString('en-IN', {day:'2-digit',month:'long',year:'numeric'}) %></td></tr>
                 <tr><td>Gender</td><td style="text-transform:capitalize;"><%= student.gender %></td></tr>
-                <tr><td>Mobile</td><td><%= student.mobile %></td></tr>
-                <tr><td>Email</td><td><%= student.email %></td></tr>
+                <tr><td>Residential Address</td><td><%= student.address %><%= student.city ? ', ' + student.city : '' %><%= student.state ? ', ' + student.state : '' %><%= student.pincode ? ' - ' + student.pincode : '' %></td></tr>
               </table>
             </div>
           </div>
 
+          <!-- 2. Contact Information -->
           <div class="card mb-24">
-            <div class="card-header"><div class="card-title">📍 Address</div></div>
+            <div class="card-header"><div class="card-title">📞 Contact Information</div></div>
             <div class="card-body">
               <table class="detail-info-table">
-                <tr><td>Address</td><td><%= student.address %></td></tr>
-                <tr><td>City</td><td><%= student.city %></td></tr>
-                <tr><td>State</td><td><%= student.state %></td></tr>
-                <tr><td>Pincode</td><td><%= student.pincode %></td></tr>
+                <tr><td>Contact Number</td><td><%= student.mobile %></td></tr>
+                <tr><td>Emergency Contact Number</td><td><%= student.emergencyContact || 'N/A' %></td></tr>
+                <tr><td>Email Address</td><td><%= student.email %></td></tr>
               </table>
             </div>
           </div>
 
+          <!-- 3. Identification -->
           <div class="card mb-24">
-            <div class="card-header"><div class="card-title">🎓 Academic Details</div></div>
+            <div class="card-header"><div class="card-title">🆔 Identification</div></div>
             <div class="card-body">
               <table class="detail-info-table">
-                <tr><td>College</td><td><%= student.college %></td></tr>
-                <tr><td>Course</td><td><%= student.course %></td></tr>
-                <tr><td>Semester/Year</td><td><%= student.semester %></td></tr>
+                <tr><td>ID Proof Type</td><td><%= student.idProofType || 'Aadhaar Card' %></td></tr>
+                <tr><td>ID Proof Number</td><td style="font-family:monospace;font-weight:600;"><%= student.idProofNumber || 'N/A' %></td></tr>
+              </table>
+            </div>
+          </div>
+
+          <!-- 4. Education -->
+          <div class="card mb-24">
+            <div class="card-header"><div class="card-title">🎓 Education</div></div>
+            <div class="card-body">
+              <table class="detail-info-table">
+                <tr><td>Education Level</td><td><%= student.educationLevel || (student.course ? student.course + (student.semester ? ' (' + student.semester + ')' : '') : 'Undergraduate') %></td></tr>
+                <tr><td>Preparing For</td><td><%= student.preparingFor || 'Competitive Exams / Self Study' %></td></tr>
+              </table>
+            </div>
+          </div>
+
+          <!-- 5. Membership Details -->
+          <div class="card mb-24">
+            <div class="card-header"><div class="card-title">📚 Membership Details</div></div>
+            <div class="card-body">
+              <table class="detail-info-table">
+                <tr><td>Membership Slot</td><td><%= student.membershipSlot || 'Full Day Slot' %></td></tr>
+                <tr><td>Subscription Plan</td><td><%= student.subscriptionPlan || '1 Month Plan' %></td></tr>
+                <tr><td>Slot Timing</td><td><%= student.slotTiming || '6:00 AM - 10:00 PM' %></td></tr>
                 <tr><td>Joining Date</td><td><%= new Date(student.joiningDate).toLocaleDateString('en-IN', {day:'2-digit',month:'long',year:'numeric'}) %></td></tr>
-                <tr><td>Registration Date</td><td><%= new Date(student.registrationDate).toLocaleDateString('en-IN', {day:'2-digit',month:'long',year:'numeric'}) %></td></tr>
+                <tr><td>Registration Date</td><td><%= new Date(student.registrationDate || student.createdAt).toLocaleDateString('en-IN', {day:'2-digit',month:'long',year:'numeric'}) %></td></tr>
               </table>
             </div>
           </div>
 
-          <% if (payment) { %>
-          <div class="card">
-            <div class="card-header"><div class="card-title">💳 Payment Information</div></div>
+          <!-- 6. Payment Information -->
+          <div class="card mb-24">
+            <div class="card-header"><div class="card-title">💳 Payment Details</div></div>
             <div class="card-body">
               <table class="detail-info-table">
-                <tr><td>Amount</td><td><strong>₹<%= payment.amount %></strong></td></tr>
-                <tr><td>Payment Method</td><td><span class="badge" style="<%= payment.paymentMethod === 'online' ? 'background:#e0f2fe;color:#0369a1;' : 'background:#fef3c7;color:#92400e;' %>"><%= payment.paymentMethod ? payment.paymentMethod.toUpperCase() : 'N/A' %></span></td></tr>
-                <tr><td>Status</td><td><span class="badge <%= payment.status === 'paid' ? 'badge-success' : 'badge-warning' %>"><%= payment.status.toUpperCase() %></span></td></tr>
-                <% if (payment.paymentMethod === 'cash') { %>
-                  <tr><td>Cash Payment Date</td><td><%= payment.cashPaymentDate ? new Date(payment.cashPaymentDate).toLocaleDateString('en-IN', {day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'}) : 'Pending Collection' %></td></tr>
-                  <tr><td>Cash Verified By</td><td><%= payment.cashVerifiedBy?.name ? (payment.cashVerifiedBy.name + ' (' + payment.cashVerifiedBy.email + ')') : (payment.status === 'paid' ? 'Admin' : 'Not verified yet') %></td></tr>
-                  <tr><td>Verification Note</td><td><%= payment.cashVerificationNote || 'N/A' %></td></tr>
-                <% } else { %>
-                  <tr><td>Order ID</td><td style="font-family:monospace;font-size:12px;word-break:break-all;"><%= payment.orderId || payment.razorpayOrderId || 'N/A' %></td></tr>
-                  <tr><td>Payment ID</td><td style="font-family:monospace;font-size:12px;word-break:break-all;"><%= payment.paymentId || payment.razorpayPaymentId || 'N/A' %></td></tr>
-                  <tr><td>Payment Date</td><td><%= payment.paymentDate ? new Date(payment.paymentDate).toLocaleDateString('en-IN', {day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'}) : 'N/A' %></td></tr>
+                <tr><td>Registration Fee</td><td><strong>₹150</strong></td></tr>
+                <tr><td>Payment Method</td><td><span class="badge" style="<%= student.paymentMethod === 'online' ? 'background:#e0f2fe;color:#0369a1;' : 'background:#fef3c7;color:#92400e;' %>"><%= student.paymentMethod ? student.paymentMethod.toUpperCase() : 'ONLINE' %></span></td></tr>
+                <tr><td>Payment Status</td><td><span class="badge <%= student.paymentStatus === 'paid' ? 'badge-success' : 'badge-warning' %>"><%= student.paymentStatus ? student.paymentStatus.toUpperCase() : 'PENDING' %></span></td></tr>
+                <% if (payment) { %>
+                  <% if (student.paymentMethod === 'cash') { %>
+                    <tr><td>Cash Received Date</td><td><%= payment.cashPaymentDate ? new Date(payment.cashPaymentDate).toLocaleDateString('en-IN', {day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'}) : 'Pending Collection' %></td></tr>
+                    <tr><td>Verified By</td><td><%= payment.cashVerifiedBy ? (payment.cashVerifiedBy.name + ' (' + payment.cashVerifiedBy.email + ')') : (student.paymentStatus === 'paid' ? 'Admin' : 'Pending Verification') %></td></tr>
+                    <tr><td>Verification Note</td><td><%= payment.cashVerificationNote || 'N/A' %></td></tr>
+                  <% } else { %>
+                    <tr><td>Transaction / Order ID</td><td style="font-family:monospace;font-size:12px;"><%= payment.orderId || payment.razorpayOrderId || 'N/A' %></td></tr>
+                    <tr><td>Payment Gateway ID</td><td style="font-family:monospace;font-size:12px;"><%= payment.paymentId || payment.razorpayPaymentId || 'N/A' %></td></tr>
+                    <tr><td>Payment Date</td><td><%= payment.paymentDate ? new Date(payment.paymentDate).toLocaleDateString('en-IN', {day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'}) : 'N/A' %></td></tr>
+                  <% } %>
                 <% } %>
               </table>
             </div>
           </div>
-          <% } %>
+
+          <!-- 7. Account Information -->
+          <div class="card mb-24">
+            <div class="card-header"><div class="card-title">🔐 Account Information</div></div>
+            <div class="card-body">
+              <table class="detail-info-table">
+                <tr><td>Account Status</td><td><span class="badge <%= student.accountStatus === 'active' ? 'badge-success' : 'badge-warning' %>"><%= student.accountStatus ? student.accountStatus.toUpperCase() : 'PENDING' %></span></td></tr>
+                <tr><td>Approval Status</td><td><span class="badge <%= student.approvalStatus === 'approved' ? 'badge-success' : 'badge-warning' %>"><%= student.approvalStatus ? student.approvalStatus.toUpperCase() : 'PENDING' %></span></td></tr>
+                <tr><td>Email Notification</td><td><span class="badge badge-gray"><%= student.emailStatus ? student.emailStatus.toUpperCase() : 'PENDING' %></span></td></tr>
+                <tr><td>Portal Login Access</td><td><strong><%= student.accountStatus === 'active' ? 'Granted (Email + Password)' : 'Blocked' %></strong></td></tr>
+              </table>
+            </div>
+          </div>
+
+          <!-- 8. System Information -->
+          <div class="card">
+            <div class="card-header"><div class="card-title">⚙️ System Information</div></div>
+            <div class="card-body">
+              <table class="detail-info-table">
+                <tr><td>Student ID</td><td><strong style="font-family:monospace;color:var(--primary);"><%= student.studentId || 'Not assigned yet' %></strong></td></tr>
+                <tr><td>Database ID</td><td style="font-family:monospace;font-size:12px;color:var(--text-muted);"><%= student._id %></td></tr>
+                <tr><td>Created At</td><td><%= new Date(student.createdAt).toLocaleString('en-IN') %></td></tr>
+                <tr><td>Last Updated</td><td><%= new Date(student.updatedAt).toLocaleString('en-IN') %></td></tr>
+              </table>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>

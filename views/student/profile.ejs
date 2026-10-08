@@ -80,20 +80,32 @@
           </div>
 
           <div style="grid-column:1/-1;">
-            <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Address</div>
-            <div style="font-weight:600;"><%= student.address %>, <%= student.city %>, <%= student.state %> — <%= student.pincode %></div>
+            <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Emergency Contact</div>
+            <div style="font-weight:600;"><%= student.emergencyContact || 'N/A' %></div>
+          </div>
+          <div style="grid-column:1/-1;">
+            <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Residential Address</div>
+            <div style="font-weight:600;"><%= student.address %><%= student.city ? ', ' + student.city : '' %><%= student.state ? ', ' + student.state : '' %><%= student.pincode ? ' - ' + student.pincode : '' %></div>
           </div>
           <div>
-            <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">College</div>
-            <div style="font-weight:600;"><%= student.college %></div>
+            <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">ID Proof</div>
+            <div style="font-weight:600;"><%= student.idProofType || 'Aadhaar Card' %>: <%= student.idProofNumber || 'Verified' %></div>
           </div>
           <div>
-            <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Course</div>
-            <div style="font-weight:600;"><%= student.course %></div>
+            <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Education Level</div>
+            <div style="font-weight:600;"><%= student.educationLevel || student.course || 'Undergraduate' %></div>
           </div>
           <div>
-            <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Semester / Year</div>
-            <div style="font-weight:600;"><%= student.semester %></div>
+            <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Preparing For</div>
+            <div style="font-weight:600;"><%= student.preparingFor || 'Competitive Exams' %></div>
+          </div>
+          <div>
+            <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Membership Slot</div>
+            <div style="font-weight:600;"><%= student.membershipSlot || 'Full Day Slot' %></div>
+          </div>
+          <div>
+            <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Slot Timing</div>
+            <div style="font-weight:600;"><%= student.slotTiming || '6:00 AM - 10:00 PM' %></div>
           </div>
           <div>
             <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Joining Date</div>

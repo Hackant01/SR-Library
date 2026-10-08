@@ -10,6 +10,8 @@ const adminAuth = async (req, res, next) => {
     req.path.endsWith('/reject') || 
     req.path.endsWith('/delete') || 
     req.path.endsWith('/deactivate') || 
+    req.path.endsWith('/activate') || 
+    req.path.endsWith('/mark-cash-paid') || 
     req.path.endsWith('/assign-id') || 
     req.path.endsWith('/resend-email') ||
     Boolean(req.headers.accept && req.headers.accept.includes('application/json')) ||

@@ -19,11 +19,14 @@ router.post('/logout', adminController.postLogout);
 // Protected routes
 router.get('/dashboard', adminAuth, adminController.getDashboard);
 router.get('/students', adminAuth, adminController.getStudents);
+router.get('/payments', adminAuth, adminController.getPayments);
 router.get('/students/:id', adminAuth, adminController.getStudentDetail);
+router.get('/students/:id/print', adminAuth, adminController.printStudentForm);
 router.post('/students/:id/assign-id', adminAuth, adminController.assignStudentId);
 router.post('/students/:id/approve', adminAuth, adminController.approveStudent);
 router.post('/students/:id/mark-cash-paid', adminAuth, adminController.markCashPaymentReceived);
 router.post('/students/:id/reject', adminAuth, adminController.rejectStudent);
+router.post('/students/:id/activate', adminAuth, adminController.activateStudent);
 router.post('/students/:id/deactivate', adminAuth, adminController.deactivateStudent);
 router.post('/students/:id/delete', adminAuth, adminController.deleteStudent);
 router.post('/students/:id/resend-email', adminAuth, adminController.resendEmail);

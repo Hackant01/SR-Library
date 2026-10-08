@@ -11,7 +11,7 @@
 <body>
 <div class="admin-wrapper">
 
-  <%- include('./partials/sidebar', { currentPage: 'dashboard', pendingCount: stats.pendingStudents }) %>
+  <%- include('./partials/sidebar', { currentPage: 'dashboard', pendingCount: stats.pendingCashPayments }) %>
 
   <div class="admin-main">
     <!-- Topbar -->
@@ -33,83 +33,127 @@
         <div>
           <div style="color:rgba(255,255,255,0.7);font-size:13px;margin-bottom:4px;">Welcome back,</div>
           <div style="color:#fff;font-size:20px;font-weight:700;"><%= admin.name %></div>
-          <div style="color:rgba(255,255,255,0.6);font-size:13px;margin-top:4px;">
-            <% if (stats.pendingStudents > 0) { %>
-              ⚠️ You have <strong style="color:var(--accent);"><%= stats.pendingStudents %></strong> pending registration<%= stats.pendingStudents > 1 ? 's' : '' %> awaiting Student ID assignment
+          <div style="color:rgba(255,255,255,0.8);font-size:13px;margin-top:4px;">
+            <% if (stats.pendingCashPayments > 0) { %>
+              ⚠️ You have <strong style="color:var(--accent);"><%= stats.pendingCashPayments %></strong> pending cash payment<%= stats.pendingCashPayments > 1 ? 's' : '' %> to verify at the desk.
             <% } else { %>
-              ✅ All registrations are up to date
+              ✅ All registrations and cash collections are up to date!
             <% } %>
           </div>
         </div>
-        <a href="/admin/students?status=pending&payment=paid" class="btn btn-accent">
-          Pending Approvals →
-        </a>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <a href="/admin/students" class="btn btn-ghost" style="color:#fff;border-color:rgba(255,255,255,0.4);">
+            Manage Students
+          </a>
+          <a href="/admin/students?payment=pending" class="btn btn-accent">
+            Pending Cash Payments →
+          </a>
+        </div>
       </div>
 
-      <!-- Stats Cards -->
-      <!-- 7 Dashboard Statistics -->
-      <div class="admin-stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
-        <div class="stat-card" style="--stat-color:var(--primary);--stat-bg:rgba(26,35,126,0.1);">
-          <div class="stat-icon">👥</div>
-          <div class="stat-info">
-            <div class="stat-value"><%= stats.totalStudents %></div>
-            <div class="stat-label">Total Students</div>
+      <!-- Payment Dashboard Section -->
+      <div class="mb-24">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+          <h2 style="font-size:17px;font-weight:700;color:var(--text);margin:0;display:flex;align-items:center;gap:8px;">
+            <span>💳</span> Payment Dashboard
+          </h2>
+          <a href="/admin/payments" class="btn btn-sm btn-ghost" style="font-size:12px;">View All Payments →</a>
+        </div>
+
+        <div class="admin-stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));gap:16px;">
+          <!-- 1. Total Revenue -->
+          <div class="stat-card" style="--stat-color:#16a34a;--stat-bg:rgba(22,163,74,0.1);border:1px solid #bbf7d0;">
+            <div class="stat-icon">💰</div>
+            <div class="stat-info">
+              <div class="stat-value" style="color:#15803d;">₹<%= (stats.totalRevenue || 0).toLocaleString('en-IN') %></div>
+              <div class="stat-label">Total Revenue</div>
+              <div class="stat-change" style="color:#16a34a;">From verified payments</div>
+            </div>
+          </div>
+
+          <!-- 2. Online Revenue -->
+          <div class="stat-card" style="--stat-color:#0284c7;--stat-bg:rgba(2,132,199,0.1);border:1px solid #bae6fd;">
+            <div class="stat-icon">💳</div>
+            <div class="stat-info">
+              <div class="stat-value" style="color:#0369a1;">₹<%= (stats.onlineRevenue || 0).toLocaleString('en-IN') %></div>
+              <div class="stat-label">Online Revenue</div>
+              <div class="stat-change" style="color:#0284c7;"><%= stats.onlinePayments || 0 %> paid transactions</div>
+            </div>
+          </div>
+
+          <!-- 3. Cash Revenue -->
+          <div class="stat-card" style="--stat-color:#059669;--stat-bg:rgba(5,150,105,0.1);border:1px solid #a7f3d0;">
+            <div class="stat-icon">💵</div>
+            <div class="stat-info">
+              <div class="stat-value" style="color:#047857;">₹<%= (stats.cashRevenue || 0).toLocaleString('en-IN') %></div>
+              <div class="stat-label">Cash Revenue</div>
+              <div class="stat-change" style="color:#059669;"><%= stats.cashPayments || 0 %> counter collections</div>
+            </div>
+          </div>
+
+          <!-- 4. Pending Cash Payments -->
+          <div class="stat-card" style="--stat-color:#d97706;--stat-bg:rgba(217,119,6,0.1);border:1px solid #fde68a;">
+            <div class="stat-icon">⏳</div>
+            <div class="stat-info">
+              <div class="stat-value" style="color:#b45309;"><%= stats.pendingCashPayments || 0 %></div>
+              <div class="stat-label">Pending Cash Payments</div>
+              <div class="stat-change" style="color:#d97706;">Awaiting desk collection</div>
+            </div>
+          </div>
+
+          <!-- 5. Total Paid Registrations -->
+          <div class="stat-card" style="--stat-color:#6366f1;--stat-bg:rgba(99,102,241,0.1);border:1px solid #c7d2fe;">
+            <div class="stat-icon">🧾</div>
+            <div class="stat-info">
+              <div class="stat-value" style="color:#4f46e5;"><%= stats.totalPaidCount || 0 %></div>
+              <div class="stat-label">Total Paid Registrations</div>
+              <div class="stat-change" style="color:#6366f1;">Verified members</div>
+            </div>
           </div>
         </div>
-        <div class="stat-card" style="--stat-color:var(--success);--stat-bg:rgba(46,125,50,0.1);">
-          <div class="stat-icon">✅</div>
-          <div class="stat-info">
-            <div class="stat-value"><%= stats.activeStudents %></div>
-            <div class="stat-label">Active Students</div>
+      </div>
+
+      <!-- Student Overview Stats -->
+      <div class="mb-24">
+        <h2 style="font-size:17px;font-weight:700;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:8px;">
+          <span>👥</span> Student Overview
+        </h2>
+        <div class="admin-stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));gap:16px;">
+          <div class="stat-card" style="--stat-color:var(--primary);--stat-bg:rgba(26,35,126,0.1);">
+            <div class="stat-icon">👥</div>
+            <div class="stat-info">
+              <div class="stat-value"><%= stats.totalStudents %></div>
+              <div class="stat-label">Total Students</div>
+              <div class="stat-change" style="color:var(--primary);">All registered records</div>
+            </div>
           </div>
-        </div>
-        <div class="stat-card" style="--stat-color:#d97706;--stat-bg:rgba(217,119,6,0.1);border:1px solid #fde68a;">
-          <div class="stat-icon">💵</div>
-          <div class="stat-info">
-            <div class="stat-value" style="color:#d97706;"><%= stats.pendingCashPayments %></div>
-            <div class="stat-label">Pending Cash Payments</div>
-            <div class="stat-change" style="color:#d97706;">Action required at counter</div>
+
+          <div class="stat-card" style="--stat-color:var(--success);--stat-bg:rgba(46,125,50,0.1);">
+            <div class="stat-icon">✅</div>
+            <div class="stat-info">
+              <div class="stat-value"><%= stats.activeStudents %></div>
+              <div class="stat-label">Active Students</div>
+              <div class="stat-change" style="color:var(--success);">Permitted portal access</div>
+            </div>
           </div>
-        </div>
-        <div class="stat-card" style="--stat-color:#0284c7;--stat-bg:rgba(2,132,199,0.1);">
-          <div class="stat-icon">💳</div>
-          <div class="stat-info">
-            <div class="stat-value"><%= stats.onlinePayments %></div>
-            <div class="stat-label">Online Payments</div>
-            <div class="stat-change" style="color:#0284c7;">Auto-Approved & Paid</div>
-          </div>
-        </div>
-        <div class="stat-card" style="--stat-color:#059669;--stat-bg:rgba(5,150,105,0.1);">
-          <div class="stat-icon">🧾</div>
-          <div class="stat-info">
-            <div class="stat-value"><%= stats.cashPayments %></div>
-            <div class="stat-label">Cash Payments</div>
-            <div class="stat-change" style="color:#059669;">Verified by Admin</div>
-          </div>
-        </div>
-        <div class="stat-card" style="--stat-color:#16a34a;--stat-bg:rgba(22,163,74,0.1);">
-          <div class="stat-icon">💰</div>
-          <div class="stat-info">
-            <div class="stat-value">₹<%= stats.totalRevenue.toLocaleString() %></div>
-            <div class="stat-label">Total Revenue</div>
-            <div class="stat-change" style="color:var(--success);">₹150 fee per student</div>
-          </div>
-        </div>
-        <div class="stat-card" style="--stat-color:var(--warning);--stat-bg:rgba(245,127,23,0.1);">
-          <div class="stat-icon">⏳</div>
-          <div class="stat-info">
-            <div class="stat-value"><%= stats.pendingApprovals %></div>
-            <div class="stat-label">Pending Approvals</div>
+
+          <div class="stat-card" style="--stat-color:var(--warning);--stat-bg:rgba(245,127,23,0.1);">
+            <div class="stat-icon">⏳</div>
+            <div class="stat-info">
+              <div class="stat-value"><%= stats.pendingApprovals %></div>
+              <div class="stat-label">Pending Approvals</div>
+              <div class="stat-change" style="color:var(--warning);">Requires admin action</div>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Pending Cash Payments Section & Recent Registrations -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(360px, 1fr));gap:24px;">
 
         <!-- Section: PENDING CASH PAYMENTS -->
         <div class="card" style="border: 2px solid #fed7aa;">
-          <div class="card-header" style="background:#fff7ed;">
+          <div class="card-header" style="background:#fff7ed;display:flex;justify-content:space-between;align-items:center;">
             <div class="card-title" style="color:#9a3412;">💵 PENDING CASH PAYMENTS</div>
             <span class="badge" style="background:#ffedd5;color:#c2410c;font-weight:700;"><%= pendingCashStudents ? pendingCashStudents.length : 0 %> Pending</span>
           </div>
@@ -120,38 +164,33 @@
               </div>
             <% } else { %>
               <% pendingCashStudents.forEach(s => { %>
-              <div class="notification-item" style="padding:16px 20px;border-bottom:1px solid var(--border);">
-                <div class="avatar-circle" style="background:#ffedd5;color:#c2410c;width:40px;height:40px;font-weight:700;">
+              <div class="notification-item" id="pending-cash-<%= s._id %>" style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;">
+                <div class="avatar-circle" style="background:#ffedd5;color:#c2410c;width:40px;height:40px;font-weight:700;flex-shrink:0;">
                   <%= s.fullName.charAt(0).toUpperCase() %>
                 </div>
-                <div class="notification-info" style="flex:1;">
-                  <div class="notification-name" style="font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;">
-                    <%= s.fullName %>
-                    <span style="font-family:monospace;font-size:12px;background:#f1f5f9;color:#475569;padding:2px 6px;border-radius:4px;"><%= s.studentId %></span>
+                <div class="notification-info" style="flex:1;min-width:0;">
+                  <div class="notification-name" style="font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                    <span><%= s.fullName %></span>
+                    <% if (s.studentId) { %>
+                      <span style="font-family:monospace;font-size:11px;background:#f1f5f9;color:#475569;padding:2px 6px;border-radius:4px;"><%= s.studentId %></span>
+                    <% } %>
                   </div>
-                  <div class="notification-meta" style="margin-top:3px;font-size:13px;">
+                  <div class="notification-meta" style="margin-top:2px;font-size:12px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
                     📞 <%= s.mobile %> &nbsp;|&nbsp; ✉️ <%= s.email %>
                   </div>
-                  <div style="font-size:12px;color:#d97706;margin-top:4px;font-weight:600;">
-                    💳 ₹150 Cash Pending • Reg: <%= new Date(s.createdAt).toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'}) %>
+                  <div style="font-size:12px;color:#d97706;margin-top:3px;font-weight:600;">
+                    💳 ₹150 Cash Pending • <%= new Date(s.createdAt).toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'}) %>
                   </div>
                 </div>
-                <div class="notification-actions" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+                <div class="notification-actions" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;flex-shrink:0;">
                   <a href="/admin/students/<%= s._id %>" class="btn btn-ghost btn-sm" title="View Details">👁 View</a>
                   <button
                     class="btn btn-success btn-sm"
                     onclick="openCashModal('<%= s._id %>', '<%= s.fullName %>')"
-                    title="Approve Cash & Send Email"
+                    title="Mark Cash Payment Received"
                     style="background:#059669;border:none;font-weight:700;"
                   >
-                    ✓ Approve & Send Email
-                  </button>
-                  <button
-                    class="btn btn-danger btn-sm"
-                    onclick="rejectStudent('<%= s._id %>', '<%= s.fullName %>', this)"
-                    title="Reject Application"
-                  >
-                    ✗ Reject
+                    ✓ Mark Cash Paid
                   </button>
                 </div>
               </div>
@@ -162,9 +201,9 @@
 
         <!-- Recent Registrations -->
         <div class="card">
-          <div class="card-header">
+          <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
             <div class="card-title">🕐 Recent Registrations</div>
-            <a href="/admin/students" class="btn btn-sm btn-ghost">All Students</a>
+            <a href="/admin/students" class="btn btn-sm btn-ghost">All Students →</a>
           </div>
           <div class="card-body" style="padding:0;">
             <% if (!recentStudents || recentStudents.length === 0) { %>
@@ -173,23 +212,23 @@
               </div>
             <% } else { %>
               <% recentStudents.slice(0, 7).forEach(s => { %>
-              <div class="notification-item" style="padding:12px 20px;border-bottom:1px solid var(--border);">
-                <div class="avatar-circle" style="width:36px;height:36px;font-size:14px;"><%= s.fullName.charAt(0).toUpperCase() %></div>
-                <div class="notification-info">
-                  <div class="notification-name" style="font-size:14px;font-weight:600;">
-                    <%= s.fullName %>
+              <div class="notification-item" style="padding:12px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;">
+                <div class="avatar-circle" style="width:36px;height:36px;font-size:13px;flex-shrink:0;"><%= s.fullName.charAt(0).toUpperCase() %></div>
+                <div class="notification-info" style="flex:1;min-width:0;">
+                  <div class="notification-name" style="font-size:14px;font-weight:600;display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+                    <span><%= s.fullName %></span>
                     <% if (s.paymentMethod === 'online') { %>
                       <span class="badge" style="background:#e0f2fe;color:#0369a1;font-size:11px;padding:2px 6px;">Online</span>
                     <% } else { %>
                       <span class="badge" style="background:#fef3c7;color:#92400e;font-size:11px;padding:2px 6px;">Cash</span>
                     <% } %>
                   </div>
-                  <div class="notification-meta">
-                    <% if (s.studentId) { %><span style="color:var(--primary);font-weight:600;"><%= s.studentId %></span> | <% } %>
+                  <div class="notification-meta" style="font-size:12px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                    <% if (s.studentId) { %><strong style="color:var(--primary);"><%= s.studentId %></strong> • <% } %>
                     <%= s.email %>
                   </div>
                 </div>
-                <div>
+                <div style="flex-shrink:0;">
                   <% if (s.accountStatus === 'active') { %>
                     <span class="badge badge-success">✓ Active</span>
                   <% } else if (s.accountStatus === 'pending') { %>

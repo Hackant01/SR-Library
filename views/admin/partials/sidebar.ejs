@@ -11,7 +11,7 @@
   </a>
 
   <nav class="sidebar-nav">
-    <div class="sidebar-section-label">Main</div>
+    <div class="sidebar-section-label">Navigation</div>
 
     <a href="/admin/dashboard" class="sidebar-link <%= typeof currentPage !== 'undefined' && currentPage === 'dashboard' ? 'active' : '' %>">
       <span class="sidebar-link-icon">📊</span>
@@ -20,27 +20,37 @@
 
     <a href="/admin/students" class="sidebar-link <%= typeof currentPage !== 'undefined' && currentPage === 'students' ? 'active' : '' %>">
       <span class="sidebar-link-icon">👥</span>
-      All Students
+      Students
     </a>
 
-    <a href="/admin/students?status=pending&payment=paid" class="sidebar-link">
+    <a href="/admin/students?payment=pending" class="sidebar-link <%= typeof currentPage !== 'undefined' && currentPage === 'pending-payments' ? 'active' : '' %>">
       <span class="sidebar-link-icon">⏳</span>
-      Pending Approvals
+      Pending Payments
       <% if (typeof pendingCount !== 'undefined' && pendingCount > 0) { %>
         <span class="sidebar-badge"><%= pendingCount %></span>
       <% } %>
     </a>
 
-    <a href="/admin/students?status=active" class="sidebar-link">
+    <a href="/admin/students?status=active" class="sidebar-link <%= typeof currentPage !== 'undefined' && currentPage === 'active-students' ? 'active' : '' %>">
       <span class="sidebar-link-icon">✅</span>
       Active Students
     </a>
 
-    <div class="sidebar-section-label">Account</div>
+    <a href="/admin/students?status=inactive" class="sidebar-link <%= typeof currentPage !== 'undefined' && currentPage === 'inactive-students' ? 'active' : '' %>">
+      <span class="sidebar-link-icon">⏸</span>
+      Inactive Students
+    </a>
+
+    <a href="/admin/payments" class="sidebar-link <%= typeof currentPage !== 'undefined' && currentPage === 'payments' ? 'active' : '' %>">
+      <span class="sidebar-link-icon">💳</span>
+      Payments
+    </a>
+
+    <div class="sidebar-section-label">System</div>
 
     <a href="/admin/profile" class="sidebar-link <%= typeof currentPage !== 'undefined' && currentPage === 'profile' ? 'active' : '' %>">
-      <span class="sidebar-link-icon">👤</span>
-      My Profile
+      <span class="sidebar-link-icon">⚙️</span>
+      Settings
     </a>
 
     <form action="/admin/logout" method="POST" style="margin:0;">
@@ -53,10 +63,10 @@
 
   <div class="sidebar-footer">
     <div class="sidebar-user">
-      <div class="sidebar-user-avatar"><%= admin.name.charAt(0).toUpperCase() %></div>
+      <div class="sidebar-user-avatar"><%= admin && admin.name ? admin.name.charAt(0).toUpperCase() : 'A' %></div>
       <div class="sidebar-user-info">
-        <div class="sidebar-user-name"><%= admin.name %></div>
-        <div class="sidebar-user-role"><%= admin.role %></div>
+        <div class="sidebar-user-name"><%= admin && admin.name ? admin.name : 'Administrator' %></div>
+        <div class="sidebar-user-role"><%= admin && admin.role ? admin.role : 'Admin' %></div>
       </div>
     </div>
   </div>

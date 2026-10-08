@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %> | <%= libraryName %> Admin</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/responsive.css" />
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body>
+<div class="admin-wrapper">
+
+  <%- include('./partials/sidebar', { currentPage: 'payments', pendingCount: stats.pendingCashPayments }) %>
+
+  <div class="admin-main">
+    <div class="admin-topbar">
+      <button class="admin-sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">☰</button>
+      <div class="admin-topbar-title">Payment Dashboard & Transactions</div>
+      <div style="font-size:13px;color:var(--text-muted);"><%= total %> total payment records</div>
+    </div>
+
+    <div class="admin-content">
+
+      <!-- Payment Statistics Cards -->
+      <div class="admin-stats-grid mb-24" style="grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));gap:16px;">
+        <div class="stat-card" style="--stat-color:#16a34a;--stat-bg:rgba(22,163,74,0.1);border:1px solid #bbf7d0;">
+          <div class="stat-icon">💰</div>
+          <div class="stat-info">
+            <div class="stat-value" style="color:#15803d;">₹<%= (stats.totalRevenue || 0).toLocaleString('en-IN') %></div>
+            <div class="stat-label">Total Revenue</div>
+            <div class="stat-change" style="color:#16a34a;">Sum of all paid records</div>
+          </div>
+        </div>
+
+        <div class="stat-card" style="--stat-color:#0284c7;--stat-bg:rgba(2,132,199,0.1);border:1px solid #bae6fd;">
+          <div class="stat-icon">💳</div>
+          <div class="stat-info">
+            <div class="stat-value" style="color:#0369a1;">₹<%= (stats.onlineRevenue || 0).toLocaleString('en-IN') %></div>
+            <div class="stat-label">Online Revenue</div>
+            <div class="stat-change" style="color:#0284c7;"><%= stats.onlineCount || 0 %> paid online</div>
+          </div>
+        </div>
+
+        <div class="stat-card" style="--stat-color:#059669;--stat-bg:rgba(5,150,105,0.1);border:1px solid #a7f3d0;">
+          <div class="stat-icon">💵</div>
+          <div class="stat-info">
+            <div class="stat-value" style="color:#047857;">₹<%= (stats.cashRevenue || 0).toLocaleString('en-IN') %></div>
+            <div class="stat-label">Cash Revenue</div>
+            <div class="stat-change" style="color:#059669;"><%= stats.cashCount || 0 %> paid at desk</div>
+          </div>
+        </div>
+
+        <div class="stat-card" style="--stat-color:#d97706;--stat-bg:rgba(217,119,6,0.1);border:1px solid #fde68a;">
+          <div class="stat-icon">⏳</div>
+          <div class="stat-info">
+            <div class="stat-value" style="color:#b45309;"><%= stats.pendingCashPayments || 0 %></div>
+            <div class="stat-label">Pending Cash Payments</div>
+            <div class="stat-change" style="color:#d97706;">Action required at desk</div>
+          </div>
+        </div>
+
+        <div class="stat-card" style="--stat-color:#6366f1;--stat-bg:rgba(99,102,241,0.1);border:1px solid #c7d2fe;">
+          <div class="stat-icon">🧾</div>
+          <div class="stat-info">
+            <div class="stat-value" style="color:#4f46e5;"><%= stats.totalPaidCount || 0 %></div>
+            <div class="stat-label">Total Paid Registrations</div>
+            <div class="stat-change" style="color:#6366f1;">All completed fees</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filters Form -->
+      <form id="paymentFilterForm" method="GET" action="/admin/payments">
+        <div class="admin-table-toolbar mb-24">
+          <select name="method" class="form-control filter-select" onchange="this.form.submit()">
+            <option value="">All Payment Methods</option>
+            <option value="online" <%= method === 'online' ? 'selected' : '' %>>💳 Online</option>
+            <option value="cash" <%= method === 'cash' ? 'selected' : '' %>>💵 Cash</option>
+          </select>
+
+          <select name="status" class="form-control filter-select" onchange="this.form.submit()">
+            <option value="">All Payment Statuses</option>
+            <option value="paid" <%= status === 'paid' ? 'selected' : '' %>>Paid</option>
+            <option value="pending" <%= status === 'pending' ? 'selected' : '' %>>Pending</option>
+            <option value="failed" <%= status === 'failed' ? 'selected' : '' %>>Failed</option>
+          </select>
+
+          <a href="/admin/payments" class="btn btn-ghost btn-sm">Reset Filters</a>
+        </div>
+      </form>
+
+      <!-- Payments Table -->
+      <div class="card">
+        <div class="table-wrapper">
+          <table class="table" id="paymentsTable">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Student ID</th>
+                <th>Student Name</th>
+                <th>Contact</th>
+                <th>Amount</th>
+                <th>Method</th>
+                <th>Status</th>
+                <th>Payment Date</th>
+                <th>Verified By / Txn ID</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (payments.length === 0) { %>
+                <tr>
+                  <td colspan="10" style="text-align:center;padding:48px;color:var(--text-muted);">
+                    No payment records found.
+                  </td>
+                </tr>
+              <% } else { %>
+                <% payments.forEach((p, i) => { %>
+                <tr>
+                  <td><%= (page - 1) * limit + i + 1 %></td>
+                  <td>
+                    <% if (p.student && p.student.studentId) { %>
+                      <span style="font-family:monospace;font-weight:700;color:var(--primary);"><%= p.student.studentId %></span>
+                    <% } else { %>
+                      <span style="color:var(--text-muted);font-size:12px;">N/A</span>
+                    <% } %>
+                  </td>
+                  <td>
+                    <div style="font-weight:600;"><%= p.student ? p.student.fullName : 'Deleted Student' %></div>
+                    <div style="font-size:12px;color:var(--text-muted);"><%= p.student ? p.student.email : '' %></div>
+                  </td>
+                  <td style="font-size:13px;"><%= p.student ? p.student.mobile : 'N/A' %></td>
+                  <td><strong style="color:#15803d;font-size:15px;">₹<%= p.amount %></strong></td>
+                  <td>
+                    <% if (p.paymentMethod === 'online') { %>
+                      <span class="badge" style="background:#e0f2fe;color:#0369a1;">💳 Online</span>
+                    <% } else { %>
+                      <span class="badge" style="background:#fef3c7;color:#92400e;">💵 Cash</span>
+                    <% } %>
+                  </td>
+                  <td>
+                    <% if (p.status === 'paid') { %>
+                      <span class="badge badge-success">✓ Paid</span>
+                    <% } else if (p.status === 'pending') { %>
+                      <span class="badge badge-warning">⏳ Pending</span>
+                    <% } else { %>
+                      <span class="badge badge-danger">Failed</span>
+                    <% } %>
+                  </td>
+                  <td style="font-size:13px;">
+                    <%= p.paymentDate ? new Date(p.paymentDate).toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'}) : (p.createdAt ? new Date(p.createdAt).toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'}) : 'N/A') %>
+                  </td>
+                  <td style="font-size:12px;max-width:180px;overflow:hidden;text-overflow:ellipsis;">
+                    <% if (p.paymentMethod === 'cash') { %>
+                      <%= p.cashVerifiedBy ? p.cashVerifiedBy.name : (p.status === 'paid' ? 'Admin' : 'Pending Verification') %>
+                    <% } else { %>
+                      <span style="font-family:monospace;"><%= p.paymentId || p.razorpayPaymentId || 'Online Gateway' %></span>
+                    <% } %>
+                  </td>
+                  <td>
+                    <% if (p.student) { %>
+                      <div style="display:flex;gap:6px;">
+                        <a href="/admin/students/<%= p.student._id %>" class="btn btn-sm btn-info" title="View Details">👁 Details</a>
+                        <a href="/admin/students/<%= p.student._id %>/print" target="_blank" class="btn btn-sm btn-ghost" title="Print Form">🖨️ Print</a>
+                      </div>
+                    <% } %>
+                  </td>
+                </tr>
+                <% }) %>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <% if (totalPages > 1) { %>
+        <div style="padding:16px 20px;border-top:1px solid var(--border);">
+          <div class="pagination">
+            <% if (page > 1) { %>
+              <a href="?page=<%= page-1 %>&method=<%= method %>&status=<%= status %>" class="page-btn">‹</a>
+            <% } %>
+            <% for (let p = 1; p <= totalPages; p++) { %>
+              <a href="?page=<%= p %>&method=<%= method %>&status=<%= status %>" class="page-btn <%= p === page ? 'active' : '' %>"><%= p %></a>
+            <% } %>
+            <% if (page < totalPages) { %>
+              <a href="?page=<%= page+1 %>&method=<%= method %>&status=<%= status %>" class="page-btn">›</a>
+            <% } %>
+          </div>
+          <div style="text-align:center;font-size:13px;color:var(--text-muted);margin-top:8px;">
+            Showing <%= (page-1)*limit + 1 %>–<%= Math.min(page*limit, total) %> of <%= total %> records
+          </div>
+        </div>
+        <% } %>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="/js/admin.js"></script>
+</body>
+</html>
