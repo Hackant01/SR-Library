@@ -1,6 +1,8 @@
 const crypto = require('crypto');
 const Student = require('../models/Student');
 const Payment = require('../models/Payment');
+const Seat = require('../models/Seat');
+const Booking = require('../models/Booking');
 const { validateStudentRegistration } = require('../middleware/validation');
 const generateStudentId = require('../utils/generateStudentId');
 const { sendStudentIdEmail } = require('../services/emailService');
@@ -354,21 +356,28 @@ const getLogin = (req, res) => {
 
 const postLogin = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const rawIdentifier = (req.body.email || req.body.mobile || req.body.identifier || '').trim();
+    const { password } = req.body;
 
-    if (!email || !password) {
+    if (!rawIdentifier || !password) {
       return res.render('student/login', {
         title: 'Student Login',
-        error: 'Email and password are required',
+        error: 'Please enter your registered Email or Mobile number and Password',
         libraryName: process.env.LIBRARY_NAME || 'SR Library',
       });
     }
 
-    const student = await Student.findOne({ email: email.toLowerCase().trim() });
+    const student = await Student.findOne({
+      $or: [
+        { email: rawIdentifier.toLowerCase() },
+        { mobile: rawIdentifier },
+      ],
+    });
+
     if (!student) {
       return res.render('student/login', {
         title: 'Student Login',
-        error: 'Invalid email or password',
+        error: 'Invalid login details. If you have not registered yet, please create an account.',
         libraryName: process.env.LIBRARY_NAME || 'SR Library',
       });
     }
@@ -377,7 +386,7 @@ const postLogin = async (req, res) => {
     if (!isMatch) {
       return res.render('student/login', {
         title: 'Student Login',
-        error: 'Invalid email or password',
+        error: 'Invalid password. Please check your password and try again.',
         libraryName: process.env.LIBRARY_NAME || 'SR Library',
       });
     }
@@ -387,7 +396,7 @@ const postLogin = async (req, res) => {
     if (student.paymentMethod === 'cash' && student.paymentStatus === 'pending') {
       return res.render('student/login', {
         title: 'Student Login',
-        error: '⏳ Cash payment pending: Please pay ₹150 at the SR Library desk. Once the admin confirms your cash payment, your account will be activated and login details emailed to you.',
+        error: '⏳ Cash payment pending: Please pay ₹150 at the SR Library counter. Once admin confirms your cash payment, your account will be activated and login access enabled.',
         libraryName: process.env.LIBRARY_NAME || 'SR Library',
       });
     }
@@ -405,7 +414,7 @@ const postLogin = async (req, res) => {
     if (student.accountStatus === 'rejected' || student.approvalStatus === 'rejected') {
       return res.render('student/login', {
         title: 'Student Login',
-        error: '❌ Your registration application was rejected by the library administrator. Please visit or contact the library office.',
+        error: '❌ Your registration application was rejected by the library administrator. Please visit or contact the library desk.',
         libraryName: process.env.LIBRARY_NAME || 'SR Library',
       });
     }
@@ -414,7 +423,7 @@ const postLogin = async (req, res) => {
     if (student.accountStatus === 'inactive') {
       return res.render('student/login', {
         title: 'Student Login',
-        error: '⚠️ Your account has been deactivated. Please contact administration.',
+        error: '⚠️ Your account is currently inactive. Please contact library management to reactivate.',
         libraryName: process.env.LIBRARY_NAME || 'SR Library',
       });
     }
@@ -432,6 +441,14 @@ const postLogin = async (req, res) => {
   }
 };
 
+// ─── Forgot Password ──────────────────────────────────────────────────────────
+const getForgotPassword = (req, res) => {
+  res.render('student/forgot-password', {
+    title: 'Forgot Password',
+    libraryName: process.env.LIBRARY_NAME || 'SR Library',
+  });
+};
+
 // ─── Student Dashboard ────────────────────────────────────────────────────────
 const getDashboard = async (req, res) => {
   try {
@@ -441,17 +458,175 @@ const getDashboard = async (req, res) => {
       return res.redirect('/student/login');
     }
 
-    const payment = await Payment.findOne({ student: student._id });
+    const [payment, activeBooking, bookingHistory, availableSeatsCount] = await Promise.all([
+      Payment.findOne({ student: student._id }),
+      Booking.findOne({ student: student._id, status: 'active' }).populate('seat'),
+      Booking.find({ student: student._id }).sort({ createdAt: -1 }).limit(10).populate('seat'),
+      Seat.countDocuments({ status: 'available' }),
+    ]);
 
     res.render('student/dashboard', {
       title: 'Student Dashboard',
       student,
       payment,
+      activeBooking,
+      bookingHistory,
+      availableSeatsCount,
       libraryName: process.env.LIBRARY_NAME || 'SR Library',
     });
   } catch (err) {
     console.error('Student dashboard error:', err);
     res.status(500).render('error', { message: 'Failed to load dashboard', title: 'Error' });
+  }
+};
+
+// ─── Visual Seat Booking Page ─────────────────────────────────────────────────
+const getSeatBooking = async (req, res) => {
+  try {
+    const student = await Student.findById(req.session.studentId).select('-password');
+    if (!student) return res.redirect('/student/login');
+
+    const [seats, activeBooking] = await Promise.all([
+      Seat.find().sort({ seatNumber: 1 }),
+      Booking.findOne({ student: student._id, status: 'active' }).populate('seat'),
+    ]);
+
+    // Group seats by section
+    const sectionA = seats.filter((s) => s.section.includes('Section A') || s.seatNumber.startsWith('A-'));
+    const sectionB = seats.filter((s) => s.section.includes('Section B') || s.seatNumber.startsWith('B-'));
+
+    res.render('student/booking', {
+      title: 'Book a Study Seat',
+      student,
+      activeBooking,
+      sectionA,
+      sectionB,
+      seats,
+      libraryName: process.env.LIBRARY_NAME || 'SR Library',
+    });
+  } catch (err) {
+    console.error('Get seat booking error:', err);
+    res.status(500).render('error', { message: 'Failed to load seat booking page', title: 'Error' });
+  }
+};
+
+// ─── Post Seat Booking ────────────────────────────────────────────────────────
+const postBookSeat = async (req, res) => {
+  try {
+    const student = await Student.findById(req.session.studentId);
+    if (!student) {
+      return res.status(401).json({ success: false, message: 'Please log in to book a seat.' });
+    }
+
+    const { seatNumber, slot, date, notes } = req.body;
+    if (!seatNumber) {
+      return res.status(400).json({ success: false, message: 'Please select a seat.' });
+    }
+
+    const seat = await Seat.findOne({ seatNumber: seatNumber.toUpperCase().trim() });
+    if (!seat) {
+      return res.status(404).json({ success: false, message: 'Selected seat does not exist.' });
+    }
+
+    if (seat.status !== 'available') {
+      return res.status(400).json({
+        success: false,
+        message: `Seat ${seat.seatNumber} is currently ${seat.status}. Please choose an available seat.`,
+      });
+    }
+
+    // If student already has an active booking, free their previous seat
+    const previousBooking = await Booking.findOne({ student: student._id, status: 'active' });
+    if (previousBooking) {
+      previousBooking.status = 'completed';
+      await previousBooking.save();
+      await Seat.findByIdAndUpdate(previousBooking.seat, {
+        status: 'available',
+        currentBooking: null,
+        currentStudent: null,
+      });
+    }
+
+    // Generate unique booking code
+    const bookingCode = 'BK' + Date.now().toString().slice(-6) + Math.random().toString(36).substring(2, 5).toUpperCase();
+
+    const booking = new Booking({
+      bookingId: bookingCode,
+      student: student._id,
+      studentName: student.fullName,
+      studentMobile: student.mobile,
+      studentEmail: student.email,
+      seat: seat._id,
+      seatNumber: seat.seatNumber,
+      bookingDate: date ? new Date(date) : new Date(),
+      slot: slot || student.membershipSlot || 'Full Day (6:00 AM - 11:00 PM)',
+      plan: student.subscriptionPlan || 'Monthly Membership',
+      status: 'active',
+      notes: notes || '',
+    });
+
+    await booking.save();
+
+    // Mark seat as occupied
+    seat.status = 'occupied';
+    seat.currentBooking = booking._id;
+    seat.currentStudent = student._id;
+    await seat.save();
+
+    res.json({
+      success: true,
+      message: `🎉 Seat ${seat.seatNumber} successfully booked! Your booking ID is ${bookingCode}.`,
+      bookingId: bookingCode,
+      seatNumber: seat.seatNumber,
+      redirectUrl: '/student/dashboard',
+    });
+  } catch (err) {
+    console.error('Post seat booking error:', err);
+    res.status(500).json({ success: false, message: 'Failed to complete seat booking. Please try again.' });
+  }
+};
+
+// ─── Cancel Booking ───────────────────────────────────────────────────────────
+const cancelBooking = async (req, res) => {
+  try {
+    const student = await Student.findById(req.session.studentId);
+    if (!student) return res.status(401).json({ success: false, message: 'Unauthorized' });
+
+    const bookingId = req.params.id;
+    const booking = await Booking.findOne({ _id: bookingId, student: student._id });
+    if (!booking) {
+      return res.status(404).json({ success: false, message: 'Booking not found' });
+    }
+
+    booking.status = 'cancelled';
+    await booking.save();
+
+    // Free the seat
+    if (booking.seat) {
+      await Seat.findByIdAndUpdate(booking.seat, {
+        status: 'available',
+        currentBooking: null,
+        currentStudent: null,
+      });
+    }
+
+    res.json({
+      success: true,
+      message: `Booking ${booking.bookingId} for seat ${booking.seatNumber} cancelled.`,
+    });
+  } catch (err) {
+    console.error('Cancel booking error:', err);
+    res.status(500).json({ success: false, message: 'Failed to cancel booking' });
+  }
+};
+
+// ─── Seat API (JSON for live updates) ──────────────────────────────────────────
+const getSeatsApi = async (req, res) => {
+  try {
+    const seats = await Seat.find().sort({ seatNumber: 1 });
+    res.json({ success: true, seats });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
 };
 
@@ -492,7 +667,13 @@ module.exports = {
   getRegistrationSuccess,
   getLogin,
   postLogin,
+  getForgotPassword,
   getDashboard,
+  getSeatBooking,
+  postBookSeat,
+  cancelBooking,
+  getSeatsApi,
   getProfile,
   postLogout,
 };
+

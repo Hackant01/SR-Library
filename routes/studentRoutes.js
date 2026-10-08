@@ -19,12 +19,19 @@ router.post('/simulate-payment', studentController.simulateGatewayPayment);
 router.post('/verify-payment', studentController.verifyOnlinePayment);
 router.get('/registration-success', studentController.getRegistrationSuccess);
 
-// Student login
+// Student login & password
 router.get('/login', studentController.getLogin);
 router.post('/login', loginLimiter, studentController.postLogin);
+router.get('/forgot-password', studentController.getForgotPassword);
+
+// Seats API
+router.get('/api/seats', studentController.getSeatsApi);
 
 // Protected student routes
 router.get('/dashboard', studentAuth, studentController.getDashboard);
+router.get('/booking', studentAuth, studentController.getSeatBooking);
+router.post('/book-seat', studentAuth, studentController.postBookSeat);
+router.post('/cancel-booking/:id', studentAuth, studentController.cancelBooking);
 router.get('/profile', studentAuth, studentController.getProfile);
 router.post('/logout', studentController.postLogout);
 

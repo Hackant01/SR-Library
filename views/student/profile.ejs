@@ -21,9 +21,9 @@
   <h1 style="font-size:clamp(1.4rem,3vw,2rem);margin-bottom:8px;">👤 My Profile</h1>
   <p style="color:var(--text-muted);font-size:15px;margin-bottom:28px;">Your complete registration details</p>
 
-  <div style="display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:start;">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:24px;align-items:start;">
     <!-- Avatar -->
-    <div class="card" style="padding:28px;text-align:center;min-width:200px;">
+    <div class="card" style="padding:28px;text-align:center;">
       <div class="avatar-circle" style="width:80px;height:80px;font-size:32px;margin:0 auto 16px;">
         <%= student.fullName.charAt(0).toUpperCase() %>
       </div>

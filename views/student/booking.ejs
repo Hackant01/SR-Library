@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %> | <%= libraryName %></title>
+  <link rel="icon" href="/images/logo.jpg" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/responsive.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <style>
+    /* Seat Selection specific styles */
+    .seat-tap-target {
+      min-height: 72px;
+      padding: 10px 4px;
+      border-radius: 12px;
+      border: 2px solid var(--border);
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      cursor: pointer;
+      user-select: none;
+      touch-action: manipulation;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .seat-tap-target.available {
+      border-color: #86efac;
+      background: #f0fdf4;
+      color: #166534;
+    }
+    .seat-tap-target.available:hover {
+      border-color: #22c55e;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);
+    }
+    .seat-tap-target.selected {
+      border-color: #2563eb !important;
+      background: #2563eb !important;
+      color: #ffffff !important;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.35) !important;
+      transform: scale(1.05);
+    }
+    .seat-tap-target.selected .seat-label-num {
+      color: #ffffff !important;
+    }
+    .seat-tap-target.occupied {
+      border-color: #fecaca;
+      background: #fef2f2;
+      color: #991b1b;
+      cursor: not-allowed;
+      opacity: 0.75;
+    }
+    .seat-tap-target.maintenance {
+      border-color: #e2e8f0;
+      background: #f8fafc;
+      color: #94a3b8;
+      cursor: not-allowed;
+      opacity: 0.65;
+    }
+    .seat-label-num {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 15px;
+      color: inherit;
+    }
+    .seat-label-type {
+      font-size: 9.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      opacity: 0.85;
+    }
+
+    /* Modal styling */
+    .success-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 16px;
+    }
+    .success-modal-backdrop.active {
+      display: flex;
+    }
+  </style>
+</head>
+<body style="background:var(--bg);min-height:100vh;padding-bottom:90px;">
+
+  <!-- Floating WhatsApp Contact Button -->
+  <a href="https://wa.me/918103485288" class="whatsapp-float" target="_blank" rel="noopener noreferrer" aria-label="Chat with SR Library on WhatsApp">
+    <i class="fa-brands fa-whatsapp"></i>
+  </a>
+
+  <!-- Topbar -->
+  <header style="background:#ffffff;height:64px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;">
+    <div style="max-width:1100px;margin:0 auto;padding:0 18px;height:100%;display:flex;align-items:center;justify-content:space-between;">
+      <a href="/student/dashboard" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text-primary);font-weight:600;font-size:14px;">
+        <i class="fa-solid fa-arrow-left"></i> <span>Dashboard</span>
+      </a>
+
+      <div style="font-family:var(--font-display);font-weight:700;font-size:16px;color:var(--primary-dark);">
+        🪑 Seat Reservation
+      </div>
+
+      <div style="font-size:13px;color:var(--text-muted);">
+        <%= student.fullName ? student.fullName.split(' ')[0] : 'Student' %>
+      </div>
+    </div>
+  </header>
+
+  <!-- Page Content -->
+  <main style="max-width:1100px;margin:0 auto;padding:24px 16px;width:100%;">
+
+    <!-- Header Instructions -->
+    <div style="text-align:center;max-width:600px;margin:0 auto 24px;">
+      <h1 style="font-size:clamp(1.5rem,3vw,2rem);margin-bottom:6px;font-weight:800;">Choose Your Study Seat</h1>
+      <p style="color:var(--text-muted);font-size:14px;">
+        Tap on any green desk to select it. Each seat is equipped with personal power points and silent lighting.
+      </p>
+    </div>
+
+    <!-- Active Booking Notice (if already booked) -->
+    <% if (activeBooking) { %>
+      <div class="alert alert-warning" style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:20px;">ℹ️</span>
+          <div style="font-size:13.5px;">
+            You currently hold <strong>Seat <%= activeBooking.seatNumber %></strong>. Selecting and confirming a new seat will reassign your booking.
+          </div>
+        </div>
+        <a href="/student/dashboard" class="btn btn-sm btn-ghost" style="border:1px solid rgba(0,0,0,0.15);">Keep Current Seat</a>
+      </div>
+    <% } %>
+
+    <!-- Date & Slot Controls -->
+    <div class="card" style="padding:18px 20px;margin-bottom:20px;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:16px;align-items:center;">
+        <div>
+          <label style="display:block;font-size:12.5px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;">Booking Date</label>
+          <input type="date" id="bookingDateInput" class="form-control" value="<%= new Date().toISOString().split('T')[0] %>" min="<%= new Date().toISOString().split('T')[0] %>" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;" />
+        </div>
+
+        <div>
+          <label style="display:block;font-size:12.5px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;">Study Shift / Slot</label>
+          <select id="slotSelect" class="form-control" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;background:#fff;">
+            <option value="Full Day (6:00 AM - 11:00 PM)" selected>Full Day (6:00 AM – 11:00 PM)</option>
+            <option value="Morning Shift (6:00 AM - 2:00 PM)">Morning Shift (6:00 AM – 2:00 PM)</option>
+            <option value="Evening Shift (2:00 PM - 10:00 PM)">Evening Shift (2:00 PM – 10:00 PM)</option>
+          </select>
+        </div>
+
+        <div>
+          <label style="display:block;font-size:12.5px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;">Section Filter</label>
+          <div style="display:flex;gap:8px;">
+            <button type="button" class="btn btn-sm btn-outline active" id="filterAllBtn" onclick="filterSection('all')">All Desks</button>
+            <button type="button" class="btn btn-sm btn-outline" id="filterSecABtn" onclick="filterSection('secA')">Section A</button>
+            <button type="button" class="btn btn-sm btn-outline" id="filterSecBBtn" onclick="filterSection('secB')">Section B</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seat Legend -->
+    <div class="seat-legend">
+      <div class="seat-legend-item">
+        <span class="seat-legend-swatch available"></span>
+        <span>Available</span>
+      </div>
+      <div class="seat-legend-item">
+        <span class="seat-legend-swatch selected"></span>
+        <span>Selected</span>
+      </div>
+      <div class="seat-legend-item">
+        <span class="seat-legend-swatch occupied"></span>
+        <span>Occupied</span>
+      </div>
+      <div class="seat-legend-item">
+        <span class="seat-legend-swatch maintenance"></span>
+        <span>Unavailable</span>
+      </div>
+    </div>
+
+    <!-- Layout: Left Grid / Right Confirmation Card on Desktop -->
+    <div style="display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start;" id="bookingLayoutGrid">
+
+      <!-- Left Column: Seat Sections -->
+      <div>
+        <!-- Section A: Main Quiet Hall -->
+        <div class="seat-section" id="sectionACard">
+          <div class="seat-section-title">
+            <div>
+              <h3>Section A — Main Quiet Study Hall</h3>
+              <span style="font-size:12.5px;color:var(--text-muted);">Ergonomic Desks • Individual Power Point</span>
+            </div>
+            <span class="badge" style="background:#e0e7ff;color:#4338ca;">A-01 to A-20</span>
+          </div>
+
+          <div class="seat-grid" style="grid-template-columns:repeat(auto-fill, minmax(70px, 1fr));gap:10px;">
+            <% sectionA.forEach(seat => { %>
+              <div 
+                class="seat-tap-target <%= seat.status %> <%= (activeBooking && activeBooking.seatNumber === seat.seatNumber) ? 'selected' : '' %>"
+                data-seat="<%= seat.seatNumber %>"
+                data-status="<%= seat.status %>"
+                data-section="Section A (Quiet Hall)"
+                onclick="selectSeat(this)"
+                title="Seat <%= seat.seatNumber %> (<%= seat.status %>)"
+              >
+                <i class="fa-solid fa-chair" style="font-size:16px;"></i>
+                <span class="seat-label-num"><%= seat.seatNumber %></span>
+                <span class="seat-label-type"><%= seat.status %></span>
+              </div>
+            <% }) %>
+          </div>
+        </div>
+
+        <!-- Section B: Reserved Cabins -->
+        <div class="seat-section" id="sectionBCard">
+          <div class="seat-section-title">
+            <div>
+              <h3>Section B — Dedicated Reserved Cabins</h3>
+              <span style="font-size:12.5px;color:var(--text-muted);">Private Partitions • Locker Available</span>
+            </div>
+            <span class="badge" style="background:#fef3c7;color:#92400e;">B-01 to B-20</span>
+          </div>
+
+          <div class="seat-grid" style="grid-template-columns:repeat(auto-fill, minmax(70px, 1fr));gap:10px;">
+            <% sectionB.forEach(seat => { %>
+              <div 
+                class="seat-tap-target <%= seat.status %> <%= (activeBooking && activeBooking.seatNumber === seat.seatNumber) ? 'selected' : '' %>"
+                data-seat="<%= seat.seatNumber %>"
+                data-status="<%= seat.status %>"
+                data-section="Section B (Cabin)"
+                onclick="selectSeat(this)"
+                title="Seat <%= seat.seatNumber %> (<%= seat.status %>)"
+              >
+                <i class="fa-solid fa-chair" style="font-size:16px;"></i>
+                <span class="seat-label-num"><%= seat.seatNumber %></span>
+                <span class="seat-label-type"><%= seat.status %></span>
+              </div>
+            <% }) %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Booking Summary Card (Desktop) -->
+      <div class="card" style="position:sticky;top:84px;padding:22px;border:2px solid var(--primary-light);">
+        <h3 style="font-size:16px;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
+          <i class="fa-solid fa-clipboard-check" style="color:var(--primary);"></i>
+          <span>Booking Summary</span>
+        </h3>
+
+        <div style="background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:18px;">
+          <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;">Selected Seat</div>
+          <div id="desktopSelectedSeat" style="font-size:24px;font-weight:800;color:var(--primary);margin-top:2px;">
+            <%= activeBooking ? activeBooking.seatNumber : 'None Selected' %>
+          </div>
+          <div id="desktopSelectedSection" style="font-size:12.5px;color:var(--text-secondary);margin-top:2px;">
+            <%= activeBooking ? 'Current Desk' : 'Please tap a green desk on the grid' %>
+          </div>
+        </div>
+
+        <div style="font-size:13px;display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">
+          <div style="display:flex;justify-content:space-between;">
+            <span style="color:var(--text-muted);">Student:</span>
+            <strong><%= student.fullName %></strong>
+          </div>
+          <div style="display:flex;justify-content:space-between;">
+            <span style="color:var(--text-muted);">Student ID:</span>
+            <span><%= student.studentId || 'Verified' %></span>
+          </div>
+          <div style="display:flex;justify-content:space-between;">
+            <span style="color:var(--text-muted);">Date:</span>
+            <strong id="desktopDateText"><%= new Date().toLocaleDateString('en-IN', {day:'2-digit',month:'short'}) %></strong>
+          </div>
+          <div style="display:flex;justify-content:space-between;">
+            <span style="color:var(--text-muted);">Slot:</span>
+            <span id="desktopSlotText">Full Day</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;">
+            <span style="color:var(--text-muted);">Fee:</span>
+            <span class="badge badge-success" style="font-size:11px;">Included in Membership</span>
+          </div>
+        </div>
+
+        <button 
+          type="button" 
+          id="confirmBookingBtn" 
+          onclick="confirmBooking()" 
+          class="btn btn-primary btn-lg btn-block"
+          style="width:100%;justify-content:center;font-weight:700;"
+          <%= !activeBooking ? 'disabled' : '' %>
+        >
+          <i class="fa-solid fa-check"></i> Confirm Reservation
+        </button>
+
+        <p style="font-size:11.5px;color:var(--text-muted);text-align:center;margin-top:10px;line-height:1.4;">
+          Your seat will be reserved immediately upon confirmation.
+        </p>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ─── STICKY MOBILE BOOKING BAR ─────────────────────────────────── -->
+  <div class="mobile-booking-bar" id="mobileBookingBar">
+    <div>
+      <div style="font-size:11.5px;color:var(--text-muted);font-weight:600;text-transform:uppercase;">Selected Seat</div>
+      <div id="mobileSeatText" style="font-size:18px;font-weight:800;color:var(--primary);line-height:1.2;">
+        <%= activeBooking ? activeBooking.seatNumber : 'Tap a Desk' %>
+      </div>
+    </div>
+    <button 
+      type="button" 
+      id="mobileConfirmBtn" 
+      onclick="confirmBooking()" 
+      class="btn btn-primary btn-sm"
+      style="padding:10px 18px;font-weight:700;display:flex;align-items:center;gap:6px;"
+      <%= !activeBooking ? 'disabled' : '' %>
+    >
+      <i class="fa-solid fa-check"></i> Confirm
+    </button>
+  </div>
+
+  <!-- ─── CONFIRMATION & SUCCESS MODAL ──────────────────────────────── -->
+  <div class="success-modal-backdrop" id="successModal">
+    <div style="background:#ffffff;border-radius:20px;max-width:400px;width:100%;padding:28px 24px;text-align:center;box-shadow:var(--shadow-xl);border:1px solid var(--border);">
+      <div style="width:64px;height:64px;border-radius:50%;background:#dcfce7;color:#16a34a;font-size:32px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+        <i class="fa-solid fa-check"></i>
+      </div>
+      <h2 style="font-size:20px;font-weight:800;margin-bottom:6px;">Booking Confirmed!</h2>
+      <p style="font-size:13.5px;color:var(--text-muted);margin-bottom:20px;">
+        Your study seat has been successfully reserved.
+      </p>
+
+      <div style="background:#f8fafc;border:1px solid var(--border);border-radius:12px;padding:16px;text-align:left;font-size:13.5px;margin-bottom:22px;display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;justify-content:space-between;">
+          <span style="color:var(--text-muted);">Seat:</span>
+          <strong id="modalSeatNum" style="color:var(--primary);font-size:16px;">--</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;">
+          <span style="color:var(--text-muted);">Booking ID:</span>
+          <strong id="modalBookingId" style="font-family:monospace;">--</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;">
+          <span style="color:var(--text-muted);">Status:</span>
+          <span class="badge badge-success">✓ Active Reservation</span>
+        </div>
+      </div>
+
+      <a href="/student/dashboard" class="btn btn-primary btn-block" style="width:100%;padding:12px;justify-content:center;font-weight:700;">
+        Go to Dashboard
+      </a>
+    </div>
+  </div>
+
+  <script>
+    let selectedSeatNumber = '<%= activeBooking ? activeBooking.seatNumber : "" %>';
+
+    function selectSeat(element) {
+      const status = element.dataset.status;
+      const seat = element.dataset.seat;
+      const section = element.dataset.section;
+
+      if (status !== 'available' && seat !== '<%= activeBooking ? activeBooking.seatNumber : "" %>') {
+        alert(`Seat ${seat} is currently ${status.toUpperCase()} and cannot be selected.`);
+        return;
+      }
+
+      // Remove selected class from previous
+      document.querySelectorAll('.seat-tap-target').forEach(el => el.classList.remove('selected'));
+
+      // Mark clicked as selected
+      element.classList.add('selected');
+      selectedSeatNumber = seat;
+
+      // Update desktop summary
+      document.getElementById('desktopSelectedSeat').textContent = seat;
+      document.getElementById('desktopSelectedSection').textContent = section;
+      document.getElementById('confirmBookingBtn').disabled = false;
+
+      // Update mobile bar
+      document.getElementById('mobileSeatText').textContent = seat;
+      document.getElementById('mobileConfirmBtn').disabled = false;
+    }
+
+    function filterSection(sec) {
+      const secA = document.getElementById('sectionACard');
+      const secB = document.getElementById('sectionBCard');
+      const btnAll = document.getElementById('filterAllBtn');
+      const btnA = document.getElementById('filterSecABtn');
+      const btnB = document.getElementById('filterSecBBtn');
+
+      btnAll.classList.remove('active');
+      btnA.classList.remove('active');
+      btnB.classList.remove('active');
+
+      if (sec === 'all') {
+        secA.style.display = 'block';
+        secB.style.display = 'block';
+        btnAll.classList.add('active');
+      } else if (sec === 'secA') {
+        secA.style.display = 'block';
+        secB.style.display = 'none';
+        btnA.classList.add('active');
+      } else if (sec === 'secB') {
+        secA.style.display = 'none';
+        secB.style.display = 'block';
+        btnB.classList.add('active');
+      }
+    }
+
+    async function confirmBooking() {
+      if (!selectedSeatNumber) {
+        alert('Please tap on an available seat first.');
+        return;
+      }
+
+      const date = document.getElementById('bookingDateInput').value;
+      const slot = document.getElementById('slotSelect').value;
+      const btn = document.getElementById('confirmBookingBtn');
+      const mobileBtn = document.getElementById('mobileConfirmBtn');
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Reserving...';
+      if (mobileBtn) {
+        mobileBtn.disabled = true;
+        mobileBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ...';
+      }
+
+      try {
+        const res = await fetch('/student/book-seat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            seatNumber: selectedSeatNumber,
+            date,
+            slot
+          })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          document.getElementById('modalSeatNum').textContent = data.seatNumber;
+          document.getElementById('modalBookingId').textContent = data.bookingId;
+          document.getElementById('successModal').classList.add('active');
+        } else {
+          alert(data.message || 'Booking failed.');
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fa-solid fa-check"></i> Confirm Reservation';
+          if (mobileBtn) {
+            mobileBtn.disabled = false;
+            mobileBtn.innerHTML = '<i class="fa-solid fa-check"></i> Confirm';
+          }
+        }
+      } catch (err) {
+        alert('Error reserving seat: ' + err.message);
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Confirm Reservation';
+        if (mobileBtn) {
+          mobileBtn.disabled = false;
+          mobileBtn.innerHTML = '<i class="fa-solid fa-check"></i> Confirm';
+        }
+      }
+    }
+
+    // Sync input date and slot text
+    document.getElementById('bookingDateInput')?.addEventListener('change', (e) => {
+      const dt = new Date(e.target.value);
+      document.getElementById('desktopDateText').textContent = dt.toLocaleDateString('en-IN', {day:'2-digit',month:'short'});
+    });
+    document.getElementById('slotSelect')?.addEventListener('change', (e) => {
+      document.getElementById('desktopSlotText').textContent = e.target.value.split(' ')[0] + ' ' + (e.target.value.split(' ')[1] || '');
+    });
+  </script>
+</body>
+</html>

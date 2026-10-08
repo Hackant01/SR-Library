@@ -113,6 +113,57 @@
         </div>
       </div>
 
+      <!-- Physical Seat Overview Stats -->
+      <div class="mb-24">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+          <h2 style="font-size:17px;font-weight:700;color:var(--text);margin:0;display:flex;align-items:center;gap:8px;">
+            <span>🪑</span> Physical Study Seats Overview
+          </h2>
+          <div style="display:flex;gap:8px;">
+            <a href="/admin/seats" class="btn btn-sm btn-primary" style="font-size:12px;">Visual Seat Map →</a>
+            <a href="/admin/bookings" class="btn btn-sm btn-ghost" style="font-size:12px;">All Bookings →</a>
+          </div>
+        </div>
+
+        <div class="admin-stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));gap:16px;">
+          <div class="stat-card" style="--stat-color:#2563eb;--stat-bg:rgba(37,99,235,0.1);border:1px solid #bfdbfe;">
+            <div class="stat-icon">🪑</div>
+            <div class="stat-info">
+              <div class="stat-value" style="color:#1d4ed8;"><%= stats.totalSeats || 40 %></div>
+              <div class="stat-label">Total Study Desks</div>
+              <div class="stat-change" style="color:#2563eb;">Section A &amp; Section B</div>
+            </div>
+          </div>
+
+          <div class="stat-card" style="--stat-color:#16a34a;--stat-bg:rgba(22,163,74,0.1);border:1px solid #bbf7d0;">
+            <div class="stat-icon">✅</div>
+            <div class="stat-info">
+              <div class="stat-value" style="color:#15803d;"><%= stats.availableSeats || 0 %></div>
+              <div class="stat-label">Available Desks</div>
+              <div class="stat-change" style="color:#16a34a;">Ready for new students</div>
+            </div>
+          </div>
+
+          <div class="stat-card" style="--stat-color:#dc2626;--stat-bg:rgba(220,38,38,0.1);border:1px solid #fecaca;">
+            <div class="stat-icon">👥</div>
+            <div class="stat-info">
+              <div class="stat-value" style="color:#b91c1c;"><%= stats.occupiedSeats || 0 %></div>
+              <div class="stat-label">Occupied / Booked</div>
+              <div class="stat-change" style="color:#dc2626;">Currently assigned</div>
+            </div>
+          </div>
+
+          <div class="stat-card" style="--stat-color:#d97706;--stat-bg:rgba(217,119,6,0.1);border:1px solid #fde68a;">
+            <div class="stat-icon">📅</div>
+            <div class="stat-info">
+              <div class="stat-value" style="color:#b45309;"><%= stats.activeBookings || 0 %></div>
+              <div class="stat-label">Active Bookings</div>
+              <div class="stat-change" style="color:#d97706;">Live student sessions</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Student Overview Stats -->
       <div class="mb-24">
         <h2 style="font-size:17px;font-weight:700;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:8px;">

@@ -1431,3 +1431,299 @@ h1, h2, h3, h4, h5, h6 {
   background: var(--border);
   margin: 24px 0;
 }
+
+/* ─── Floating WhatsApp Button ───────────────────────────────────── */
+.whatsapp-float {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 54px;
+  height: 54px;
+  background: #25D366;
+  color: #ffffff !important;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  box-shadow: 0 4px 18px rgba(37, 211, 102, 0.4);
+  z-index: 990;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  text-decoration: none;
+  cursor: pointer;
+}
+.whatsapp-float:hover {
+  transform: scale(1.08) translateY(-2px);
+  box-shadow: 0 8px 24px rgba(37, 211, 102, 0.55);
+}
+.whatsapp-float:active {
+  transform: scale(0.96);
+}
+@media (max-width: 768px) {
+  .whatsapp-float {
+    bottom: 20px;
+    right: 18px;
+    width: 48px;
+    height: 48px;
+    font-size: 24px;
+  }
+}
+
+/* ─── Visual Seat Selection Grid ─────────────────────────────────── */
+.seat-legend {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 20px;
+}
+.seat-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+.seat-legend-swatch {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+.seat-legend-swatch.available {
+  background: #f0fdf4;
+  border-color: #86efac;
+}
+.seat-legend-swatch.selected {
+  background: #2563eb;
+  border-color: #1d4ed8;
+}
+.seat-legend-swatch.occupied {
+  background: #fef2f2;
+  border-color: #fca5a5;
+}
+.seat-legend-swatch.maintenance {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.seat-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 22px;
+  margin-bottom: 24px;
+}
+.seat-section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.seat-section-title h3 {
+  font-size: 16px;
+  margin: 0;
+}
+
+.seat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(68px, 1fr));
+  gap: 10px;
+}
+
+.seat-item {
+  min-height: 68px;
+  border-radius: var(--radius);
+  border: 2px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  user-select: none;
+  touch-action: manipulation;
+  padding: 8px 4px;
+}
+.seat-item.available {
+  border-color: #86efac;
+  background: #f0fdf4;
+  color: #166534;
+}
+.seat-item.available:hover {
+  border-color: #22c55e;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);
+}
+.seat-item.selected {
+  border-color: #2563eb;
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.35);
+  transform: scale(1.04);
+}
+.seat-item.occupied {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #991b1b;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+.seat-item.maintenance {
+  border-color: #e2e8f0;
+  background: #f8fafc;
+  color: #94a3b8;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.seat-number {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 14.5px;
+}
+.seat-type-tag {
+  font-size: 9.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.85;
+}
+
+/* ─── Sticky Mobile Booking Summary ──────────────────────────────── */
+.mobile-booking-bar {
+  display: none;
+}
+@media (max-width: 768px) {
+  .mobile-booking-bar {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    border-top: 1px solid var(--border);
+    padding: 12px 18px;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+    z-index: 950;
+  }
+}
+
+/* ─── Student Dashboard Action Grid ──────────────────────────────── */
+.dash-action-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.dash-action-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: var(--transition);
+  color: var(--text-primary);
+  text-decoration: none;
+}
+.dash-action-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary-light);
+  box-shadow: var(--shadow);
+}
+.dash-action-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+.dash-action-title {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text-primary);
+}
+.dash-action-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* ─── Hero Enhancements for Professional Library ─────────────────── */
+.hero-booking-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  margin-bottom: 16px;
+}
+.hero-live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4ade80;
+  box-shadow: 0 0 8px #4ade80;
+  animation: pulseLive 2s infinite;
+}
+@keyframes pulseLive {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+/* ─── Responsive Card Tables on Mobile ───────────────────────────── */
+@media (max-width: 640px) {
+  .responsive-card-table thead {
+    display: none;
+  }
+  .responsive-card-table tr {
+    display: block;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 12px;
+    padding: 14px 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+  }
+  .responsive-card-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: none;
+    padding: 6px 0;
+    font-size: 13.5px;
+  }
+  .responsive-card-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+}
+

@@ -23,22 +23,22 @@
       Students
     </a>
 
+    <a href="/admin/seats" class="sidebar-link <%= typeof currentPage !== 'undefined' && currentPage === 'seats' ? 'active' : '' %>">
+      <span class="sidebar-link-icon">🪑</span>
+      Seats
+    </a>
+
+    <a href="/admin/bookings" class="sidebar-link <%= typeof currentPage !== 'undefined' && currentPage === 'bookings' ? 'active' : '' %>">
+      <span class="sidebar-link-icon">📅</span>
+      Bookings
+    </a>
+
     <a href="/admin/students?payment=pending" class="sidebar-link <%= typeof currentPage !== 'undefined' && currentPage === 'pending-payments' ? 'active' : '' %>">
       <span class="sidebar-link-icon">⏳</span>
       Pending Payments
       <% if (typeof pendingCount !== 'undefined' && pendingCount > 0) { %>
         <span class="sidebar-badge"><%= pendingCount %></span>
       <% } %>
-    </a>
-
-    <a href="/admin/students?status=active" class="sidebar-link <%= typeof currentPage !== 'undefined' && currentPage === 'active-students' ? 'active' : '' %>">
-      <span class="sidebar-link-icon">✅</span>
-      Active Students
-    </a>
-
-    <a href="/admin/students?status=inactive" class="sidebar-link <%= typeof currentPage !== 'undefined' && currentPage === 'inactive-students' ? 'active' : '' %>">
-      <span class="sidebar-link-icon">⏸</span>
-      Inactive Students
     </a>
 
     <a href="/admin/payments" class="sidebar-link <%= typeof currentPage !== 'undefined' && currentPage === 'payments' ? 'active' : '' %>">

@@ -1,644 +1,778 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="SR Self Study Zone & Library — Shahdol's most premium self-study library with AC, WiFi, CCTV, lockers and 40+ seats. Build your tomorrow today.">
-    <title>
-        <%= title %>
-    </title>
-    <link rel="icon" href="/images/logo.jpg">
-    <link rel="stylesheet" href="/style.css">
-    <link rel="stylesheet" href="/css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-        .nav-btn-student {
-            background: rgba(255, 255, 255, 0.15);
-            color: #fff !important;
-            padding: 8px 16px !important;
-            border-radius: 20px;
-            font-weight: 600 !important;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            transition: all 0.3s ease;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="SR Self Study Zone & Library — Shahdol's premier study library. Reserve dedicated study seats with AC, High-Speed WiFi, Lockers, and 24/7 Power Backup." />
+  <title><%= title %></title>
+  <link rel="icon" href="/images/logo.jpg" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/responsive.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <style>
+    /* Navbar enhancements */
+    .header-nav {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      height: 68px;
+      display: flex;
+      align-items: center;
+    }
+    .header-container {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 20px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+    .nav-brand-img {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      object-fit: cover;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .nav-brand-text {
+      font-family: var(--font-display);
+      font-size: 19px;
+      font-weight: 800;
+      color: var(--primary-dark);
+      letter-spacing: -0.02em;
+    }
+    .nav-menu-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+    .nav-item-link {
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 600;
+      transition: var(--transition);
+      text-decoration: none;
+    }
+    .nav-item-link:hover {
+      color: var(--primary);
+    }
+    .nav-login-btn {
+      background: var(--primary);
+      color: #fff !important;
+      padding: 9px 18px;
+      border-radius: var(--radius);
+      font-size: 13.5px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition);
+      box-shadow: 0 2px 8px rgba(26, 35, 126, 0.25);
+    }
+    .nav-login-btn:hover {
+      background: var(--primary-light);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(26, 35, 126, 0.35);
+    }
+    .nav-mobile-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: var(--text-primary);
+      cursor: pointer;
+      padding: 6px;
+    }
 
-        .nav-btn-student:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-        }
+    /* Mobile drawer */
+    .mobile-drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 1050;
+      opacity: 0;
+      visibility: hidden;
+      transition: var(--transition);
+    }
+    .mobile-drawer-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    .mobile-drawer {
+      position: fixed;
+      top: 0;
+      right: -290px;
+      width: 280px;
+      height: 100%;
+      background: #ffffff;
+      z-index: 1060;
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: var(--shadow-xl);
+      transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .mobile-drawer.active {
+      right: 0;
+    }
+    .mobile-drawer-close {
+      align-self: flex-end;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      width: 36px;
+      height: 36px;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .mobile-drawer-link {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    .mobile-drawer-link:hover, .mobile-drawer-link.active {
+      background: var(--surface-2);
+      color: var(--primary);
+    }
 
-        .nav-btn-admin {
-            background: rgba(13, 27, 110, 0.6);
-            color: #fff !important;
-            padding: 8px 16px !important;
-            border-radius: 20px;
-            font-weight: 600 !important;
-            border: 1px solid rgba(255, 171, 0, 0.6);
-            transition: all 0.3s ease;
-        }
+    /* Hero section */
+    .hero-lib {
+      padding: 64px 20px 56px;
+      background: linear-gradient(135deg, #0d1b6e 0%, #1a237e 60%, #283593 100%);
+      color: #ffffff;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-lib::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background: radial-gradient(circle at 85% 20%, rgba(255, 214, 0, 0.12) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .hero-lib-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 40px;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+    }
+    .hero-badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #ffeb3b;
+      margin-bottom: 18px;
+    }
+    .hero-heading {
+      font-size: clamp(2rem, 4.5vw, 3.2rem);
+      line-height: 1.15;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 16px;
+      letter-spacing: -0.02em;
+    }
+    .hero-heading span {
+      color: #ffd600;
+    }
+    .hero-subtext {
+      font-size: clamp(14.5px, 2vw, 17px);
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.88);
+      max-width: 540px;
+      margin-bottom: 28px;
+    }
+    .hero-cta-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .btn-hero-primary {
+      background: #ffd600;
+      color: #0d1b6e !important;
+      padding: 13px 26px;
+      border-radius: var(--radius);
+      font-size: 15px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      box-shadow: 0 4px 18px rgba(255, 214, 0, 0.35);
+      transition: var(--transition);
+    }
+    .btn-hero-primary:hover {
+      background: #ffea00;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 22px rgba(255, 214, 0, 0.45);
+    }
+    .btn-hero-secondary {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      color: #ffffff !important;
+      padding: 13px 24px;
+      border-radius: var(--radius);
+      font-size: 15px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    .btn-hero-secondary:hover {
+      background: rgba(255, 255, 255, 0.22);
+      transform: translateY(-2px);
+    }
+    .hero-card-img {
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      border: 3px solid rgba(255, 255, 255, 0.2);
+      aspect-ratio: 16/11;
+      width: 100%;
+    }
+    .hero-card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
 
-        .nav-btn-admin:hover {
-            background: rgba(255, 171, 0, 0.2);
-            color: #ffab00 !important;
-            transform: translateY(-2px);
-        }
+    /* Live Availability Strip */
+    .live-strip {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 18px 20px;
+    }
+    .live-strip-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .live-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .live-pulse-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #16a34a;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+    }
+    .live-strip-details {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      flex-wrap: wrap;
+    }
 
-        .nav-btn-reg {
-            background: #ffab00 !important;
-            color: #0d1b6e !important;
-            padding: 8px 18px !important;
-            border-radius: 20px;
-            font-weight: 700 !important;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(255, 171, 0, 0.4);
-        }
+    /* Step flow */
+    .step-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      text-align: center;
+      position: relative;
+      transition: var(--transition);
+    }
+    .step-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow);
+      border-color: rgba(26, 35, 126, 0.2);
+    }
+    .step-num-bubble {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 3px 10px rgba(26, 35, 126, 0.25);
+    }
 
-        .nav-btn-reg:hover {
-            background: #ffd600 !important;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 171, 0, 0.6);
-        }
-    </style>
+    /* Facility card */
+    .fac-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: var(--transition);
+    }
+    .fac-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow);
+      border-color: rgba(26, 35, 126, 0.25);
+    }
+    .fac-icon-circle {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: #eef2ff;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    /* Media query adjustments */
+    @media (max-width: 900px) {
+      .hero-lib-inner {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+      .hero-subtext {
+        margin: 0 auto 28px;
+      }
+      .hero-cta-group {
+        justify-content: center;
+      }
+      .hero-card-img {
+        max-width: 520px;
+        margin: 0 auto;
+      }
+      .nav-menu-links {
+        display: none;
+      }
+      .nav-mobile-toggle {
+        display: block;
+      }
+    }
+  </style>
 </head>
-
 <body>
 
-    <!-- ── ANNOUNCEMENT BANNER ── -->
-    <div class="announce-bar" id="announceBar">
-        <div class="announce-inner">
-            <span class="announce-icon">🎉</span>
-            <span>SR Library ab open hai! Seats limited hain — <a href="/student/register">Abhi Register Karein
-                    (₹150)</a></span>
-            <button class="announce-close"
-                onclick="this.parentElement.parentElement.style.display='none'">&times;</button>
-        </div>
-    </div>
+  <!-- Floating WhatsApp Contact Button -->
+  <a href="https://wa.me/918103485288" class="whatsapp-float" target="_blank" rel="noopener noreferrer" aria-label="Chat with SR Library on WhatsApp" title="WhatsApp Us">
+    <i class="fa-brands fa-whatsapp"></i>
+  </a>
 
-    <!-- WhatsApp Float -->
-    <a href="https://wa.me/918103485288" class="whatsapp" target="_blank" aria-label="Chat on WhatsApp">
-        <div class="whatsapp-pulse"></div>
-        <i class="fa-brands fa-whatsapp"></i>
+  <!-- Mobile Navigation Drawer -->
+  <div class="mobile-drawer-overlay" id="drawerOverlay" onclick="toggleMobileDrawer()"></div>
+  <div class="mobile-drawer" id="mobileDrawer" role="dialog" aria-modal="true" aria-label="Mobile Navigation">
+    <button class="mobile-drawer-close" onclick="toggleMobileDrawer()" aria-label="Close Menu">&times;</button>
+    <a href="/" class="nav-brand" style="margin-bottom:8px;">
+      <img src="/images/logo.jpg" alt="Logo" class="nav-brand-img" />
+      <span class="nav-brand-text"><%= libraryName %></span>
     </a>
-
-    <!-- Back to Top -->
-    <button class="back-to-top" id="backTop" aria-label="Back to top">
-        <i class="fa-solid fa-chevron-up"></i>
-    </button>
-
-    <!-- Toast -->
-    <div class="toast"></div>
-
-    <!-- Lightbox -->
-    <div class="lightbox" id="lightbox">
-        <button class="lightbox-close"><i class="fa-solid fa-xmark"></i></button>
-        <img src="" alt="Gallery Image">
+    <a href="/" class="mobile-drawer-link active"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="/about.html" class="mobile-drawer-link"><i class="fa-solid fa-building-columns"></i> About Library</a>
+    <a href="#facilities" class="mobile-drawer-link" onclick="toggleMobileDrawer()"><i class="fa-solid fa-layer-group"></i> Facilities</a>
+    <a href="#how-it-works" class="mobile-drawer-link" onclick="toggleMobileDrawer()"><i class="fa-solid fa-list-check"></i> How It Works</a>
+    <a href="/seat-availability" class="mobile-drawer-link"><i class="fa-solid fa-chair"></i> Seat Availability</a>
+    <a href="/contact.html" class="mobile-drawer-link"><i class="fa-solid fa-phone"></i> Contact</a>
+    <div style="margin-top:auto;padding-top:16px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:10px;">
+      <a href="/student/login" class="btn btn-primary btn-block" style="justify-content:center;">
+        <i class="fa-solid fa-user-graduate"></i> Student Login
+      </a>
+      <a href="/admin/login" class="btn btn-ghost btn-block" style="justify-content:center;font-size:13px;">
+        <i class="fa-solid fa-shield-halved"></i> Admin Portal
+      </a>
     </div>
+  </div>
 
-    <!-- Mobile Menu -->
-    <div class="mobile-menu" id="mobileMenu">
-        <button class="menu-close"><i class="fa-solid fa-xmark"></i></button>
-        <a href="/" aria-current="page">Home</a>
-        <a href="/about.html">About</a>
-        <a href="/pricing.html">Pricing</a>
-        <a href="/gallery.html">Gallery</a>
-        <a href="/contact.html">Contact</a>
-        <a href="/student/login">🎓 Student Login</a>
-        <a href="/admin/login">🛡️ Admin Login</a>
-        <a href="/student/register">📝 Register Now (₹150)</a>
-    </div>
+  <!-- Header / Navigation Bar -->
+  <header class="header-nav">
+    <div class="header-container">
+      <a href="/" class="nav-brand">
+        <img src="/images/logo.jpg" alt="SR Library Logo" class="nav-brand-img" />
+        <span class="nav-brand-text"><%= libraryName %></span>
+      </a>
 
-    <!-- Navbar -->
-    <nav class="navbar" id="navbar">
-        <a href="/" class="logo-link">
-            <img src="/images/logo.jpg" alt="SR Self Study Zone & Library Logo" class="nav-logo-img">
-            <span class="logo">SR Library</span>
+      <!-- Desktop Links -->
+      <nav class="nav-menu-links">
+        <a href="/" class="nav-item-link" style="color:var(--primary);font-weight:700;">Home</a>
+        <a href="/about.html" class="nav-item-link">About</a>
+        <a href="#facilities" class="nav-item-link">Facilities</a>
+        <a href="#how-it-works" class="nav-item-link">How It Works</a>
+        <a href="/seat-availability" class="nav-item-link">Seats</a>
+        <a href="/contact.html" class="nav-item-link">Contact</a>
+        <a href="/student/login" class="nav-login-btn">
+          <i class="fa-solid fa-user-graduate"></i> Student Login
         </a>
-        <div class="nav-links">
-            <a href="/" aria-current="page">Home</a>
-            <a href="/about.html">About</a>
-            <a href="/pricing.html">Pricing</a>
-            <a href="/gallery.html">Gallery</a>
-            <a href="/contact.html">Contact</a>
-            <a href="/student/login" class="nav-btn-student"><i class="fa-solid fa-user-graduate"></i> Student Login</a>
-            <a href="/admin/login" class="nav-btn-admin"><i class="fa-solid fa-user-shield"></i> Admin Login</a>
-            <a href="/student/register" class="nav-btn-reg"><i class="fa-solid fa-pen-to-square"></i> Register</a>
-        </div>
-        <button class="hamburger" aria-label="Menu">
-            <span></span><span></span><span></span>
-        </button>
-    </nav>
+      </nav>
 
-    <!-- ────────────────── HERO ────────────────── -->
-    <section class="hero" id="home">
-        <div class="hero-bg"></div>
-        <div class="hero-overlay"></div>
-        <div class="particles" id="particles"></div>
-
-        <div class="hero-content">
-            <div class="hero-logo-wrap">
-                <img src="/images/logo.jpg" alt="SR Self Study Zone & Library" class="hero-logo">
-            </div>
-
-            <div class="hero-badge">
-                <i class="fa-solid fa-star"></i>
-                Shahdol's #1 Premium Study Zone
-            </div>
-
-            <h1>
-                <span class="highlight">SR Self Study Zone</span><br>
-                &amp; Library
-            </h1>
-
-            <p class="hero-tagline">Build Your Tomorrow, Today</p>
-
-            <div class="typing-wrapper">
-                <span class="typing-text"></span><span class="typing-cursor">|</span>
-            </div>
-
-            <div class="hero-actions" style="flex-wrap:wrap;gap:12px;justify-content:center;">
-                <a href="/student/register" class="btn-primary" id="hero-register-btn">
-                    <i class="fa-solid fa-pen-to-square"></i>
-                    Register Now — ₹150
-                </a>
-                <a href="/student/login" class="btn-secondary" id="hero-student-login-btn">
-                    <i class="fa-solid fa-user-graduate"></i>
-                    Student Login
-                </a>
-                <a href="/admin/login" class="btn-secondary" style="border:1px solid rgba(255,255,255,0.4);"
-                    id="hero-admin-login-btn">
-                    <i class="fa-solid fa-user-shield"></i>
-                    Admin Login
-                </a>
-            </div>
-
-            <div class="hero-pills">
-                <span>🏆 40+ Seats</span>
-                <span>📚 1000+ Books</span>
-                <span>🔒 Lockers</span>
-                <span>❄️ Full AC</span>
-                <span>📶 High-Speed WiFi</span>
-            </div>
-        </div>
-
-        <div class="scroll-indicator">
-            <span>Scroll</span>
-            <div class="scroll-line"></div>
-        </div>
-    </section>
-
-    <!-- ────────────────── FLOATING TIMER WIDGET ────────────────── -->
-    <div class="float-timer" id="floatTimer">
-        <button class="float-timer-toggle" id="floatTimerToggle" title="Study Timer">
-            <i class="fa-solid fa-stopwatch"></i>
-            <span class="float-timer-label">Timer</span>
-        </button>
-        <div class="float-timer-panel" id="floatTimerPanel">
-            <div class="ftp-header">
-                <span>⏱ Focus Timer</span>
-                <button class="ftp-close" id="floatTimerClose"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="ftp-display" id="ftp-display">25:00</div>
-            <div class="ftp-modes">
-                <button class="ftp-mode active" data-ftp="25:00">🍅 25m</button>
-                <button class="ftp-mode" data-ftp="05:00">☕ 5m</button>
-                <button class="ftp-mode" data-ftp="15:00">🌙 15m</button>
-            </div>
-            <div class="ftp-progress">
-                <div class="ftp-bar" id="ftp-bar"></div>
-            </div>
-            <div class="ftp-controls">
-                <button class="ftp-btn ftp-start" id="ftp-start">▶</button>
-                <button class="ftp-btn ftp-pause" id="ftp-pause">⏸</button>
-                <button class="ftp-btn ftp-reset" id="ftp-reset">↺</button>
-            </div>
-        </div>
+      <!-- Mobile Hamburger Button -->
+      <button class="nav-mobile-toggle" onclick="toggleMobileDrawer()" aria-label="Open Navigation Menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
     </div>
+  </header>
 
-    <!-- ────────────────── QUICK INFO STRIP ────────────────── -->
-    <div class="info-strip">
-        <div class="info-strip-inner">
-            <span>⏰ Open Daily: 6 AM – 11 PM</span>
-            <span class="strip-dot"></span>
-            <span>📍 Shahdol, Madhya Pradesh</span>
-            <span class="strip-dot"></span>
-            <span>📞 8103485288 &nbsp;|&nbsp; 7987526720</span>
-            <span class="strip-dot"></span>
-            <span>🎓 UPSC • MPPSC • SSC • Banking • JEE • NEET</span>
-            <span class="strip-dot"></span>
-            <span>⏰ Open Daily: 6 AM – 11 PM</span>
-            <span class="strip-dot"></span>
-            <span>📍 Shahdol, Madhya Pradesh</span>
-            <span class="strip-dot"></span>
-            <span>📞 8103485288 &nbsp;|&nbsp; 7987526720</span>
-            <span class="strip-dot"></span>
-            <span>🎓 UPSC • MPPSC • SSC • Banking • JEE • NEET</span>
+  <!-- ─── HERO SECTION ────────────────────────────────────────────────── -->
+  <section class="hero-lib">
+    <div class="hero-lib-inner">
+      <div>
+        <div class="hero-badge-pill">
+          <i class="fa-solid fa-star"></i> Shahdol's Premier Self-Study Zone
         </div>
+        <h1 class="hero-heading">
+          Study Better.<br />
+          <span>Focus Better.</span>
+        </h1>
+        <p class="hero-subtext">
+          Reserve your dedicated, quiet study seat equipped with high-speed Wi-Fi, air conditioning, and personal power sockets. Build your tomorrow today.
+        </p>
+        <div class="hero-cta-group">
+          <a href="/seat-availability" class="btn-hero-primary" id="heroBookSeatBtn">
+            <i class="fa-solid fa-chair"></i> Book a Seat
+          </a>
+          <a href="/student/login" class="btn-hero-secondary" id="heroStudentLoginBtn">
+            <i class="fa-solid fa-arrow-right-to-bracket"></i> Student Login
+          </a>
+        </div>
+      </div>
+
+      <div class="hero-card-img">
+        <img src="/images/gallery1.jpeg" alt="SR Library Study Room" loading="eager" />
+      </div>
     </div>
+  </section>
 
-    <!-- ────────────────── POMODORO TIMER (MAIN) ────────────────── -->
-    <section class="timer-section section" id="study-timer">
-        <div class="section-header reveal">
-            <span class="section-label">⚡ Free Study Tool</span>
-            <h2 class="section-title">Use Our Free <span>Focus Timer</span> Right Now!</h2>
-            <p class="section-sub">Topper students use Pomodoro technique. Try it free here — no download needed!</p>
-        </div>
-        <div class="timer-card reveal">
-            <h3>⏱ Study Session Timer</h3>
-            <p>Track your focus sessions — used by thousands of toppers.</p>
-            <div class="timer-display" id="timer-display">25:00</div>
-            <div class="timer-label">MINUTES : SECONDS</div>
-            <div class="timer-modes">
-                <button class="timer-mode-btn active" data-mode="pomodoro">🍅 Pomodoro 25m</button>
-                <button class="timer-mode-btn" data-mode="short-break">☕ Short Break 5m</button>
-                <button class="timer-mode-btn" data-mode="long-break">🌙 Long Break 15m</button>
-            </div>
-            <div class="timer-progress">
-                <div class="timer-bar" id="timer-bar"></div>
-            </div>
-            <div class="timer-controls">
-                <button class="timer-btn start" id="timer-start">▶ Start</button>
-                <button class="timer-btn pause" id="timer-pause">⏸ Pause</button>
-                <button class="timer-btn reset" id="timer-reset">↺ Reset</button>
-            </div>
-        </div>
-    </section>
+  <!-- ─── LIVE SEAT AVAILABILITY STRIP ───────────────────────────────── -->
+  <section class="live-strip">
+    <div class="live-strip-inner">
+      <div class="live-status-badge">
+        <span class="live-pulse-dot"></span>
+        <span>Physical Seats: <strong><%= typeof totalSeats !== 'undefined' ? totalSeats : 40 %> Available</strong> across Section A & B</span>
+      </div>
+      <div class="live-strip-details">
+        <span><i class="fa-regular fa-clock" style="color:var(--primary);"></i> Daily: <strong>6:00 AM – 11:00 PM</strong></span>
+        <span><i class="fa-solid fa-location-dot" style="color:var(--primary);"></i> <strong>Shahdol, M.P.</strong></span>
+        <a href="/seat-availability" class="btn btn-sm btn-outline" style="font-size:12.5px;">View Live Seat Map →</a>
+      </div>
+    </div>
+  </section>
 
-    <section class="stats-section section">
-        <div class="section-header reveal">
-            <span class="section-label">By the Numbers</span>
-            <h2 class="section-title">Trusted by <span>Serious Students</span></h2>
-        </div>
-        <div class="stats-grid">
-            <div class="stat-box reveal">
-                <div class="stat-number" data-count="40" data-suffix="+">0+</div>
-                <div class="stat-label">Study Seats</div>
-            </div>
-            <div class="stat-box reveal">
-                <div class="stat-number" data-count="100" data-suffix="+">0+</div>
-                <div class="stat-label">Happy Students</div>
-            </div>
-            <div class="stat-box reveal">
-                <div class="stat-number" data-count="1000" data-suffix="+">0+</div>
-                <div class="stat-label">Reference Books</div>
-            </div>
-            <div class="stat-box reveal">
-                <div class="stat-number" data-count="365" data-suffix=" Days">0</div>
-                <div class="stat-label">Open Year Round</div>
-            </div>
-        </div>
-    </section>
+  <!-- ─── FACILITIES SECTION ─────────────────────────────────────────── -->
+  <section class="section" id="facilities" style="background:var(--bg);">
+    <div class="container">
+      <div style="text-align:center;max-width:640px;margin:0 auto 44px;">
+        <span class="badge badge-primary" style="margin-bottom:10px;">Built for Focus</span>
+        <h2 style="font-size:clamp(1.6rem,3vw,2.3rem);margin-bottom:10px;">Library Facilities</h2>
+        <p style="color:var(--text-muted);font-size:15px;">
+          Carefully designed study atmosphere with every essential amenity for competitive exam aspirants.
+        </p>
+      </div>
 
-    <!-- ────────────────── FEATURES ────────────────── -->
-    <section class="section" id="features">
-        <div class="section-header reveal">
-            <span class="section-label">Premium Facilities</span>
-            <h2 class="section-title">Everything You Need to <span>Succeed</span></h2>
-            <p class="section-sub">We've built an environment where distraction is impossible and focus is inevitable.
-            </p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));gap:20px;">
+        <!-- 1. Comfortable Study Seats -->
+        <div class="fac-card">
+          <div class="fac-icon-circle"><i class="fa-solid fa-chair"></i></div>
+          <h3 style="font-size:16px;margin:0;">Comfortable Study Seats</h3>
+          <p style="font-size:13.5px;color:var(--text-muted);margin:0;line-height:1.5;">
+            Spacious, dedicated desks with posture-friendly ergonomic chairs for long study hours without fatigue.
+          </p>
         </div>
-        <div class="features-grid">
-            <div class="feature-card reveal">
-                <div class="feature-icon">❄️</div>
-                <h3>Full Air Conditioning</h3>
-                <p>Beat the heat — study in a perfectly temperature-controlled environment all year round.</p>
-            </div>
-            <div class="feature-card reveal">
-                <div class="feature-icon">📶</div>
-                <h3>High-Speed WiFi</h3>
-                <p>Blazing-fast internet to access online materials, lectures, and study resources seamlessly.</p>
-            </div>
-            <div class="feature-card reveal">
-                <div class="feature-icon">🔒</div>
-                <h3>Personal Lockers</h3>
-                <p>Secure, dedicated lockers to store your books, devices, and belongings safely every day.</p>
-            </div>
-            <div class="feature-card reveal">
-                <div class="feature-icon">📹</div>
-                <h3>CCTV Security</h3>
-                <p>24/7 surveillance for a completely safe and secure study environment. Your safety is our priority.
-                </p>
-            </div>
-            <div class="feature-card reveal">
-                <div class="feature-icon">🪑</div>
-                <h3>Ergonomic Seating</h3>
-                <p>Comfortable, posture-friendly chairs and spacious desks designed for long study sessions.</p>
-            </div>
-            <div class="feature-card reveal">
-                <div class="feature-icon">💧</div>
-                <h3>RO Drinking Water</h3>
-                <p>Purified RO water available throughout the day. Stay hydrated, stay focused.</p>
-            </div>
-            <div class="feature-card reveal">
-                <div class="feature-icon">⚡</div>
-                <h3>24/7 Power Backup</h3>
-                <p>Uninterrupted power supply so your study sessions are never broken by power cuts.</p>
-            </div>
-            <div class="feature-card reveal">
-                <div class="feature-icon">📚</div>
-                <h3>1000+ Reference Books</h3>
-                <p>A vast collection of UPSC, MPPSC, SSC, Banking, JEE, NEET and other competitive exam books.</p>
-            </div>
-        </div>
-    </section>
 
-    <!-- ────────────────── ABOUT PREVIEW ────────────────── -->
-    <section class="section" style="padding-top:0" id="about-preview">
-        <div class="about-grid">
-            <div class="about-image-wrap reveal-left">
-                <img src="/images/gallery1.jpeg" alt="SR Library Study Room" loading="lazy">
-                <div class="about-badge">
-                    <strong>🌟</strong>
-                    Newly<br>Opened!
-                </div>
-            </div>
-            <div class="about-text reveal-right">
-                <span class="section-label">About SR Library</span>
-                <h2 class="section-title">A Place Built For <span>Serious Students</span></h2>
-                <p>SR Self Study Zone &amp; Library in Shahdol is specially designed for students preparing for UPSC,
-                    MPPSC, SSC, Banking, Railway, JEE, NEET and all other competitive examinations.</p>
-                <p>We believe that the right environment is the first step to success. That's why every detail — from
-                    our ergonomic chairs to our soundproof zones — is crafted with your success in mind.</p>
-                <ul class="about-checklist">
-                    <li><i class="fa-solid fa-check"></i> Silence &amp; No Distraction</li>
-                    <li><i class="fa-solid fa-check"></i> Private Study Cabins</li>
-                    <li><i class="fa-solid fa-check"></i> Multiple Exam Materials</li>
-                    <li><i class="fa-solid fa-check"></i> Flexible Timings</li>
-                    <li><i class="fa-solid fa-check"></i> Friendly Environment</li>
-                    <li><i class="fa-solid fa-check"></i> Open 6 AM – 11 PM</li>
-                </ul>
-                <div style="margin-top:28px">
-                    <a href="/about.html" class="btn-primary" id="about-read-btn">
-                        <i class="fa-solid fa-arrow-right"></i>
-                        Read Full Story
-                    </a>
-                </div>
-            </div>
+        <!-- 2. High-Speed Wi-Fi -->
+        <div class="fac-card">
+          <div class="fac-icon-circle"><i class="fa-solid fa-wifi"></i></div>
+          <h3 style="font-size:16px;margin:0;">High-Speed Wi-Fi</h3>
+          <p style="font-size:13.5px;color:var(--text-muted);margin:0;line-height:1.5;">
+            High-speed optical fiber internet for uninterrupted online video lectures, test series, and research.
+          </p>
         </div>
-    </section>
 
-    <!-- ────────────────── VIDEO TOUR ────────────────── -->
-    <section class="section video-section" id="video-tour"
-        style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
-        <div class="section-header reveal">
-            <span class="section-label">Virtual Tour</span>
-            <h2 class="section-title">See SR Library <span>In Action</span></h2>
-            <p class="section-sub">Take a virtual tour of Shahdol's most premium study zone. See the facilities,
-                ambiance, and environment before you visit.</p>
+        <!-- 3. Peaceful Environment -->
+        <div class="fac-card">
+          <div class="fac-icon-circle"><i class="fa-solid fa-volume-xmark"></i></div>
+          <h3 style="font-size:16px;margin:0;">Peaceful Environment</h3>
+          <p style="font-size:13.5px;color:var(--text-muted);margin:0;line-height:1.5;">
+            Strictly maintained silence zone ensuring 100% distraction-free deep concentration for serious aspirants.
+          </p>
         </div>
-        <div class="video-container reveal">
-            <div class="video-wrapper">
-                <video controls poster="/images/gallery1.jpeg" class="library-video"
-                    style="width:100%;border-radius:16px;display:block;">
-                    <source src="/images/lib.mp4" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
-            </div>
-            <div class="video-features">
-                <div class="video-feat-item">
-                    <i class="fa-solid fa-eye"></i>
-                    <div>
-                        <strong>See the Space</strong>
-                        <p>Tour our premium study halls and private cabins</p>
-                    </div>
-                </div>
-                <div class="video-feat-item">
-                    <i class="fa-solid fa-shield-halved"></i>
-                    <div>
-                        <strong>Feel the Safety</strong>
-                        <p>CCTV-monitored, fully secure environment</p>
-                    </div>
-                </div>
-                <div class="video-feat-item">
-                    <i class="fa-solid fa-book-open"></i>
-                    <div>
-                        <strong>Explore the Library</strong>
-                        <p>1000+ books for every competitive exam</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <!-- ────────────────── GALLERY PREVIEW ────────────────── -->
-    <section class="section" id="gallery-preview">
-        <div class="section-header reveal">
-            <span class="section-label">Gallery</span>
-            <h2 class="section-title">See Our <span>Study Environment</span></h2>
-            <p class="section-sub">A peek inside Shahdol's most premium self-study zone.</p>
+        <!-- 4. Power Backup -->
+        <div class="fac-card">
+          <div class="fac-icon-circle"><i class="fa-solid fa-bolt"></i></div>
+          <h3 style="font-size:16px;margin:0;">100% Power Backup</h3>
+          <p style="font-size:13.5px;color:var(--text-muted);margin:0;line-height:1.5;">
+            Full inverter & generator power backup so your learning is never interrupted during power outages.
+          </p>
         </div>
-        <div class="gallery-grid">
-            <div class="gallery-item reveal">
-                <img src="/images/gallery1.jpeg" alt="Study Hall" loading="lazy">
-                <div class="gallery-overlay"><span>📚 Study Hall</span></div>
-                <div class="gallery-zoom"><i class="fa-solid fa-expand"></i></div>
-            </div>
-            <div class="gallery-item reveal">
-                <img src="/images/gallery3.jpeg" alt="Private Cabin" loading="lazy">
-                <div class="gallery-overlay"><span>🪑 Private Study Cabin</span></div>
-                <div class="gallery-zoom"><i class="fa-solid fa-expand"></i></div>
-            </div>
-            <div class="gallery-item reveal">
-                <img src="/images/coridoor.jpeg" alt="Library Corridor" loading="lazy">
-                <div class="gallery-overlay"><span>🏛️ Library Corridor</span></div>
-                <div class="gallery-zoom"><i class="fa-solid fa-expand"></i></div>
-            </div>
-            <div class="gallery-item reveal">
-                <img src="/images/office.jpeg" alt="Library Office" loading="lazy">
-                <div class="gallery-overlay"><span>🌟 Premium Ambiance</span></div>
-                <div class="gallery-zoom"><i class="fa-solid fa-expand"></i></div>
-            </div>
+
+        <!-- 5. Air Conditioning -->
+        <div class="fac-card">
+          <div class="fac-icon-circle"><i class="fa-solid fa-snowflake"></i></div>
+          <h3 style="font-size:16px;margin:0;">Air Conditioning</h3>
+          <p style="font-size:13.5px;color:var(--text-muted);margin:0;line-height:1.5;">
+            Evenly cooled, temperature-controlled environment providing maximum comfort in all seasons.
+          </p>
         </div>
-        <div style="text-align:center;margin-top:32px" class="reveal">
-            <a href="/gallery.html" class="btn-secondary" id="view-gallery-btn">
-                <i class="fa-solid fa-images"></i>
-                View Full Gallery
+
+        <!-- 6. CCTV Security -->
+        <div class="fac-card">
+          <div class="fac-icon-circle"><i class="fa-solid fa-video"></i></div>
+          <h3 style="font-size:16px;margin:0;">24/7 CCTV Surveillance</h3>
+          <p style="font-size:13.5px;color:var(--text-muted);margin:0;line-height:1.5;">
+            Full round-the-clock camera monitoring ensuring complete safety for students and their belongings.
+          </p>
+        </div>
+
+        <!-- 7. Purified RO Water -->
+        <div class="fac-card">
+          <div class="fac-icon-circle"><i class="fa-solid fa-bottle-water"></i></div>
+          <h3 style="font-size:16px;margin:0;">RO Drinking Water</h3>
+          <p style="font-size:13.5px;color:var(--text-muted);margin:0;line-height:1.5;">
+            Hygienic, multi-stage RO purified chilled and normal drinking water dispenser available continuously.
+          </p>
+        </div>
+
+        <!-- 8. Long Study Hours -->
+        <div class="fac-card">
+          <div class="fac-icon-circle"><i class="fa-solid fa-clock"></i></div>
+          <h3 style="font-size:16px;margin:0;">Long Study Hours</h3>
+          <p style="font-size:13.5px;color:var(--text-muted);margin:0;line-height:1.5;">
+            Open 7 days a week from 6:00 AM to 11:00 PM to accommodate early risers and late-night study routines.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── HOW SEAT BOOKING WORKS ─────────────────────────────────────── -->
+  <section class="section" id="how-it-works" style="background:#ffffff;border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+    <div class="container">
+      <div style="text-align:center;max-width:600px;margin:0 auto 44px;">
+        <span class="badge badge-primary" style="margin-bottom:10px;">Simple Process</span>
+        <h2 style="font-size:clamp(1.6rem,3vw,2.3rem);margin-bottom:10px;">How Seat Booking Works</h2>
+        <p style="color:var(--text-muted);font-size:15px;">Book and reserve your study seat in four easy steps.</p>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(230px, 1fr));gap:20px;">
+        <div class="step-card">
+          <div class="step-num-bubble">1</div>
+          <h3 style="font-size:16px;margin-bottom:8px;">Create Account</h3>
+          <p style="font-size:13.5px;color:var(--text-muted);margin:0;line-height:1.5;">
+            Register with your name, phone number, and address.
+          </p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-num-bubble">2</div>
+          <h3 style="font-size:16px;margin-bottom:8px;">Login</h3>
+          <p style="font-size:13.5px;color:var(--text-muted);margin:0;line-height:1.5;">
+            Access your student portal using your registered mobile or email.
+          </p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-num-bubble">3</div>
+          <h3 style="font-size:16px;margin-bottom:8px;">Select Seat</h3>
+          <p style="font-size:13.5px;color:var(--text-muted);margin:0;line-height:1.5;">
+            Pick an available seat from Section A or Section B on the interactive map.
+          </p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-num-bubble">4</div>
+          <h3 style="font-size:16px;margin-bottom:8px;">Confirm Booking</h3>
+          <p style="font-size:13.5px;color:var(--text-muted);margin:0;line-height:1.5;">
+            Receive your booking confirmation instantly and start studying.
+          </p>
+        </div>
+      </div>
+
+      <div style="text-align:center;margin-top:36px;">
+        <a href="/seat-availability" class="btn btn-primary btn-lg">
+          <i class="fa-solid fa-chair"></i> View Available Seats Now
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── STUDY ENVIRONMENT & GALLERY ─────────────────────────────────── -->
+  <section class="section" id="gallery" style="background:var(--bg);">
+    <div class="container">
+      <div style="text-align:center;max-width:600px;margin:0 auto 40px;">
+        <span class="badge badge-primary" style="margin-bottom:10px;">Our Space</span>
+        <h2 style="font-size:clamp(1.6rem,3vw,2.3rem);margin-bottom:10px;">Inside the Library</h2>
+        <p style="color:var(--text-muted);font-size:15px;">Real photographs from SR Self Study Zone &amp; Library.</p>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:20px;">
+        <div style="border-radius:14px;overflow:hidden;border:1px solid var(--border);aspect-ratio:4/3;background:#000;">
+          <img src="/images/gallery1.jpeg" alt="Study Hall" style="width:100%;height:100%;object-fit:cover;" loading="lazy" />
+        </div>
+        <div style="border-radius:14px;overflow:hidden;border:1px solid var(--border);aspect-ratio:4/3;background:#000;">
+          <img src="/images/gallery3.jpeg" alt="Private Desk" style="width:100%;height:100%;object-fit:cover;" loading="lazy" />
+        </div>
+        <div style="border-radius:14px;overflow:hidden;border:1px solid var(--border);aspect-ratio:4/3;background:#000;">
+          <img src="/images/coridoor.jpeg" alt="Corridor" style="width:100%;height:100%;object-fit:cover;" loading="lazy" />
+        </div>
+        <div style="border-radius:14px;overflow:hidden;border:1px solid var(--border);aspect-ratio:4/3;background:#000;">
+          <img src="/images/office.jpeg" alt="Reception Desk" style="width:100%;height:100%;object-fit:cover;" loading="lazy" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── VIRTUAL VIDEO TOUR ─────────────────────────────────────────── -->
+  <section class="section" style="background:#ffffff;border-top:1px solid var(--border);">
+    <div class="container">
+      <div style="max-width:820px;margin:0 auto;text-align:center;">
+        <span class="badge badge-primary" style="margin-bottom:10px;">Video Tour</span>
+        <h2 style="font-size:clamp(1.5rem,2.8vw,2rem);margin-bottom:12px;">See SR Library in Action</h2>
+        <p style="color:var(--text-muted);font-size:14.5px;margin-bottom:24px;">
+          Take a look at the facilities, ambience, and peaceful study atmosphere.
+        </p>
+        <div style="border-radius:16px;overflow:hidden;box-shadow:var(--shadow-lg);border:1px solid var(--border);background:#000;">
+          <video controls poster="/images/gallery1.jpeg" style="width:100%;max-height:480px;display:block;">
+            <source src="/images/lib.mp4" type="video/mp4" />
+            Your browser does not support HTML5 video.
+          </video>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── CALL TO ACTION BANNER ──────────────────────────────────────── -->
+  <section style="background:linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);padding:56px 20px;color:#fff;">
+    <div class="container" style="text-align:center;max-width:700px;margin:0 auto;">
+      <h2 style="font-size:clamp(1.7rem,3.2vw,2.4rem);color:#fff;margin-bottom:12px;">
+        Ready to Boost Your Exam Preparation?
+      </h2>
+      <p style="color:rgba(255,255,255,0.85);font-size:15px;margin-bottom:28px;">
+        Join dedicated students already preparing for UPSC, MPPSC, SSC, Banking, and State exams at SR Library.
+      </p>
+      <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+        <a href="/seat-availability" class="btn btn-accent btn-lg" style="font-weight:700;">
+          <i class="fa-solid fa-chair"></i> Reserve Your Seat
+        </a>
+        <a href="https://wa.me/918103485288" target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-lg" style="color:#fff;border-color:rgba(255,255,255,0.4);">
+          <i class="fa-brands fa-whatsapp"></i> Chat on WhatsApp
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── FOOTER ─────────────────────────────────────────────────────── -->
+  <footer style="background:#0f172a;color:#94a3b8;padding:48px 20px 24px;">
+    <div class="container" style="max-width:1200px;margin:0 auto;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:32px;margin-bottom:40px;">
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+            <img src="/images/logo.jpg" alt="Logo" style="width:36px;height:36px;border-radius:8px;object-fit:cover;" />
+            <strong style="color:#ffffff;font-size:18px;"><%= libraryName %></strong>
+          </div>
+          <p style="font-size:13.5px;line-height:1.6;margin-bottom:16px;">
+            Shahdol's premier study library where students come to focus, prepare, and excel in competitive exams.
+          </p>
+          <div style="display:flex;gap:10px;">
+            <a href="https://wa.me/918103485288" target="_blank" rel="noopener noreferrer" style="color:#fff;background:rgba(255,255,255,0.1);width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;">
+              <i class="fa-brands fa-whatsapp"></i>
             </a>
+            <a href="mailto:srselfstudyzone@gmail.com" style="color:#fff;background:rgba(255,255,255,0.1);width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;">
+              <i class="fa-solid fa-envelope"></i>
+            </a>
+          </div>
         </div>
-    </section>
 
-    <!-- ────────────────── TESTIMONIALS ────────────────── -->
-    <section class="section" id="testimonials"
-        style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
-        <div class="section-header reveal">
-            <span class="section-label">Student Reviews</span>
-            <h2 class="section-title">What Our <span>Students Say</span></h2>
-            <p class="section-sub">Real feedback from students who achieved their goals with us.</p>
+        <div>
+          <h4 style="color:#ffffff;font-size:15px;margin-bottom:16px;">Quick Links</h4>
+          <ul style="display:flex;flex-direction:column;gap:10px;font-size:13.5px;">
+            <li><a href="/" style="color:#cbd5e1;text-decoration:none;">Home</a></li>
+            <li><a href="/about.html" style="color:#cbd5e1;text-decoration:none;">About Library</a></li>
+            <li><a href="#facilities" style="color:#cbd5e1;text-decoration:none;">Facilities</a></li>
+            <li><a href="#how-it-works" style="color:#cbd5e1;text-decoration:none;">How It Works</a></li>
+            <li><a href="/seat-availability" style="color:#cbd5e1;text-decoration:none;">Seat Availability</a></li>
+            <li><a href="/contact.html" style="color:#cbd5e1;text-decoration:none;">Contact</a></li>
+          </ul>
         </div>
-        <div class="testimonials-wrapper reveal">
-            <div class="testimonials-track">
-                <div class="testimonial-card">
-                    <div class="testimonial-stars">★★★★★</div>
-                    <blockquote>Best study environment in Shahdol. The silence and AC makes it easy to study for 10+
-                        hours. I cracked my SSC exam after joining SR Library!</blockquote>
-                    <div class="testimonial-author">
-                        <div class="t-avatar">R</div>
-                        <div>
-                            <div class="t-name">Rahul Sharma</div>
-                            <div class="t-role">SSC CGL Selected</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="testimonial-card">
-                    <div class="testimonial-stars">★★★★★</div>
-                    <blockquote>The lockers, fast WiFi, and RO water — everything is top class. A true premium
-                        experience at an affordable price. Highly recommended to all aspirants!</blockquote>
-                    <div class="testimonial-author">
-                        <div class="t-avatar">P</div>
-                        <div>
-                            <div class="t-name">Priya Mishra</div>
-                            <div class="t-role">MPPSC Aspirant</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="testimonial-card">
-                    <div class="testimonial-stars">★★★★★</div>
-                    <blockquote>I love the Full Day plan — sitting here from 6 AM to 11 PM with my reserved seat gives
-                        me a sense of ownership. My productivity shot up 3x!</blockquote>
-                    <div class="testimonial-author">
-                        <div class="t-avatar">A</div>
-                        <div>
-                            <div class="t-name">Amit Patel</div>
-                            <div class="t-role">UPSC Aspirant</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="testimonial-card">
-                    <div class="testimonial-stars">★★★★★</div>
-                    <blockquote>The 1000+ reference books saved me thousands of rupees. No need to buy expensive books —
-                        everything is right there. Plus the atmosphere is incredibly focused.</blockquote>
-                    <div class="testimonial-author">
-                        <div class="t-avatar">S</div>
-                        <div>
-                            <div class="t-name">Sneha Gupta</div>
-                            <div class="t-role">Banking Exam Cleared</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="testimonial-controls reveal">
-            <div class="t-dot active"></div>
-            <div class="t-dot"></div>
-        </div>
-    </section>
 
-    <!-- ────────────────── PRICING PREVIEW ────────────────── -->
-    <section class="section" id="pricing-preview">
-        <div class="section-header reveal">
-            <span class="section-label">Library Plans</span>
-            <h2 class="section-title">Affordable Plans for <span>Every Student</span></h2>
-            <p class="section-sub">Choose the plan that fits your study schedule. Registration fee ₹150 (one time only).
-            </p>
+        <div>
+          <h4 style="color:#ffffff;font-size:15px;margin-bottom:16px;">Student Portal</h4>
+          <ul style="display:flex;flex-direction:column;gap:10px;font-size:13.5px;">
+            <li><a href="/student/login" style="color:#cbd5e1;text-decoration:none;">Student Login</a></li>
+            <li><a href="/student/register" style="color:#cbd5e1;text-decoration:none;">Create Student Account</a></li>
+            <li><a href="/student/dashboard" style="color:#cbd5e1;text-decoration:none;">Student Dashboard</a></li>
+            <li><a href="/admin/login" style="color:#cbd5e1;text-decoration:none;">Admin Sign In</a></li>
+          </ul>
         </div>
-        <div class="pricing-grid">
-            <div class="price-card reveal">
-                <div class="price-icon">🌅</div>
-                <h3>4 Hours</h3>
-                <div class="price-row"><span>1 Month</span><span class="amount">₹500</span></div>
-                <div class="price-row"><span>2 Months</span><span class="amount">₹900</span></div>
-                <div class="price-row"><span>3 Months</span><span class="amount">₹1300</span></div>
-                <a href="/student/register" class="price-cta" id="price-4hr-btn">Register (₹150)</a>
-            </div>
-            <div class="price-card reveal">
-                <div class="price-icon">☀️</div>
-                <h3>6 Hours</h3>
-                <div class="price-row"><span>1 Month</span><span class="amount">₹700</span></div>
-                <div class="price-row"><span>2 Months</span><span class="amount">₹1300</span></div>
-                <div class="price-row"><span>3 Months</span><span class="amount">₹1900</span></div>
-                <a href="/student/register" class="price-cta" id="price-6hr-btn">Register (₹150)</a>
-            </div>
-            <div class="price-card reveal">
-                <div class="price-icon">🌇</div>
-                <h3>8 Hours</h3>
-                <div class="price-row"><span>1 Month</span><span class="amount">₹900</span></div>
-                <div class="price-row"><span>2 Months</span><span class="amount">₹1700</span></div>
-                <div class="price-row"><span>3 Months</span><span class="amount">₹2500</span></div>
-                <a href="/student/register" class="price-cta" id="price-8hr-btn">Register (₹150)</a>
-            </div>
-            <div class="price-card popular reveal">
-                <div class="price-icon">🌟</div>
-                <h3>Full Day</h3>
-                <div class="price-row"><span>Unreserved 1M</span><span class="amount">₹1000</span></div>
-                <div class="price-row"><span>Reserved 1M</span><span class="amount">₹1100</span></div>
-                <div class="price-row"><span>Reserved 3M</span><span class="amount">₹3000</span></div>
-                <a href="/fullday.html" class="price-cta" id="price-fullday-btn">View Details</a>
-            </div>
-        </div>
-    </section>
 
-    <!-- ────────────────── CTA BANNER ────────────────── -->
-    <section class="cta-banner reveal">
-        <div class="cta-banner-content">
-            <img src="/images/logo.jpg" alt="SR Library Logo" class="cta-logo">
-            <div class="cta-text">
-                <h2>Ready to Start Your <span>Success Journey?</span></h2>
-                <p>Join 100+ students already studying at SR Self Study Zone & Library, Shahdol</p>
-            </div>
-            <div class="cta-actions">
-                <a href="/student/register" class="btn-primary" id="cta-register-btn">
-                    <i class="fa-solid fa-pen-to-square"></i> Register Now — ₹150
-                </a>
-                <a href="https://wa.me/918103485288" target="_blank" class="btn-secondary" id="cta-whatsapp-btn">
-                    <i class="fa-brands fa-whatsapp"></i> WhatsApp Us
-                </a>
-            </div>
+        <div>
+          <h4 style="color:#ffffff;font-size:15px;margin-bottom:16px;">Contact Info</h4>
+          <ul style="display:flex;flex-direction:column;gap:10px;font-size:13.5px;">
+            <li><i class="fa-solid fa-location-dot" style="color:#ffd600;margin-right:8px;"></i> Shahdol, Madhya Pradesh</li>
+            <li><i class="fa-solid fa-phone" style="color:#ffd600;margin-right:8px;"></i> +91 8103485288 / 7987526720</li>
+            <li><i class="fa-regular fa-clock" style="color:#ffd600;margin-right:8px;"></i> Open Daily: 6:00 AM – 11:00 PM</li>
+          </ul>
         </div>
-    </section>
+      </div>
 
-    <!-- ────────────────── FOOTER ────────────────── -->
-    <footer class="footer">
-        <div class="footer-grid">
-            <div class="footer-brand">
-                <a href="/" class="logo-link">
-                    <img src="/images/logo.jpg" alt="SR Library Logo" class="footer-logo-img">
-                    <div class="logo" style="display:inline-block">SR Library</div>
-                </a>
-                <p>Build Your Tomorrow, Today. Shahdol's most premium self-study zone for competitive exam aspirants.
-                </p>
-                <div class="footer-social">
-                    <a href="https://wa.me/918103485288" class="social-btn" target="_blank" aria-label="WhatsApp"><i
-                            class="fa-brands fa-whatsapp"></i></a>
-                    <a href="https://www.instagram.com/sr_self_study_zone_and_library?igsh=ZTg3MWJrOHRra3I2&utm_source=qr"
-                        class="social-btn" target="_blank" aria-label="Instagram"><i
-                            class="fa-brands fa-instagram"></i></a>
-                    <a href="mailto:srselfstudyzone@gmail.com" class="social-btn" aria-label="Email"><i
-                            class="fa-solid fa-envelope"></i></a>
-                </div>
-            </div>
-            <div class="footer-col">
-                <h4>Quick Links</h4>
-                <ul>
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/about.html">About Us</a></li>
-                    <li><a href="/pricing.html">Pricing</a></li>
-                    <li><a href="/gallery.html">Gallery</a></li>
-                    <li><a href="/contact.html">Contact</a></li>
-                    <li><a href="/student/login">Student Login</a></li>
-                    <li><a href="/admin/login">Admin Portal</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Exams Covered</h4>
-                <ul>
-                    <li><a href="#">UPSC / IAS</a></li>
-                    <li><a href="#">MPPSC</a></li>
-                    <li><a href="#">SSC / CGL</a></li>
-                    <li><a href="#">Banking / IBPS</a></li>
-                    <li><a href="#">JEE / NEET</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <span>© <%= currentYear %> SR Self Study Zone &amp; Library. All Rights Reserved.</span>
-            <span>Made with ❤️ in Shahdol, M.P.</span>
-        </div>
-    </footer>
+      <div style="border-top:1px solid rgba(255,255,255,0.1);padding-top:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-size:13px;">
+        <span>© <%= currentYear %> <%= libraryName %>. All Rights Reserved.</span>
+        <span>Shahdol, M.P.</span>
+      </div>
+    </div>
+  </footer>
 
-    <script src="/mobile.js"></script>
+  <script>
+    function toggleMobileDrawer() {
+      const drawer = document.getElementById('mobileDrawer');
+      const overlay = document.getElementById('drawerOverlay');
+      if (drawer && overlay) {
+        drawer.classList.toggle('active');
+        overlay.classList.toggle('active');
+      }
+    }
+  </script>
 </body>
-
 </html>

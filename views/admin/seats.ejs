@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %> | <%= libraryName %> Admin</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/responsive.css" />
+  <link rel="stylesheet" href="/css/admin.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <style>
+    .admin-seat-card {
+      min-height: 80px;
+      padding: 10px 6px;
+      border-radius: 12px;
+      border: 2px solid var(--border);
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+    .admin-seat-card.available {
+      border-color: #86efac;
+      background: #f0fdf4;
+      color: #166534;
+    }
+    .admin-seat-card.available:hover {
+      border-color: #22c55e;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);
+    }
+    .admin-seat-card.occupied {
+      border-color: #fca5a5;
+      background: #fef2f2;
+      color: #991b1b;
+    }
+    .admin-seat-card.occupied:hover {
+      border-color: #ef4444;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+    }
+    .admin-seat-card.maintenance {
+      border-color: #cbd5e1;
+      background: #f8fafc;
+      color: #64748b;
+    }
+    .admin-seat-card.maintenance:hover {
+      border-color: #94a3b8;
+      transform: translateY(-2px);
+    }
+    .admin-seat-occupant {
+      font-size: 10px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 90%;
+      text-align: center;
+    }
+
+    /* Modal Backdrop */
+    .seat-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 16px;
+    }
+    .seat-modal-backdrop.active {
+      display: flex;
+    }
+  </style>
+</head>
+<body>
+<div class="admin-wrapper">
+
+  <%- include('./partials/sidebar', { currentPage: 'seats' }) %>
+
+  <div class="admin-main">
+    <!-- Topbar -->
+    <div class="admin-topbar">
+      <button class="admin-sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">☰</button>
+      <div class="admin-topbar-title">Physical Study Seats</div>
+      <div style="font-size:13px;color:var(--text-muted);">
+        <span><%= stats.totalSeats %></span> Desks Configured
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="admin-content">
+
+      <!-- Seat Stats -->
+      <div class="admin-stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));gap:16px;margin-bottom:24px;">
+        <div class="stat-card" style="--stat-color:#2563eb;--stat-bg:rgba(37,99,235,0.1);border:1px solid #bfdbfe;">
+          <div class="stat-icon">🪑</div>
+          <div class="stat-info">
+            <div class="stat-value" style="color:#1d4ed8;"><%= stats.totalSeats %></div>
+            <div class="stat-label">Total Seats</div>
+            <div class="stat-change" style="color:#2563eb;">All library rooms</div>
+          </div>
+        </div>
+
+        <div class="stat-card" style="--stat-color:#16a34a;--stat-bg:rgba(22,163,74,0.1);border:1px solid #bbf7d0;">
+          <div class="stat-icon">✅</div>
+          <div class="stat-info">
+            <div class="stat-value" style="color:#15803d;"><%= stats.availableSeats %></div>
+            <div class="stat-label">Available Desks</div>
+            <div class="stat-change" style="color:#16a34a;">Vacant &amp; ready</div>
+          </div>
+        </div>
+
+        <div class="stat-card" style="--stat-color:#dc2626;--stat-bg:rgba(220,38,38,0.1);border:1px solid #fecaca;">
+          <div class="stat-icon">👥</div>
+          <div class="stat-info">
+            <div class="stat-value" style="color:#b91c1c;"><%= stats.occupiedSeats %></div>
+            <div class="stat-label">Occupied / Booked</div>
+            <div class="stat-change" style="color:#dc2626;">Reserved by students</div>
+          </div>
+        </div>
+
+        <div class="stat-card" style="--stat-color:#64748b;--stat-bg:rgba(100,116,139,0.1);border:1px solid #e2e8f0;">
+          <div class="stat-icon">🔧</div>
+          <div class="stat-info">
+            <div class="stat-value" style="color:#475569;"><%= stats.maintenanceSeats %></div>
+            <div class="stat-label">Maintenance / Reserved</div>
+            <div class="stat-change" style="color:#64748b;">Unavailable to book</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Legend -->
+      <div class="seat-legend" style="margin-bottom:20px;">
+        <div class="seat-legend-item">
+          <span class="seat-legend-swatch available"></span>
+          <span>Available</span>
+        </div>
+        <div class="seat-legend-item">
+          <span class="seat-legend-swatch occupied"></span>
+          <span>Occupied / Booked</span>
+        </div>
+        <div class="seat-legend-item">
+          <span class="seat-legend-swatch maintenance"></span>
+          <span>Maintenance / Inactive</span>
+        </div>
+        <span style="margin-left:auto;font-size:12.5px;color:var(--text-muted);">
+          💡 Tip: Click any desk to view occupant details or toggle status.
+        </span>
+      </div>
+
+      <!-- Section A: Main Quiet Study Hall -->
+      <div class="card mb-24" style="padding:22px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);">
+          <div>
+            <h2 style="font-size:16px;margin:0;font-weight:700;">Section A — Main Quiet Study Hall</h2>
+            <span style="font-size:12.5px;color:var(--text-muted);">Individual study desks with individual lighting &amp; power point</span>
+          </div>
+          <span class="badge" style="background:#e0e7ff;color:#4338ca;">A-01 to A-20</span>
+        </div>
+
+        <div class="seat-grid" style="grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));gap:12px;">
+          <% sectionA.forEach(seat => { %>
+            <div 
+              class="admin-seat-card <%= seat.status %>"
+              data-id="<%= seat._id %>"
+              data-number="<%= seat.seatNumber %>"
+              data-section="<%= seat.section %>"
+              data-status="<%= seat.status %>"
+              data-student="<%= seat.currentStudent ? seat.currentStudent.fullName : '' %>"
+              data-studentid="<%= seat.currentStudent ? (seat.currentStudent.studentId || '') : '' %>"
+              data-mobile="<%= seat.currentStudent ? seat.currentStudent.mobile : '' %>"
+              onclick="openSeatModal(this)"
+            >
+              <i class="fa-solid fa-chair" style="font-size:18px;"></i>
+              <strong style="font-size:14.5px;"><%= seat.seatNumber %></strong>
+              <% if (seat.status === 'occupied' && seat.currentStudent) { %>
+                <span class="admin-seat-occupant"><%= seat.currentStudent.fullName.split(' ')[0] %></span>
+              <% } else { %>
+                <span style="font-size:9.5px;text-transform:uppercase;font-weight:600;"><%= seat.status %></span>
+              <% } %>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+
+      <!-- Section B: Reserved Cabins -->
+      <div class="card mb-24" style="padding:22px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);">
+          <div>
+            <h2 style="font-size:16px;margin:0;font-weight:700;">Section B — Dedicated Reserved Cabins</h2>
+            <span style="font-size:12.5px;color:var(--text-muted);">Private partitions with personal lockers</span>
+          </div>
+          <span class="badge" style="background:#fef3c7;color:#92400e;">B-01 to B-20</span>
+        </div>
+
+        <div class="seat-grid" style="grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));gap:12px;">
+          <% sectionB.forEach(seat => { %>
+            <div 
+              class="admin-seat-card <%= seat.status %>"
+              data-id="<%= seat._id %>"
+              data-number="<%= seat.seatNumber %>"
+              data-section="<%= seat.section %>"
+              data-status="<%= seat.status %>"
+              data-student="<%= seat.currentStudent ? seat.currentStudent.fullName : '' %>"
+              data-studentid="<%= seat.currentStudent ? (seat.currentStudent.studentId || '') : '' %>"
+              data-mobile="<%= seat.currentStudent ? seat.currentStudent.mobile : '' %>"
+              onclick="openSeatModal(this)"
+            >
+              <i class="fa-solid fa-chair" style="font-size:18px;"></i>
+              <strong style="font-size:14.5px;"><%= seat.seatNumber %></strong>
+              <% if (seat.status === 'occupied' && seat.currentStudent) { %>
+                <span class="admin-seat-occupant"><%= seat.currentStudent.fullName.split(' ')[0] %></span>
+              <% } else { %>
+                <span style="font-size:9.5px;text-transform:uppercase;font-weight:600;"><%= seat.status %></span>
+              <% } %>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Seat Inspection & Action Modal -->
+<div class="seat-modal-backdrop" id="seatModal">
+  <div style="background:#ffffff;border-radius:18px;max-width:440px;width:100%;overflow:hidden;box-shadow:var(--shadow-xl);border:1px solid var(--border);">
+    
+    <div style="background:#f8fafc;padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:40px;height:40px;border-radius:10px;background:#eff6ff;color:#2563eb;display:flex;align-items:center;justify-content:center;font-size:18px;">
+          <i class="fa-solid fa-chair"></i>
+        </div>
+        <div>
+          <h3 id="modalSeatTitle" style="margin:0;font-size:17px;font-weight:800;">Seat A-01</h3>
+          <span id="modalSeatSection" style="font-size:12px;color:var(--text-muted);">Section A</span>
+        </div>
+      </div>
+      <button type="button" onclick="closeSeatModal()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-muted);">&times;</button>
+    </div>
+
+    <div style="padding:24px;">
+      <!-- Occupant Info (if any) -->
+      <div id="modalOccupantCard" style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:14px;margin-bottom:18px;display:none;">
+        <div style="font-size:11.5px;font-weight:700;color:#991b1b;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Current Occupant</div>
+        <div style="font-size:15px;font-weight:700;color:#1e293b;" id="modalOccupantName">Student Name</div>
+        <div style="font-size:12.5px;color:#475569;margin-top:2px;">
+          <span id="modalOccupantId">ID</span> &nbsp;|&nbsp; 📞 <span id="modalOccupantMobile">Mobile</span>
+        </div>
+      </div>
+
+      <!-- Status Toggle Form -->
+      <form id="seatStatusForm" onsubmit="saveSeatStatus(event)">
+        <input type="hidden" id="modalSeatId" />
+
+        <div class="form-group" style="margin-bottom:18px;">
+          <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;">Seat Status</label>
+          <select id="modalSeatStatusSelect" class="form-control" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;background:#fff;">
+            <option value="available">Available (Green - Ready to Book)</option>
+            <option value="occupied">Occupied (Red - Assigned)</option>
+            <option value="maintenance">Maintenance (Gray - Unavailable)</option>
+          </select>
+        </div>
+
+        <div style="display:flex;gap:10px;justify-content:flex-end;">
+          <button type="button" class="btn btn-ghost" onclick="closeSeatModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="saveSeatStatusBtn">
+            Update Status
+          </button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="/js/admin.js"></script>
+<script>
+  let activeSeatEl = null;
+
+  function openSeatModal(card) {
+    activeSeatEl = card;
+    const id = card.dataset.id;
+    const number = card.dataset.number;
+    const section = card.dataset.section;
+    const status = card.dataset.status;
+    const student = card.dataset.student;
+    const studentId = card.dataset.studentid;
+    const mobile = card.dataset.mobile;
+
+    document.getElementById('modalSeatId').value = id;
+    document.getElementById('modalSeatTitle').textContent = `Seat ${number}`;
+    document.getElementById('modalSeatSection').textContent = section;
+    document.getElementById('modalSeatStatusSelect').value = status;
+
+    const occupantCard = document.getElementById('modalOccupantCard');
+    if (student) {
+      document.getElementById('modalOccupantName').textContent = student;
+      document.getElementById('modalOccupantId').textContent = studentId || 'Verified';
+      document.getElementById('modalOccupantMobile').textContent = mobile || 'No phone';
+      occupantCard.style.display = 'block';
+    } else {
+      occupantCard.style.display = 'none';
+    }
+
+    document.getElementById('seatModal').classList.add('active');
+  }
+
+  function closeSeatModal() {
+    document.getElementById('seatModal').classList.remove('active');
+  }
+
+  async function saveSeatStatus(e) {
+    e.preventDefault();
+    const id = document.getElementById('modalSeatId').value;
+    const status = document.getElementById('modalSeatStatusSelect').value;
+    const btn = document.getElementById('saveSeatStatusBtn');
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+
+    try {
+      const res = await fetch(`/admin/seats/${id}/status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        showToast('✅ ' + data.message, 'success');
+        closeSeatModal();
+        setTimeout(() => location.reload(), 600);
+      } else {
+        showToast('❌ ' + (data.message || 'Error updating seat'), 'danger');
+        btn.disabled = false;
+        btn.innerHTML = 'Update Status';
+      }
+    } catch (err) {
+      showToast('❌ Server error: ' + err.message, 'danger');
+      btn.disabled = false;
+      btn.innerHTML = 'Update Status';
+    }
+  }
+</script>
+</body>
+</html>

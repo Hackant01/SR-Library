@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="View real-time seat availability at <%= libraryName %>." />
+  <title><%= title %></title>
+  <link rel="icon" href="/images/logo.jpg" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/responsive.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+</head>
+<body style="background:var(--bg);min-height:100vh;display:flex;flex-direction:column;">
+
+  <!-- Floating WhatsApp Contact Button -->
+  <a href="https://wa.me/918103485288" class="whatsapp-float" target="_blank" rel="noopener noreferrer" aria-label="Chat with SR Library on WhatsApp">
+    <i class="fa-brands fa-whatsapp"></i>
+  </a>
+
+  <!-- Header -->
+  <header style="background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;">
+    <div style="max-width:1200px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;">
+      <a href="/" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+        <img src="/images/logo.jpg" alt="Logo" style="width:38px;height:38px;border-radius:8px;object-fit:cover;" />
+        <span style="font-family:var(--font-display);font-weight:800;font-size:18px;color:var(--primary-dark);"><%= libraryName %></span>
+      </a>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <a href="/" class="btn btn-ghost btn-sm">Home</a>
+        <a href="/student/login" class="btn btn-primary btn-sm">
+          <i class="fa-solid fa-user-graduate"></i> Student Login
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Page Main Content -->
+  <main style="max-width:1100px;margin:0 auto;padding:32px 18px;width:100%;flex:1;">
+
+    <div style="text-align:center;max-width:680px;margin:0 auto 28px;">
+      <span class="badge badge-primary" style="margin-bottom:8px;">Live Study Seats</span>
+      <h1 style="font-size:clamp(1.6rem,3.2vw,2.2rem);margin-bottom:10px;">Library Seat Availability</h1>
+      <p style="color:var(--text-muted);font-size:14.5px;">
+        Browse real-time seat availability across Section A (Quiet Hall) and Section B (Reserved Cabins). Log in to book your favorite desk.
+      </p>
+    </div>
+
+    <!-- Quick Stats Cards -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:16px;margin-bottom:24px;">
+      <div class="card" style="padding:16px 20px;display:flex;align-items:center;gap:14px;">
+        <div style="width:44px;height:44px;border-radius:10px;background:#f0fdf4;color:#16a34a;display:flex;align-items:center;justify-content:center;font-size:20px;">
+          <i class="fa-solid fa-check"></i>
+        </div>
+        <div>
+          <div style="font-size:22px;font-weight:800;color:#15803d;"><%= availableCount %></div>
+          <div style="font-size:12.5px;color:var(--text-muted);">Available Now</div>
+        </div>
+      </div>
+
+      <div class="card" style="padding:16px 20px;display:flex;align-items:center;gap:14px;">
+        <div style="width:44px;height:44px;border-radius:10px;background:#fef2f2;color:#dc2626;display:flex;align-items:center;justify-content:center;font-size:20px;">
+          <i class="fa-solid fa-user-check"></i>
+        </div>
+        <div>
+          <div style="font-size:22px;font-weight:800;color:#b91c1c;"><%= totalCount - availableCount %></div>
+          <div style="font-size:12.5px;color:var(--text-muted);">Occupied / Reserved</div>
+        </div>
+      </div>
+
+      <div class="card" style="padding:16px 20px;display:flex;align-items:center;gap:14px;">
+        <div style="width:44px;height:44px;border-radius:10px;background:#eff6ff;color:#2563eb;display:flex;align-items:center;justify-content:center;font-size:20px;">
+          <i class="fa-solid fa-chair"></i>
+        </div>
+        <div>
+          <div style="font-size:22px;font-weight:800;color:#1d4ed8;"><%= totalCount %></div>
+          <div style="font-size:12.5px;color:var(--text-muted);">Total Physical Desks</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="seat-legend">
+      <div class="seat-legend-item">
+        <span class="seat-legend-swatch available"></span>
+        <span>Available to Book</span>
+      </div>
+      <div class="seat-legend-item">
+        <span class="seat-legend-swatch occupied"></span>
+        <span>Occupied / Reserved</span>
+      </div>
+      <div class="seat-legend-item">
+        <span class="seat-legend-swatch maintenance"></span>
+        <span>Maintenance / Reserved Desk</span>
+      </div>
+    </div>
+
+    <!-- Section A: Main Quiet Study Hall -->
+    <div class="seat-section">
+      <div class="seat-section-title">
+        <div>
+          <h3>Section A — Main Quiet Study Hall</h3>
+          <span style="font-size:12.5px;color:var(--text-muted);">Standard Study Desks • Individual Power Socket • WiFi 6</span>
+        </div>
+        <span class="badge" style="background:#e0e7ff;color:#4338ca;">Desks A-01 to A-20</span>
+      </div>
+
+      <div class="seat-grid">
+        <% seats.filter(s => s.seatNumber.startsWith('A-')).forEach(seat => { %>
+          <div class="seat-item <%= seat.status %>" title="Seat <%= seat.seatNumber %> (<%= seat.status %>)" onclick="handleSeatClick('<%= seat.seatNumber %>', '<%= seat.status %>')">
+            <span class="seat-number"><%= seat.seatNumber %></span>
+            <span class="seat-type-tag"><%= seat.status %></span>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+
+    <!-- Section B: Reserved Cabins -->
+    <div class="seat-section">
+      <div class="seat-section-title">
+        <div>
+          <h3>Section B — Reserved Cabins</h3>
+          <span style="font-size:12.5px;color:var(--text-muted);">Partitioned Desks • Locker Facility • Dedicated Lighting</span>
+        </div>
+        <span class="badge" style="background:#fef3c7;color:#92400e;">Desks B-01 to B-20</span>
+      </div>
+
+      <div class="seat-grid">
+        <% seats.filter(s => s.seatNumber.startsWith('B-')).forEach(seat => { %>
+          <div class="seat-item <%= seat.status %>" title="Seat <%= seat.seatNumber %> (<%= seat.status %>)" onclick="handleSeatClick('<%= seat.seatNumber %>', '<%= seat.status %>')">
+            <span class="seat-number"><%= seat.seatNumber %></span>
+            <span class="seat-type-tag"><%= seat.status %></span>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+
+    <!-- Call to action card -->
+    <div class="card" style="text-align:center;padding:32px 20px;background:linear-gradient(135deg,#f8fafc 0%,#edf2f7 100%);">
+      <h3 style="margin-bottom:8px;">Ready to Reserve Your Seat?</h3>
+      <p style="color:var(--text-muted);font-size:14px;max-width:500px;margin:0 auto 20px;">
+        Log in to your student account to select your seat, confirm your reservation, and begin studying.
+      </p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <a href="/student/login" class="btn btn-primary btn-lg">
+          <i class="fa-solid fa-user-graduate"></i> Log In to Book
+        </a>
+        <a href="/student/register" class="btn btn-outline btn-lg">
+          Create Account
+        </a>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer style="background:#0f172a;color:#94a3b8;padding:24px 20px;text-align:center;font-size:13px;margin-top:auto;">
+    <span>© <%= currentYear %> <%= libraryName %> • Shahdol, M.P. • Call: +91 8103485288</span>
+  </footer>
+
+  <script>
+    function handleSeatClick(seatNumber, status) {
+      if (status === 'available') {
+        const choice = confirm(`Seat ${seatNumber} is currently AVAILABLE!\n\nWould you like to log in to book this seat now?`);
+        if (choice) {
+          window.location.href = '/student/login';
+        }
+      } else {
+        alert(`Seat ${seatNumber} is currently ${status.toUpperCase()} and cannot be selected.`);
+      }
+    }
+  </script>
+</body>
+</html>

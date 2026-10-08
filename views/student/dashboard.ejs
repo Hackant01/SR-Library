@@ -4,178 +4,296 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title><%= title %> | <%= libraryName %></title>
+  <link rel="icon" href="/images/logo.jpg" />
   <link rel="stylesheet" href="/css/style.css" />
   <link rel="stylesheet" href="/css/responsive.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 </head>
-<body>
-<!-- Student Navbar -->
-<nav style="background:var(--primary);height:60px;display:flex;align-items:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,0.2);">
-  <div style="max-width:1200px;margin:0 auto;padding:0 24px;width:100%;display:flex;align-items:center;justify-content:space-between;">
-    <a href="/student/dashboard" style="color:#fff;font-family:var(--font-display);font-size:18px;font-weight:700;">📚 <%= libraryName %></a>
-    <div style="display:flex;align-items:center;gap:12px;">
-      <span style="color:rgba(255,255,255,0.7);font-size:14px;">Welcome, <%= student.fullName.split(' ')[0] %></span>
-      <form action="/student/logout" method="POST" style="margin:0;">
-        <button type="submit" class="btn btn-sm" style="background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.2);" id="logout-btn">Logout</button>
-      </form>
-    </div>
-  </div>
-</nav>
+<body style="background:var(--bg);min-height:100vh;">
 
-<div class="student-dash">
-  <!-- Dashboard Header -->
-  <div class="student-dash-header">
-    <div style="max-width:1200px;margin:0 auto;padding:0 24px;">
-      <div style="display:flex;align-items:center;gap:20px;">
-        <div class="avatar-circle" style="width:64px;height:64px;font-size:24px;">
-          <%= student.fullName.charAt(0).toUpperCase() %>
+  <!-- Floating WhatsApp Contact Button -->
+  <a href="https://wa.me/918103485288" class="whatsapp-float" target="_blank" rel="noopener noreferrer" aria-label="Chat with SR Library on WhatsApp">
+    <i class="fa-brands fa-whatsapp"></i>
+  </a>
+
+  <!-- Student App Topbar -->
+  <header style="background:var(--primary);height:64px;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,0.15);">
+    <div style="max-width:1100px;margin:0 auto;padding:0 18px;height:100%;display:flex;align-items:center;justify-content:space-between;">
+      <a href="/student/dashboard" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+        <img src="/images/logo.jpg" alt="Logo" style="width:34px;height:34px;border-radius:8px;object-fit:cover;" />
+        <span style="color:#ffffff;font-family:var(--font-display);font-size:17px;font-weight:700;"><%= libraryName %></span>
+      </a>
+
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span style="color:rgba(255,255,255,0.85);font-size:13px;display:none;font-weight:500;" class="desktop-only-inline">
+          ID: <%= student.studentId || 'Pending' %>
+        </span>
+        <a href="/student/profile" style="color:#fff;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);padding:6px 12px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+          <i class="fa-solid fa-user"></i> <span class="desktop-only-inline">Profile</span>
+        </a>
+        <form action="/student/logout" method="POST" style="margin:0;">
+          <button type="submit" style="background:none;border:none;color:rgba(255,255,255,0.85);font-size:14px;cursor:pointer;padding:6px 10px;display:flex;align-items:center;gap:6px;" title="Logout">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+  </header>
+
+  <!-- Dashboard Main Container -->
+  <main style="max-width:1100px;margin:0 auto;padding:24px 16px 40px;width:100%;">
+
+    <!-- Greeting & Student Identity -->
+    <div style="background:linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);border-radius:18px;padding:24px;color:#fff;margin-bottom:24px;box-shadow:var(--shadow);">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+        <div style="display:flex;align-items:center;gap:16px;">
+          <div style="width:56px;height:56px;border-radius:50%;background:#ffd600;color:#0d1b6e;font-size:24px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.15);flex-shrink:0;">
+            <%= student.fullName ? student.fullName.charAt(0).toUpperCase() : 'S' %>
+          </div>
+          <div>
+            <h1 style="font-size:clamp(1.4rem,3vw,1.8rem);color:#fff;margin-bottom:2px;font-weight:800;">
+              Hello, <%= student.fullName %>!
+            </h1>
+            <div style="color:rgba(255,255,255,0.85);font-size:13.5px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+              <span><strong>Student ID:</strong> <%= student.studentId || 'Pending Approval' %></span>
+              <span>•</span>
+              <span><%= student.membershipSlot || 'Full Day' %></span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <% if (student.accountStatus === 'active') { %>
+            <span class="badge badge-success" style="font-size:13px;padding:6px 16px;">✓ Active Student</span>
+          <% } else { %>
+            <span class="badge badge-warning" style="font-size:13px;padding:6px 16px;">⏳ <%= student.accountStatus %></span>
+          <% } %>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── CURRENT BOOKING HIGHLIGHT CARD ──────────────────────────── -->
+    <div class="card" id="current-booking" style="margin-bottom:24px;border:2px solid <%= activeBooking ? '#86efac' : 'var(--border)' %>;overflow:hidden;">
+      <div style="background:<%= activeBooking ? '#f0fdf4' : '#f8fafc' %>;padding:16px 20px;border-bottom:1px solid <%= activeBooking ? '#bbf7d0' : 'var(--border)' %>;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+        <div style="font-weight:700;font-size:15px;color:<%= activeBooking ? '#166534' : 'var(--text-primary)' %>;display:flex;align-items:center;gap:8px;">
+          <i class="fa-solid fa-chair" style="color:<%= activeBooking ? '#16a34a' : 'var(--text-muted)' %>;"></i>
+          <span>Current Study Seat</span>
+        </div>
+        <% if (activeBooking) { %>
+          <span class="badge badge-success">✓ Confirmed &amp; Active</span>
+        <% } else { %>
+          <span class="badge" style="background:#e2e8f0;color:#475569;">No Active Seat Reserved</span>
+        <% } %>
+      </div>
+
+      <div style="padding:22px 20px;">
+        <% if (activeBooking) { %>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));gap:20px;align-items:center;">
+            <div>
+              <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Seat Number</div>
+              <div style="font-size:28px;font-weight:800;color:var(--primary);margin-top:2px;font-family:var(--font-display);">
+                <%= activeBooking.seatNumber %>
+              </div>
+              <div style="font-size:12.5px;color:var(--text-secondary);margin-top:2px;">
+                <%= activeBooking.seat && activeBooking.seat.section ? activeBooking.seat.section : 'Physical Study Desk' %>
+              </div>
+            </div>
+
+            <div>
+              <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Booking Date</div>
+              <div style="font-size:16px;font-weight:700;margin-top:4px;">
+                <%= new Date(activeBooking.bookingDate).toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'}) %>
+              </div>
+              <div style="font-size:12.5px;color:var(--text-secondary);margin-top:2px;">
+                <%= activeBooking.slot || 'Full Day (6:00 AM - 11:00 PM)' %>
+              </div>
+            </div>
+
+            <div>
+              <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Booking ID</div>
+              <div style="font-size:15px;font-weight:700;margin-top:4px;font-family:monospace;">
+                <%= activeBooking.bookingId %>
+              </div>
+              <div style="font-size:12.5px;color:var(--success);font-weight:600;margin-top:2px;">
+                Valid Today &amp; Onwards
+              </div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <a href="/student/booking" class="btn btn-outline btn-sm" style="justify-content:center;font-weight:600;">
+                <i class="fa-solid fa-arrows-rotate"></i> Change Seat
+              </a>
+              <button type="button" onclick="cancelActiveBooking('<%= activeBooking._id %>')" class="btn btn-ghost btn-sm" style="color:#ef4444;justify-content:center;font-size:12px;">
+                Cancel Booking
+              </button>
+            </div>
+          </div>
+        <% } else { %>
+          <div style="text-align:center;padding:16px 0;">
+            <div style="font-size:36px;margin-bottom:8px;">🪑</div>
+            <h3 style="font-size:17px;margin-bottom:6px;">You don't have a reserved seat yet</h3>
+            <p style="color:var(--text-muted);font-size:14px;max-width:440px;margin:0 auto 18px;">
+              There are currently <strong><%= availableSeatsCount %></strong> study seats available for booking. Select a seat now to secure your desk.
+            </p>
+            <a href="/student/booking" class="btn btn-primary btn-lg" style="display:inline-flex;align-items:center;gap:8px;">
+              <i class="fa-solid fa-chair"></i> Book a Seat Now
+            </a>
+          </div>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- ─── MAIN ACTIONS SHORTCUT GRID ─────────────────────────────── -->
+    <div class="dash-action-grid">
+      <a href="/student/booking" class="dash-action-card">
+        <div class="dash-action-icon" style="background:#eff6ff;color:#2563eb;">
+          <i class="fa-solid fa-chair"></i>
         </div>
         <div>
-          <h1 style="color:#fff;font-size:clamp(1.2rem,2.5vw,1.7rem);margin-bottom:4px;"><%= student.fullName %></h1>
-          <p style="color:rgba(255,255,255,0.7);font-size:14px;"><%= student.email %></p>
+          <div class="dash-action-title">Book a Seat</div>
+          <div class="dash-action-desc">Select seat on visual map</div>
         </div>
-        <div style="margin-left:auto;">
-          <% if (student.accountStatus === 'active') { %>
-            <span class="badge badge-success" style="font-size:13px;padding:6px 16px;">✓ Active</span>
-          <% } else if (student.accountStatus === 'pending') { %>
-            <span class="badge badge-warning" style="font-size:13px;padding:6px 16px;">⏳ Pending ID</span>
-          <% } else { %>
-            <span class="badge badge-danger" style="font-size:13px;padding:6px 16px;">✗ Inactive</span>
-          <% } %>
-        </div>
-      </div>
+      </a>
 
-      <!-- Info Grid -->
-      <div class="student-info-grid" style="margin-top:20px;max-width:700px;">
-        <div class="student-info-item">
-          <div class="student-info-label">Student ID</div>
-          <div class="student-info-value">
-            <% if (student.studentId) { %>
-              <%= student.studentId %>
-            <% } else { %>
-              <span style="color:rgba(255,255,255,0.5);font-style:italic;">Pending Admin Approval</span>
-            <% } %>
-          </div>
+      <a href="#current-booking" class="dash-action-card">
+        <div class="dash-action-icon" style="background:#f0fdf4;color:#16a34a;">
+          <i class="fa-solid fa-id-card-clip"></i>
         </div>
-        <div class="student-info-item">
-          <div class="student-info-label">Joining Date</div>
-          <div class="student-info-value"><%= new Date(student.joiningDate).toLocaleDateString('en-IN', {day:'2-digit',month:'long',year:'numeric'}) %></div>
+        <div>
+          <div class="dash-action-title">My Booking</div>
+          <div class="dash-action-desc">View your active desk</div>
         </div>
-        <div class="student-info-item">
-          <div class="student-info-label">Payment Status</div>
-          <div class="student-info-value" style="color:<%= student.paymentStatus === 'paid' ? '#a5d6a7' : '#ef9a9a' %>;">
-            <%= student.paymentStatus === 'paid' ? '✓ ₹150 Paid' : '⚠ Pending' %>
-          </div>
+      </a>
+
+      <a href="#booking-history" class="dash-action-card">
+        <div class="dash-action-icon" style="background:#fef3c7;color:#d97706;">
+          <i class="fa-solid fa-clock-rotate-left"></i>
         </div>
-        <div class="student-info-item">
-          <div class="student-info-label">Registration Date</div>
-          <div class="student-info-value"><%= new Date(student.registrationDate).toLocaleDateString('en-IN', {day:'2-digit',month:'long',year:'numeric'}) %></div>
+        <div>
+          <div class="dash-action-title">Booking History</div>
+          <div class="dash-action-desc">Past seat reservations</div>
         </div>
-      </div>
+      </a>
+
+      <a href="/student/profile" class="dash-action-card">
+        <div class="dash-action-icon" style="background:#f3e8ff;color:#9333ea;">
+          <i class="fa-solid fa-user-gear"></i>
+        </div>
+        <div>
+          <div class="dash-action-title">My Profile</div>
+          <div class="dash-action-desc">Personal details &amp; card</div>
+        </div>
+      </a>
     </div>
-  </div>
 
-  <!-- Dashboard Content -->
-  <div style="max-width:1200px;margin:0 auto;padding:28px 24px;">
+    <!-- ─── TWO COLUMN DETAILS: MEMBERSHIP & BOOKING HISTORY ────────── -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:24px;align-items:start;">
 
-    <% if (!student.studentId) { %>
-    <div class="alert alert-warning mb-24">
-      <span style="font-size:22px;">⏳</span>
-      <div>
-        <strong>Student ID Pending</strong><br/>
-        <span style="font-size:14px;">Your registration is pending admin approval. Your Student ID will be assigned within 24–48 hours and sent to your email: <strong><%= student.email %></strong></span>
-      </div>
-    </div>
-    <% } %>
-
-    <% if (student.studentId) { %>
-    <div class="alert alert-success mb-24">
-      <span style="font-size:22px;">🎉</span>
-      <div>
-        <strong>Registration Complete!</strong><br/>
-        <span style="font-size:14px;">Your Student ID is <strong><%= student.studentId %></strong>. You can now access all library services.</span>
-      </div>
-    </div>
-    <% } %>
-
-    <div style="display:grid;grid-template-columns:2fr 1fr;gap:24px;align-items:start;">
-      <!-- Profile Card -->
+      <!-- Membership & ID Card -->
       <div class="card">
-        <div class="card-header">
-          <div class="card-title">👤 My Profile</div>
-          <a href="/student/profile" class="btn btn-ghost btn-sm">View Full Profile</a>
+        <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;">
+          <div class="card-title">📚 Membership Details</div>
+          <a href="/student/profile" class="btn btn-ghost btn-sm" style="font-size:12px;">Full Details →</a>
         </div>
-        <div class="card-body">
+        <div class="card-body" style="padding:20px;">
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
             <div>
-              <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">Full Name</div>
-              <div style="font-weight:600;margin-top:4px;"><%= student.fullName %></div>
+              <div style="font-size:12px;color:var(--text-muted);font-weight:600;">Full Name</div>
+              <div style="font-weight:700;margin-top:2px;"><%= student.fullName %></div>
             </div>
             <div>
-              <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">Parent's Name</div>
-              <div style="font-weight:600;margin-top:4px;"><%= student.parentName %></div>
+              <div style="font-size:12px;color:var(--text-muted);font-weight:600;">Student ID</div>
+              <div style="font-weight:700;margin-top:2px;color:var(--primary);"><%= student.studentId || 'Pending Approval' %></div>
             </div>
             <div>
-              <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">Mobile</div>
-              <div style="font-weight:600;margin-top:4px;"><%= student.mobile %></div>
+              <div style="font-size:12px;color:var(--text-muted);font-weight:600;">Registered Mobile</div>
+              <div style="font-weight:600;margin-top:2px;"><%= student.mobile %></div>
             </div>
             <div>
-              <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">Gender</div>
-              <div style="font-weight:600;margin-top:4px;text-transform:capitalize;"><%= student.gender %></div>
+              <div style="font-size:12px;color:var(--text-muted);font-weight:600;">Registered Email</div>
+              <div style="font-weight:600;margin-top:2px;font-size:13px;word-break:break-all;"><%= student.email %></div>
             </div>
             <div>
-              <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">Education</div>
-              <div style="font-weight:600;margin-top:4px;"><%= student.educationLevel || student.course || 'Undergraduate' %></div>
+              <div style="font-size:12px;color:var(--text-muted);font-weight:600;">Membership Plan</div>
+              <div style="font-weight:600;margin-top:2px;"><%= student.subscriptionPlan || 'Monthly' %></div>
             </div>
             <div>
-              <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">Preparing For</div>
-              <div style="font-weight:600;margin-top:4px;"><%= student.preparingFor || 'Competitive Exams' %></div>
+              <div style="font-size:12px;color:var(--text-muted);font-weight:600;">Timing / Slot</div>
+              <div style="font-weight:600;margin-top:2px;"><%= student.slotTiming || '6:00 AM - 11:00 PM' %></div>
             </div>
-            <div>
-              <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">Membership Slot</div>
-              <div style="font-weight:600;margin-top:4px;"><%= student.membershipSlot || 'Full Day' %> (<%= student.slotTiming || '6 AM - 10 PM' %>)</div>
-            </div>
-            <div>
-              <div style="font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">ID Proof</div>
-              <div style="font-weight:600;margin-top:4px;"><%= student.idProofType || 'Aadhaar' %>: <%= student.idProofNumber || 'Verified' %></div>
-            </div>
+          </div>
+
+          <div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:13px;color:var(--text-muted);">Registration Fee (₹150)</span>
+            <span class="badge <%= student.paymentStatus === 'paid' ? 'badge-success' : 'badge-warning' %>">
+              <%= student.paymentStatus === 'paid' ? '✓ Paid' : '⏳ Cash Pending' %>
+            </span>
           </div>
         </div>
       </div>
 
-      <!-- Payment Card -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">💳 Payment</div>
+      <!-- Booking History (Mobile-First Cards) -->
+      <div class="card" id="booking-history">
+        <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;">
+          <div class="card-title">📜 Recent Bookings</div>
+          <span style="font-size:12px;color:var(--text-muted);"><%= bookingHistory.length %> Record<%= bookingHistory.length !== 1 ? 's' : '' %></span>
         </div>
-        <div class="card-body">
-          <% if (payment) { %>
-            <div style="text-align:center;margin-bottom:16px;">
-              <div style="font-size:36px;font-weight:800;color:var(--success);">₹150</div>
-              <span class="badge badge-success">✓ Payment Verified</span>
-            </div>
-            <div style="font-size:13px;">
-              <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
-                <span style="color:var(--text-muted);">Payment ID</span>
-                <span style="font-weight:500;word-break:break-all;text-align:right;max-width:60%;"><%= payment.razorpayPaymentId || 'N/A' %></span>
-              </div>
-              <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
-                <span style="color:var(--text-muted);">Date</span>
-                <span style="font-weight:500;"><%= new Date(payment.paymentDate).toLocaleDateString('en-IN') %></span>
-              </div>
-              <div style="display:flex;justify-content:space-between;padding:8px 0;">
-                <span style="color:var(--text-muted);">Status</span>
-                <span class="badge badge-success">Paid</span>
-              </div>
+        <div class="card-body" style="padding:16px;">
+          <% if (bookingHistory && bookingHistory.length > 0) { %>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <% bookingHistory.forEach(b => { %>
+                <div style="background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
+                  <div>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                      <strong style="color:var(--primary);font-size:15px;"><%= b.seatNumber %></strong>
+                      <span class="badge <%= b.status === 'active' ? 'badge-success' : 'badge-neutral' %>" style="font-size:11px;padding:2px 8px;">
+                        <%= b.status %>
+                      </span>
+                    </div>
+                    <div style="font-size:12.5px;color:var(--text-muted);margin-top:3px;">
+                      <%= new Date(b.bookingDate || b.createdAt).toLocaleDateString('en-IN') %> • <%= b.slot || 'Full Day' %>
+                    </div>
+                  </div>
+                  <div style="text-align:right;font-size:11.5px;color:var(--text-muted);font-family:monospace;">
+                    <%= b.bookingId %>
+                  </div>
+                </div>
+              <% }) %>
             </div>
           <% } else { %>
-            <div style="text-align:center;color:var(--text-muted);font-size:14px;">
-              No payment information available.
+            <div style="text-align:center;padding:24px 0;color:var(--text-muted);font-size:13.5px;">
+              No booking history found. Click "Book a Seat" to reserve your first study seat.
             </div>
           <% } %>
         </div>
       </div>
+
     </div>
-  </div>
-</div>
+
+  </main>
+
+  <script>
+    async function cancelActiveBooking(bookingId) {
+      if (!confirm('Are you sure you want to cancel your current seat booking? Your seat will become available for other students.')) {
+        return;
+      }
+
+      try {
+        const res = await fetch(`/student/cancel-booking/${bookingId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert('Booking cancelled successfully.');
+          location.reload();
+        } else {
+          alert(data.message || 'Could not cancel booking.');
+        }
+      } catch (err) {
+        alert('Server error: ' + err.message);
+      }
+    }
+  </script>
 </body>
 </html>

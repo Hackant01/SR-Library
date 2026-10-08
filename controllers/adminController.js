@@ -1,6 +1,8 @@
 const Admin = require('../models/Admin');
 const Student = require('../models/Student');
 const Payment = require('../models/Payment');
+const Seat = require('../models/Seat');
+const Booking = require('../models/Booking');
 const jwt = require('jsonwebtoken');
 const generateStudentId = require('../utils/generateStudentId');
 const { sendStudentIdEmail, sendRejectionEmail } = require('../services/emailService');
@@ -82,6 +84,12 @@ const getDashboard = async (req, res) => {
       pendingCashStudents,
       recentStudents,
       paymentAggregation,
+      totalSeats,
+      availableSeats,
+      occupiedSeats,
+      maintenanceSeats,
+      activeBookings,
+      recentBookings,
     ] = await Promise.all([
       Student.countDocuments(),
       Student.countDocuments({ accountStatus: 'active' }),
@@ -106,6 +114,15 @@ const getDashboard = async (req, res) => {
           },
         },
       ]),
+      Seat.countDocuments(),
+      Seat.countDocuments({ status: 'available' }),
+      Seat.countDocuments({ status: 'occupied' }),
+      Seat.countDocuments({ status: 'maintenance' }),
+      Booking.countDocuments({ status: 'active' }),
+      Booking.find()
+        .sort({ createdAt: -1 })
+        .limit(8)
+        .populate('seat student'),
     ]);
 
     let onlineRevenue = 0;
@@ -140,9 +157,15 @@ const getDashboard = async (req, res) => {
         totalRevenue,
         totalPaidCount: totalPaidRegistrations,
         pendingApprovals,
+        totalSeats,
+        availableSeats,
+        occupiedSeats,
+        maintenanceSeats,
+        activeBookings,
       },
       pendingCashStudents,
       recentStudents,
+      recentBookings,
       libraryName: process.env.LIBRARY_NAME || 'SR Library',
     });
   } catch (err) {
@@ -648,6 +671,184 @@ const resendEmail = async (req, res) => {
   }
 };
 
+// ─── Seat Management ─────────────────────────────────────────────────────────
+const getSeats = async (req, res) => {
+  try {
+    const [seats, totalSeats, availableSeats, occupiedSeats, maintenanceSeats] = await Promise.all([
+      Seat.find()
+        .sort({ seatNumber: 1 })
+        .populate({
+          path: 'currentBooking',
+          select: 'bookingId studentName studentMobile studentEmail bookingDate slot plan status',
+        })
+        .populate('currentStudent', 'fullName studentId mobile email'),
+      Seat.countDocuments(),
+      Seat.countDocuments({ status: 'available' }),
+      Seat.countDocuments({ status: 'occupied' }),
+      Seat.countDocuments({ status: 'maintenance' }),
+    ]);
+
+    // Group seats by section
+    const sectionA = seats.filter((s) => s.section.includes('Section A') || s.seatNumber.startsWith('A-'));
+    const sectionB = seats.filter((s) => s.section.includes('Section B') || s.seatNumber.startsWith('B-'));
+
+    res.render('admin/seats', {
+      title: 'Seat Management',
+      admin: req.admin,
+      seats,
+      sectionA,
+      sectionB,
+      stats: {
+        totalSeats,
+        availableSeats,
+        occupiedSeats,
+        maintenanceSeats,
+      },
+      libraryName: process.env.LIBRARY_NAME || 'SR Library',
+    });
+  } catch (err) {
+    console.error('Get seats error:', err);
+    res.status(500).render('error', { title: 'Error', message: 'Failed to load seats management' });
+  }
+};
+
+// ─── Update Seat Status ───────────────────────────────────────────────────────
+const updateSeatStatus = async (req, res) => {
+  try {
+    const { status, notes } = req.body;
+    const seat = await Seat.findById(req.params.id);
+    if (!seat) return res.status(404).json({ success: false, message: 'Seat not found' });
+
+    const previousStatus = seat.status;
+    seat.status = status;
+
+    // If making available, clear occupancy
+    if (status === 'available') {
+      if (seat.currentBooking) {
+        await Booking.findByIdAndUpdate(seat.currentBooking, { status: 'completed' });
+      }
+      seat.currentBooking = null;
+      seat.currentStudent = null;
+    }
+
+    await seat.save();
+
+    res.json({
+      success: true,
+      message: `Seat ${seat.seatNumber} status updated to ${status}.`,
+      seatNumber: seat.seatNumber,
+      status: seat.status,
+    });
+  } catch (err) {
+    console.error('Update seat status error:', err);
+    res.status(500).json({ success: false, message: 'Failed to update seat status' });
+  }
+};
+
+// ─── Booking Management ───────────────────────────────────────────────────────
+const getBookings = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 15;
+    const skip = (page - 1) * limit;
+    const search = (req.query.search || '').trim();
+    const status = req.query.status || '';
+    const date = req.query.date || '';
+
+    const query = {};
+    if (status) query.status = status;
+    if (search) {
+      query.$or = [
+        { studentName: { $regex: search, $options: 'i' } },
+        { studentMobile: { $regex: search, $options: 'i' } },
+        { seatNumber: { $regex: search, $options: 'i' } },
+        { bookingId: { $regex: search, $options: 'i' } },
+      ];
+    }
+    if (date) {
+      const startOfDay = new Date(date);
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date(date);
+      endOfDay.setHours(23, 59, 59, 999);
+      query.bookingDate = { $gte: startOfDay, $lte: endOfDay };
+    }
+
+    const [bookings, total, totalActive, totalCompleted, totalCancelled] = await Promise.all([
+      Booking.find(query)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .populate('seat student'),
+      Booking.countDocuments(query),
+      Booking.countDocuments({ status: 'active' }),
+      Booking.countDocuments({ status: 'completed' }),
+      Booking.countDocuments({ status: 'cancelled' }),
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+
+    res.render('admin/bookings', {
+      title: 'Booking Management',
+      admin: req.admin,
+      bookings,
+      total,
+      page,
+      totalPages,
+      limit,
+      search,
+      status,
+      date,
+      stats: {
+        totalActive,
+        totalCompleted,
+        totalCancelled,
+      },
+      libraryName: process.env.LIBRARY_NAME || 'SR Library',
+    });
+  } catch (err) {
+    console.error('Get bookings error:', err);
+    res.status(500).render('error', { title: 'Error', message: 'Failed to load bookings' });
+  }
+};
+
+// ─── Cancel Booking (Admin) ───────────────────────────────────────────────────
+const cancelBooking = async (req, res) => {
+  try {
+    const booking = await Booking.findById(req.params.id);
+    if (!booking) return res.status(404).json({ success: false, message: 'Booking not found' });
+
+    booking.status = 'cancelled';
+    await booking.save();
+
+    // Free up seat
+    if (booking.seat) {
+      await Seat.findByIdAndUpdate(booking.seat, {
+        status: 'available',
+        currentBooking: null,
+        currentStudent: null,
+      });
+    }
+
+    res.json({
+      success: true,
+      message: `Booking ${booking.bookingId} cancelled and seat ${booking.seatNumber} is now available.`,
+    });
+  } catch (err) {
+    console.error('Cancel booking error:', err);
+    res.status(500).json({ success: false, message: 'Failed to cancel booking' });
+  }
+};
+
+// ─── Seats API (JSON for Admin) ───────────────────────────────────────────────
+const getSeatsApi = async (req, res) => {
+  try {
+    const seats = await Seat.find().sort({ seatNumber: 1 });
+    res.json({ success: true, seats });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
 // ─── Admin Profile ────────────────────────────────────────────────────────────
 const getProfile = (req, res) => {
   res.render('admin/profile', {
@@ -674,5 +875,10 @@ module.exports = {
   deactivateStudent,
   deleteStudent,
   resendEmail,
+  getSeats,
+  updateSeatStatus,
+  getBookings,
+  cancelBooking,
+  getSeatsApi,
   getProfile,
 };

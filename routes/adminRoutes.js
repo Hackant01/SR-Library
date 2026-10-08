@@ -19,6 +19,11 @@ router.post('/logout', adminController.postLogout);
 // Protected routes
 router.get('/dashboard', adminAuth, adminController.getDashboard);
 router.get('/students', adminAuth, adminController.getStudents);
+router.get('/seats', adminAuth, adminController.getSeats);
+router.post('/seats/:id/status', adminAuth, adminController.updateSeatStatus);
+router.get('/bookings', adminAuth, adminController.getBookings);
+router.post('/bookings/:id/cancel', adminAuth, adminController.cancelBooking);
+router.get('/api/seats', adminAuth, adminController.getSeatsApi);
 router.get('/payments', adminAuth, adminController.getPayments);
 router.get('/students/:id', adminAuth, adminController.getStudentDetail);
 router.get('/students/:id/print', adminAuth, adminController.printStudentForm);

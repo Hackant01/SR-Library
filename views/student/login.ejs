@@ -1,86 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Student Login | <%= libraryName %>
-  </title>
+  <title>Student Login | <%= libraryName %></title>
+  <link rel="icon" href="/images/logo.jpg" />
   <link rel="stylesheet" href="/css/style.css" />
   <link rel="stylesheet" href="/css/responsive.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 </head>
+<body style="background:var(--bg);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 16px;">
 
-<body>
-  <div class="auth-page">
-    <div class="auth-card">
-      <div class="auth-card-header">
-        <div style="font-size:40px;">📚</div>
-        <h1>
-          <%= libraryName %>
-        </h1>
-        <p>Student Portal Login</p>
-      </div>
-      <div class="auth-card-body">
-        <% if (error) { %>
-          <div class="alert alert-danger">
-            <span>⚠️</span>
-            <%= error %>
+  <div style="width:100%;max-width:440px;background:#ffffff;border:1px solid var(--border);border-radius:20px;box-shadow:var(--shadow-lg);overflow:hidden;">
+    
+    <!-- Top Header -->
+    <div style="padding:32px 24px 20px;text-align:center;background:linear-gradient(180deg,#f8fafc 0%,#ffffff 100%);border-bottom:1px solid var(--border);">
+      <a href="/" style="display:inline-block;margin-bottom:12px;">
+        <img src="/images/logo.jpg" alt="<%= libraryName %>" style="width:54px;height:54px;border-radius:14px;object-fit:cover;box-shadow:0 4px 12px rgba(0,0,0,0.08);margin:0 auto;" />
+      </a>
+      <h1 style="font-size:22px;color:var(--text-primary);margin-bottom:4px;font-weight:800;">Student Login</h1>
+      <p style="color:var(--text-muted);font-size:13.5px;margin:0;">Access your <%= libraryName %> account and study seat</p>
+    </div>
+
+    <!-- Form Content -->
+    <div style="padding:28px 24px;">
+      <% if (error) { %>
+        <div class="alert alert-danger" style="margin-bottom:20px;display:flex;align-items:flex-start;gap:10px;font-size:13.5px;padding:12px 14px;border-radius:10px;">
+          <span style="font-size:16px;">⚠️</span>
+          <div><%= error %></div>
+        </div>
+      <% } %>
+
+      <form id="studentLoginForm" action="/student/login" method="POST" novalidate>
+        <div class="form-group" style="margin-bottom:18px;">
+          <label class="form-label" for="email" style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--text-secondary);">
+            Mobile Number or Email
+          </label>
+          <input
+            type="text"
+            id="email"
+            name="email"
+            class="form-control"
+            placeholder="10-digit mobile number or email"
+            required
+            autocomplete="username"
+            style="width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:10px;font-size:15px;"
+          />
+        </div>
+
+        <div class="form-group" style="margin-bottom:22px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <label class="form-label" for="password" style="font-size:13px;font-weight:600;color:var(--text-secondary);margin:0;">
+              Password
+            </label>
+            <a href="/student/forgot-password" style="font-size:12.5px;color:var(--primary);text-decoration:none;font-weight:600;">
+              Forgot Password?
+            </a>
           </div>
-          <% } %>
+          <div style="position:relative;">
+            <input
+              type="password"
+              id="password"
+              name="password"
+              class="form-control"
+              placeholder="Enter your account password"
+              required
+              autocomplete="current-password"
+              style="width:100%;padding:12px 44px 12px 14px;border:1px solid var(--border);border-radius:10px;font-size:15px;"
+            />
+            <button
+              type="button"
+              id="togglePwdBtn"
+              onclick="togglePwd()"
+              aria-label="Toggle password visibility"
+              style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:16px;padding:6px;"
+            >
+              <i class="fa-regular fa-eye" id="pwdEyeIcon"></i>
+            </button>
+          </div>
+        </div>
 
-            <form id="studentLoginForm" action="/student/login" method="POST" novalidate>
-              <div class="form-group">
-                <label class="form-label" for="email">Email Address</label>
-                <input type="email" id="email" name="email" class="form-control"
-                  placeholder="Enter your registered email" required autocomplete="email" />
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="password">Password</label>
-                <div style="position:relative;">
-                  <input type="password" id="password" name="password" class="form-control"
-                    placeholder="Enter your password" required />
-                  <button type="button" onclick="togglePwd('password',this)"
-                    style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:18px;">👁</button>
-                </div>
-              </div>
+        <button type="submit" class="btn btn-primary btn-lg btn-block" id="loginBtn" style="width:100%;padding:13px;font-size:15px;font-weight:700;border-radius:10px;display:flex;align-items:center;justify-content:center;gap:8px;">
+          <i class="fa-solid fa-arrow-right-to-bracket"></i> Login to Portal
+        </button>
+      </form>
 
-              <button type="submit" class="btn btn-primary btn-lg btn-block" id="loginBtn">
-                🔑 Login
-              </button>
-            </form>
+      <!-- Account creation prompt -->
+      <div style="text-align:center;margin-top:24px;padding-top:20px;border-top:1px solid var(--border);">
+        <p style="color:var(--text-muted);font-size:13.5px;margin-bottom:10px;">
+          Don't have an account?
+        </p>
+        <a href="/student/register" class="btn btn-outline btn-block" style="width:100%;padding:11px;font-size:14px;font-weight:600;border-radius:10px;text-align:center;display:block;">
+          Create an Account
+        </a>
+      </div>
 
-            <div style="text-align:center;margin-top:24px;padding-top:20px;border-top:1px solid var(--border);">
-              <p style="color:var(--text-muted);font-size:14px;margin-bottom:12px;">Don't have an account?</p>
-              <a href="/student/register" class="btn btn-outline btn-block" id="go-register">
-                📝 Register Now — ₹150
-              </a>
-            </div>
-
-            <div style="text-align:center;margin-top:16px;">
-              <a href="/" style="font-size:13px;color:var(--text-muted);">← Back to Home</a>
-            </div>
+      <div style="text-align:center;margin-top:20px;">
+        <a href="/" style="font-size:13px;color:var(--text-muted);text-decoration:none;">
+          <i class="fa-solid fa-arrow-left"></i> Back to Home
+        </a>
       </div>
     </div>
   </div>
 
   <script>
-    function togglePwd(id, btn) {
-      const input = document.getElementById(id);
-      if (input.type === 'password') {
-        input.type = 'text';
-        btn.textContent = '🙈';
+    function togglePwd() {
+      const pwdInput = document.getElementById('password');
+      const icon = document.getElementById('pwdEyeIcon');
+      if (pwdInput.type === 'password') {
+        pwdInput.type = 'text';
+        icon.className = 'fa-regular fa-eye-slash';
       } else {
-        input.type = 'password';
-        btn.textContent = '👁';
+        pwdInput.type = 'password';
+        icon.className = 'fa-regular fa-eye';
       }
     }
 
     document.getElementById('studentLoginForm').addEventListener('submit', function (e) {
       const btn = document.getElementById('loginBtn');
       btn.disabled = true;
-      btn.innerHTML = '<span class="spinner"></span> Logging in...';
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Logging in...';
     });
   </script>
 </body>
-
 </html>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %> | <%= libraryName %> Admin</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/responsive.css" />
+  <link rel="stylesheet" href="/css/admin.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+</head>
+<body>
+<div class="admin-wrapper">
+
+  <%- include('./partials/sidebar', { currentPage: 'bookings' }) %>
+
+  <div class="admin-main">
+    <div class="admin-topbar">
+      <button class="admin-sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">☰</button>
+      <div class="admin-topbar-title">Booking Management</div>
+      <div style="font-size:13px;color:var(--text-muted);">
+        <span><%= total %></span> Total Bookings
+      </div>
+    </div>
+
+    <div class="admin-content">
+
+      <!-- Stat Cards -->
+      <div class="admin-stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));gap:16px;margin-bottom:24px;">
+        <div class="stat-card" style="--stat-color:#16a34a;--stat-bg:rgba(22,163,74,0.1);border:1px solid #bbf7d0;">
+          <div class="stat-icon">📅</div>
+          <div class="stat-info">
+            <div class="stat-value" style="color:#15803d;"><%= stats.totalActive %></div>
+            <div class="stat-label">Active Bookings</div>
+            <div class="stat-change" style="color:#16a34a;">Live seated students</div>
+          </div>
+        </div>
+
+        <div class="stat-card" style="--stat-color:#0284c7;--stat-bg:rgba(2,132,199,0.1);border:1px solid #bae6fd;">
+          <div class="stat-icon">✓</div>
+          <div class="stat-info">
+            <div class="stat-value" style="color:#0369a1;"><%= stats.totalCompleted %></div>
+            <div class="stat-label">Completed Sessions</div>
+            <div class="stat-change" style="color:#0284c7;">Past seat terms</div>
+          </div>
+        </div>
+
+        <div class="stat-card" style="--stat-color:#dc2626;--stat-bg:rgba(220,38,38,0.1);border:1px solid #fecaca;">
+          <div class="stat-icon">✗</div>
+          <div class="stat-info">
+            <div class="stat-value" style="color:#b91c1c;"><%= stats.totalCancelled %></div>
+            <div class="stat-label">Cancelled Bookings</div>
+            <div class="stat-change" style="color:#dc2626;">Freed seats</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search & Filter Toolbar -->
+      <form id="filterForm" method="GET" action="/admin/bookings">
+        <div class="admin-table-toolbar" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:20px;">
+          <div class="search-input-wrapper" style="flex:1;min-width:240px;">
+            <span class="search-icon">🔍</span>
+            <input
+              type="text"
+              name="search"
+              class="form-control"
+              placeholder="Search by student, seat, phone, booking ID..."
+              value="<%= search %>"
+            />
+          </div>
+
+          <select name="status" class="form-control filter-select" onchange="this.form.submit()">
+            <option value="">Status: All</option>
+            <option value="active" <%= status === 'active' ? 'selected' : '' %>>Active</option>
+            <option value="completed" <%= status === 'completed' ? 'selected' : '' %>>Completed</option>
+            <option value="cancelled" <%= status === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+          </select>
+
+          <input
+            type="date"
+            name="date"
+            class="form-control"
+            value="<%= date %>"
+            onchange="this.form.submit()"
+            style="min-width:150px;padding:9px 12px;"
+            title="Filter by date"
+          />
+
+          <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+          <a href="/admin/bookings" class="btn btn-ghost btn-sm">Reset</a>
+        </div>
+      </form>
+
+      <!-- Bookings Table / Cards -->
+      <div class="card">
+        <div class="table-wrapper">
+          <table class="table responsive-card-table" id="bookingsTable">
+            <thead>
+              <tr>
+                <th>Booking ID</th>
+                <th>Student</th>
+                <th>Seat</th>
+                <th>Date</th>
+                <th>Slot / Plan</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (!bookings || bookings.length === 0) { %>
+                <tr>
+                  <td colspan="7" style="text-align:center;padding:36px;color:var(--text-muted);">
+                    No seat bookings found matching your query.
+                  </td>
+                </tr>
+              <% } else { %>
+                <% bookings.forEach(b => { %>
+                  <tr>
+                    <td data-label="Booking ID">
+                      <strong style="font-family:monospace;color:var(--primary);"><%= b.bookingId %></strong>
+                    </td>
+
+                    <td data-label="Student">
+                      <div>
+                        <strong><%= b.studentName %></strong>
+                        <div style="font-size:12px;color:var(--text-muted);"><%= b.studentMobile %></div>
+                      </div>
+                    </td>
+
+                    <td data-label="Seat">
+                      <span class="badge" style="background:#e0e7ff;color:#4338ca;font-size:13px;font-weight:700;padding:4px 10px;">
+                        <%= b.seatNumber %>
+                      </span>
+                    </td>
+
+                    <td data-label="Date">
+                      <%= new Date(b.bookingDate || b.createdAt).toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'}) %>
+                    </td>
+
+                    <td data-label="Slot / Plan">
+                      <div style="font-size:13px;"><%= b.slot || 'Full Day' %></div>
+                      <div style="font-size:11.5px;color:var(--text-muted);"><%= b.plan || 'Monthly' %></div>
+                    </td>
+
+                    <td data-label="Status">
+                      <% if (b.status === 'active') { %>
+                        <span class="badge badge-success">✓ Active</span>
+                      <% } else if (b.status === 'completed') { %>
+                        <span class="badge badge-neutral">Completed</span>
+                      <% } else { %>
+                        <span class="badge badge-danger">Cancelled</span>
+                      <% } %>
+                    </td>
+
+                    <td data-label="Actions">
+                      <% if (b.status === 'active') { %>
+                        <button
+                          type="button"
+                          class="btn btn-ghost btn-sm"
+                          style="color:#ef4444;"
+                          onclick="cancelBookingAdmin('<%= b._id %>', '<%= b.seatNumber %>', '<%= b.studentName %>')"
+                        >
+                          Cancel
+                        </button>
+                      <% } else { %>
+                        <span style="color:var(--text-muted);font-size:12px;">--</span>
+                      <% } %>
+                    </td>
+                  </tr>
+                <% }) %>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <% if (totalPages > 1) { %>
+          <div style="padding:16px 20px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+            <div style="font-size:13px;color:var(--text-muted);">
+              Page <%= page %> of <%= totalPages %>
+            </div>
+            <div style="display:flex;gap:6px;">
+              <% if (page > 1) { %>
+                <a href="/admin/bookings?page=<%= page - 1 %>&search=<%= search %>&status=<%= status %>&date=<%= date %>" class="btn btn-sm btn-ghost">← Prev</a>
+              <% } %>
+              <% if (page < totalPages) { %>
+                <a href="/admin/bookings?page=<%= page + 1 %>&search=<%= search %>&status=<%= status %>&date=<%= date %>" class="btn btn-sm btn-ghost">Next →</a>
+              <% } %>
+            </div>
+          </div>
+        <% } %>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="/js/admin.js"></script>
+<script>
+  async function cancelBookingAdmin(id, seatNumber, studentName) {
+    if (!confirm(`Are you sure you want to cancel the active booking for ${studentName} on Seat ${seatNumber}? This will make the seat available again.`)) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`/admin/bookings/${id}/cancel`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast('✅ ' + data.message, 'success');
+        setTimeout(() => location.reload(), 700);
+      } else {
+        showToast('❌ ' + (data.message || 'Error cancelling booking'), 'danger');
+      }
+    } catch (err) {
+      showToast('❌ Server error: ' + err.message, 'danger');
+    }
+  }
+</script>
+</body>
+</html>

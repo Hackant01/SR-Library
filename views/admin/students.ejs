@@ -84,9 +84,10 @@
       </form>
 
       <!-- Student Table Card -->
+      <!-- Student Table Card -->
       <div class="card">
         <div class="table-wrapper">
-          <table class="table" id="studentsTable">
+          <table class="table responsive-card-table" id="studentsTable">
             <thead>
               <tr>
                 <th>#</th>
@@ -113,15 +114,15 @@
               <% } else { %>
                 <% students.forEach((s, i) => { %>
                 <tr id="student-row-<%= s._id %>">
-                  <td><%= (page - 1) * limit + i + 1 %></td>
-                  <td>
+                  <td data-label="#"> <%= (page - 1) * limit + i + 1 %></td>
+                  <td data-label="Student ID">
                     <% if (s.studentId) { %>
                       <span style="font-family:monospace;font-weight:700;color:var(--primary);letter-spacing:0.5px;"><%= s.studentId %></span>
                     <% } else { %>
                       <span style="color:var(--text-light);font-style:italic;font-size:13px;">Not Assigned</span>
                     <% } %>
                   </td>
-                  <td>
+                  <td data-label="Name">
                     <div style="display:flex;align-items:center;gap:8px;">
                       <div class="avatar-circle" style="width:32px;height:32px;font-size:13px;flex-shrink:0;"><%= s.fullName.charAt(0).toUpperCase() %></div>
                       <div>
@@ -130,18 +131,18 @@
                       </div>
                     </div>
                   </td>
-                  <td style="font-size:13px;max-width:160px;overflow:hidden;text-overflow:ellipsis;"><%= s.email %></td>
-                  <td><%= s.mobile %></td>
-                  <td><%= new Date(s.registrationDate || s.createdAt).toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'}) %></td>
-                  <td><%= new Date(s.joiningDate).toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'}) %></td>
-                  <td>
+                  <td data-label="Email" style="font-size:13px;max-width:160px;overflow:hidden;text-overflow:ellipsis;"><%= s.email %></td>
+                  <td data-label="Mobile"><%= s.mobile %></td>
+                  <td data-label="Reg. Date"><%= new Date(s.registrationDate || s.createdAt).toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'}) %></td>
+                  <td data-label="Joining Date"><%= new Date(s.joiningDate).toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'}) %></td>
+                  <td data-label="Payment Method">
                     <% if (s.paymentMethod === 'online') { %>
                       <span class="badge" style="background:#e0f2fe;color:#0369a1;font-weight:600;">💳 Online</span>
                     <% } else { %>
                       <span class="badge" style="background:#fef3c7;color:#92400e;font-weight:600;">💵 Cash</span>
                     <% } %>
                   </td>
-                  <td>
+                  <td data-label="Payment Status">
                     <% if (s.paymentStatus === 'paid') { %>
                       <span class="badge badge-success">✓ Paid</span>
                     <% } else if (s.paymentStatus === 'failed') { %>
@@ -150,7 +151,7 @@
                       <span class="badge badge-warning" style="background:#fff7ed;color:#c2410c;border:1px solid #ffedd5;">Pending</span>
                     <% } %>
                   </td>
-                  <td>
+                  <td data-label="Approval">
                     <% if (s.approvalStatus === 'approved') { %>
                       <span class="badge badge-success">Approved</span>
                     <% } else if (s.approvalStatus === 'rejected') { %>
@@ -159,7 +160,7 @@
                       <span class="badge badge-warning">Pending</span>
                     <% } %>
                   </td>
-                  <td id="account-status-cell-<%= s._id %>">
+                  <td data-label="Status" id="account-status-cell-<%= s._id %>">
                     <% if (s.accountStatus === 'active') { %>
                       <span class="badge badge-success">✓ Active</span>
                     <% } else if (s.accountStatus === 'pending') { %>
@@ -170,7 +171,7 @@
                       <span class="badge badge-gray">Inactive</span>
                     <% } %>
                   </td>
-                  <td>
+                  <td data-label="Actions">
                     <div class="action-btn-group" id="action-group-<%= s._id %>" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
                       <!-- Details Button -->
                       <a href="/admin/students/<%= s._id %>" class="btn btn-sm btn-info" title="View Details">👁 Details</a>

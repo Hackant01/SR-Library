@@ -23,6 +23,10 @@ const startServer = async () => {
   // ─── Connect to MongoDB ───────────────────────────────────────────────────
   await connectDB();
 
+  // ─── Initialize Study Seats ───────────────────────────────────────────────
+  const initSeats = require('./utils/initSeats');
+  await initSeats();
+
   // ─── Auto-Seed Admin if None Exists ─────────────────────────────────────
   try {
     const adminCount = await Admin.countDocuments();
@@ -92,7 +96,7 @@ const startServer = async () => {
 
   // ─── Static Files ─────────────────────────────────────────────────────────
   app.use(express.static(path.join(__dirname, 'public')));
-  app.use(express.static(__dirname));
+  app.use(express.static(__dirname, { index: false }));
 
   // ─── Global Template Variables ────────────────────────────────────────────
   app.use((req, res, next) => {
@@ -102,14 +106,49 @@ const startServer = async () => {
   });
 
   // ─── Routes ───────────────────────────────────────────────────────────────
-  app.get('/', (req, res) => {
-    res.render('home', {
-      title: `${process.env.LIBRARY_NAME || 'SR Library'} - Library Management System`,
-      libraryName: process.env.LIBRARY_NAME || 'SR Library',
-    });
+  app.get('/', async (req, res) => {
+    try {
+      const Seat = require('./models/Seat');
+      const [availableSeats, totalSeats] = await Promise.all([
+        Seat.countDocuments({ status: 'available' }),
+        Seat.countDocuments(),
+      ]);
+      res.render('home', {
+        title: `${process.env.LIBRARY_NAME || 'SR Library'} - Physical Study Library & Seat Booking`,
+        libraryName: process.env.LIBRARY_NAME || 'SR Library',
+        availableSeats: availableSeats || 35,
+        totalSeats: totalSeats || 40,
+      });
+    } catch (e) {
+      res.render('home', {
+        title: `${process.env.LIBRARY_NAME || 'SR Library'} - Physical Study Library & Seat Booking`,
+        libraryName: process.env.LIBRARY_NAME || 'SR Library',
+        availableSeats: 35,
+        totalSeats: 40,
+      });
+    }
   });
 
-  // Redirect /register to /student/register
+  // Public Seat Availability View
+  app.get('/seat-availability', async (req, res) => {
+    try {
+      const Seat = require('./models/Seat');
+      const seats = await Seat.find().sort({ seatNumber: 1 });
+      const availableCount = seats.filter((s) => s.status === 'available').length;
+      res.render('seat-availability', {
+        title: `Seat Availability | ${process.env.LIBRARY_NAME || 'SR Library'}`,
+        libraryName: process.env.LIBRARY_NAME || 'SR Library',
+        seats,
+        availableCount,
+        totalCount: seats.length,
+      });
+    } catch (e) {
+      res.redirect('/');
+    }
+  });
+
+  // Redirects
+  app.get('/index.html', (req, res) => res.redirect('/'));
   app.get('/register', (req, res) => res.redirect('/student/register'));
 
   app.use('/student', studentRoutes);
