@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="SR Self Study Zone & Library — Shahdol's premier study library. Reserve dedicated study seats with AC, High-Speed WiFi, Lockers, and 24/7 Power Backup." />
-  <title><%= title %></title>
+  <meta name="description"
+    content="SR Self Study Zone & Library — Shahdol's premier study library. Reserve dedicated study seats with AC, High-Speed WiFi, Lockers, and 24/7 Power Backup." />
+  <title>
+    <%= title %>
+  </title>
   <link rel="icon" href="/images/logo.jpg" />
   <link rel="stylesheet" href="/css/style.css" />
   <link rel="stylesheet" href="/css/responsive.css" />
@@ -22,6 +26,7 @@
       display: flex;
       align-items: center;
     }
+
     .header-container {
       max-width: 1240px;
       margin: 0 auto;
@@ -31,19 +36,22 @@
       align-items: center;
       justify-content: space-between;
     }
+
     .nav-brand {
       display: flex;
       align-items: center;
       gap: 12px;
       text-decoration: none;
     }
+
     .nav-brand-img {
       width: 42px;
       height: 42px;
       border-radius: 10px;
       object-fit: cover;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
+
     .nav-brand-text {
       font-family: var(--font-display);
       font-size: 19px;
@@ -51,11 +59,13 @@
       color: var(--primary-dark);
       letter-spacing: -0.02em;
     }
+
     .nav-menu-links {
       display: flex;
       align-items: center;
       gap: 24px;
     }
+
     .nav-item-link {
       color: var(--text-secondary);
       font-size: 14px;
@@ -63,9 +73,11 @@
       transition: var(--transition);
       text-decoration: none;
     }
+
     .nav-item-link:hover {
       color: var(--primary);
     }
+
     .nav-login-btn {
       background: var(--primary);
       color: #fff !important;
@@ -79,11 +91,13 @@
       transition: var(--transition);
       box-shadow: 0 2px 8px rgba(26, 35, 126, 0.25);
     }
+
     .nav-login-btn:hover {
       background: var(--primary-light);
       transform: translateY(-1px);
       box-shadow: 0 4px 12px rgba(26, 35, 126, 0.35);
     }
+
     .nav-mobile-toggle {
       display: none;
       background: none;
@@ -105,10 +119,12 @@
       visibility: hidden;
       transition: var(--transition);
     }
+
     .mobile-drawer-overlay.active {
       opacity: 1;
       visibility: visible;
     }
+
     .mobile-drawer {
       position: fixed;
       top: 0;
@@ -124,9 +140,11 @@
       box-shadow: var(--shadow-xl);
       transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
+
     .mobile-drawer.active {
       right: 0;
     }
+
     .mobile-drawer-close {
       align-self: flex-end;
       background: var(--surface-2);
@@ -140,6 +158,7 @@
       align-items: center;
       justify-content: center;
     }
+
     .mobile-drawer-link {
       font-size: 15px;
       font-weight: 600;
@@ -152,7 +171,9 @@
       text-decoration: none;
       transition: var(--transition);
     }
-    .mobile-drawer-link:hover, .mobile-drawer-link.active {
+
+    .mobile-drawer-link:hover,
+    .mobile-drawer-link.active {
       background: var(--surface-2);
       color: var(--primary);
     }
@@ -165,6 +186,7 @@
       position: relative;
       overflow: hidden;
     }
+
     .hero-lib::after {
       content: '';
       position: absolute;
@@ -175,6 +197,7 @@
       background: radial-gradient(circle at 85% 20%, rgba(255, 214, 0, 0.12) 0%, transparent 50%);
       pointer-events: none;
     }
+
     .hero-lib-inner {
       max-width: 1200px;
       margin: 0 auto;
@@ -185,6 +208,7 @@
       position: relative;
       z-index: 2;
     }
+
     .hero-badge-pill {
       display: inline-flex;
       align-items: center;
@@ -198,6 +222,7 @@
       color: #ffeb3b;
       margin-bottom: 18px;
     }
+
     .hero-heading {
       font-size: clamp(2rem, 4.5vw, 3.2rem);
       line-height: 1.15;
@@ -206,9 +231,11 @@
       margin-bottom: 16px;
       letter-spacing: -0.02em;
     }
+
     .hero-heading span {
       color: #ffd600;
     }
+
     .hero-subtext {
       font-size: clamp(14.5px, 2vw, 17px);
       line-height: 1.6;
@@ -216,12 +243,14 @@
       max-width: 540px;
       margin-bottom: 28px;
     }
+
     .hero-cta-group {
       display: flex;
       align-items: center;
       gap: 14px;
       flex-wrap: wrap;
     }
+
     .btn-hero-primary {
       background: #ffd600;
       color: #0d1b6e !important;
@@ -236,11 +265,13 @@
       box-shadow: 0 4px 18px rgba(255, 214, 0, 0.35);
       transition: var(--transition);
     }
+
     .btn-hero-primary:hover {
       background: #ffea00;
       transform: translateY(-2px);
       box-shadow: 0 6px 22px rgba(255, 214, 0, 0.45);
     }
+
     .btn-hero-secondary {
       background: rgba(255, 255, 255, 0.12);
       border: 1px solid rgba(255, 255, 255, 0.35);
@@ -255,18 +286,21 @@
       text-decoration: none;
       transition: var(--transition);
     }
+
     .btn-hero-secondary:hover {
       background: rgba(255, 255, 255, 0.22);
       transform: translateY(-2px);
     }
+
     .hero-card-img {
       border-radius: 18px;
       overflow: hidden;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
       border: 3px solid rgba(255, 255, 255, 0.2);
       aspect-ratio: 16/11;
       width: 100%;
     }
+
     .hero-card-img img {
       width: 100%;
       height: 100%;
@@ -280,6 +314,7 @@
       border-bottom: 1px solid var(--border);
       padding: 18px 20px;
     }
+
     .live-strip-inner {
       max-width: 1200px;
       margin: 0 auto;
@@ -289,6 +324,7 @@
       gap: 20px;
       flex-wrap: wrap;
     }
+
     .live-status-badge {
       display: inline-flex;
       align-items: center;
@@ -297,6 +333,7 @@
       font-weight: 600;
       color: var(--text-primary);
     }
+
     .live-pulse-dot {
       width: 10px;
       height: 10px;
@@ -304,6 +341,7 @@
       background: #16a34a;
       box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
     }
+
     .live-strip-details {
       display: flex;
       align-items: center;
@@ -323,11 +361,13 @@
       position: relative;
       transition: var(--transition);
     }
+
     .step-card:hover {
       transform: translateY(-3px);
       box-shadow: var(--shadow);
       border-color: rgba(26, 35, 126, 0.2);
     }
+
     .step-num-bubble {
       width: 42px;
       height: 42px;
@@ -354,11 +394,13 @@
       gap: 12px;
       transition: var(--transition);
     }
+
     .fac-card:hover {
       transform: translateY(-3px);
       box-shadow: var(--shadow);
       border-color: rgba(26, 35, 126, 0.25);
     }
+
     .fac-icon-circle {
       width: 48px;
       height: 48px;
@@ -377,29 +419,36 @@
         grid-template-columns: 1fr;
         text-align: center;
       }
+
       .hero-subtext {
         margin: 0 auto 28px;
       }
+
       .hero-cta-group {
         justify-content: center;
       }
+
       .hero-card-img {
         max-width: 520px;
         margin: 0 auto;
       }
+
       .nav-menu-links {
         display: none;
       }
+
       .nav-mobile-toggle {
         display: block;
       }
     }
   </style>
 </head>
+
 <body>
 
   <!-- Floating WhatsApp Contact Button -->
-  <a href="https://wa.me/918103485288" class="whatsapp-float" target="_blank" rel="noopener noreferrer" aria-label="Chat with SR Library on WhatsApp" title="WhatsApp Us">
+  <a href="https://wa.me/918103485288" class="whatsapp-float" target="_blank" rel="noopener noreferrer"
+    aria-label="Chat with SR Library on WhatsApp" title="WhatsApp Us">
     <i class="fa-brands fa-whatsapp"></i>
   </a>
 
@@ -409,15 +458,20 @@
     <button class="mobile-drawer-close" onclick="toggleMobileDrawer()" aria-label="Close Menu">&times;</button>
     <a href="/" class="nav-brand" style="margin-bottom:8px;">
       <img src="/images/logo.jpg" alt="Logo" class="nav-brand-img" />
-      <span class="nav-brand-text"><%= libraryName %></span>
+      <span class="nav-brand-text">
+        <%= libraryName %>
+      </span>
     </a>
     <a href="/" class="mobile-drawer-link active"><i class="fa-solid fa-house"></i> Home</a>
     <a href="/about.html" class="mobile-drawer-link"><i class="fa-solid fa-building-columns"></i> About Library</a>
-    <a href="#facilities" class="mobile-drawer-link" onclick="toggleMobileDrawer()"><i class="fa-solid fa-layer-group"></i> Facilities</a>
-    <a href="#how-it-works" class="mobile-drawer-link" onclick="toggleMobileDrawer()"><i class="fa-solid fa-list-check"></i> How It Works</a>
+    <a href="#facilities" class="mobile-drawer-link" onclick="toggleMobileDrawer()"><i
+        class="fa-solid fa-layer-group"></i> Facilities</a>
+    <a href="#how-it-works" class="mobile-drawer-link" onclick="toggleMobileDrawer()"><i
+        class="fa-solid fa-list-check"></i> How It Works</a>
     <a href="/seat-availability" class="mobile-drawer-link"><i class="fa-solid fa-chair"></i> Seat Availability</a>
     <a href="/contact.html" class="mobile-drawer-link"><i class="fa-solid fa-phone"></i> Contact</a>
-    <div style="margin-top:auto;padding-top:16px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:10px;">
+    <div
+      style="margin-top:auto;padding-top:16px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:10px;">
       <a href="/student/login" class="btn btn-primary btn-block" style="justify-content:center;">
         <i class="fa-solid fa-user-graduate"></i> Student Login
       </a>
@@ -432,7 +486,9 @@
     <div class="header-container">
       <a href="/" class="nav-brand">
         <img src="/images/logo.jpg" alt="SR Library Logo" class="nav-brand-img" />
-        <span class="nav-brand-text"><%= libraryName %></span>
+        <span class="nav-brand-text">
+          <%= libraryName %>
+        </span>
       </a>
 
       <!-- Desktop Links -->
@@ -467,7 +523,8 @@
           <span>Focus Better.</span>
         </h1>
         <p class="hero-subtext">
-          Reserve your dedicated, quiet study seat equipped with high-speed Wi-Fi, air conditioning, and personal power sockets. Build your tomorrow today.
+          Reserve your dedicated, quiet study seat equipped with high-speed Wi-Fi, air conditioning, and personal power
+          sockets. Build your tomorrow today.
         </p>
         <div class="hero-cta-group">
           <a href="/seat-availability" class="btn-hero-primary" id="heroBookSeatBtn">
@@ -490,11 +547,15 @@
     <div class="live-strip-inner">
       <div class="live-status-badge">
         <span class="live-pulse-dot"></span>
-        <span>Physical Seats: <strong><%= typeof totalSeats !== 'undefined' ? totalSeats : 40 %> Available</strong> across Section A & B</span>
+        <span>Physical Seats: <strong>
+            <%= typeof totalSeats !=='undefined' ? totalSeats : 40 %> Available
+          </strong> across Section A & B</span>
       </div>
       <div class="live-strip-details">
-        <span><i class="fa-regular fa-clock" style="color:var(--primary);"></i> Daily: <strong>6:00 AM – 11:00 PM</strong></span>
-        <span><i class="fa-solid fa-location-dot" style="color:var(--primary);"></i> <strong>Shahdol, M.P.</strong></span>
+        <span><i class="fa-regular fa-clock" style="color:var(--primary);"></i> Daily: <strong>6:00 AM – 11:00
+            PM</strong></span>
+        <span><i class="fa-solid fa-location-dot" style="color:var(--primary);"></i> <strong>Shahdol,
+            M.P.</strong></span>
         <a href="/seat-availability" class="btn btn-sm btn-outline" style="font-size:12.5px;">View Live Seat Map →</a>
       </div>
     </div>
@@ -588,7 +649,8 @@
   </section>
 
   <!-- ─── HOW SEAT BOOKING WORKS ─────────────────────────────────────── -->
-  <section class="section" id="how-it-works" style="background:#ffffff;border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+  <section class="section" id="how-it-works"
+    style="background:#ffffff;border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
     <div class="container">
       <div style="text-align:center;max-width:600px;margin:0 auto 44px;">
         <span class="badge badge-primary" style="margin-bottom:10px;">Simple Process</span>
@@ -648,17 +710,25 @@
       </div>
 
       <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:20px;">
-        <div style="border-radius:14px;overflow:hidden;border:1px solid var(--border);aspect-ratio:4/3;background:#000;">
-          <img src="/images/gallery1.jpeg" alt="Study Hall" style="width:100%;height:100%;object-fit:cover;" loading="lazy" />
+        <div
+          style="border-radius:14px;overflow:hidden;border:1px solid var(--border);aspect-ratio:4/3;background:#000;">
+          <img src="/images/gallery1.jpeg" alt="Study Hall" style="width:100%;height:100%;object-fit:cover;"
+            loading="lazy" />
         </div>
-        <div style="border-radius:14px;overflow:hidden;border:1px solid var(--border);aspect-ratio:4/3;background:#000;">
-          <img src="/images/gallery3.jpeg" alt="Private Desk" style="width:100%;height:100%;object-fit:cover;" loading="lazy" />
+        <div
+          style="border-radius:14px;overflow:hidden;border:1px solid var(--border);aspect-ratio:4/3;background:#000;">
+          <img src="/images/gallery3.jpeg" alt="Private Desk" style="width:100%;height:100%;object-fit:cover;"
+            loading="lazy" />
         </div>
-        <div style="border-radius:14px;overflow:hidden;border:1px solid var(--border);aspect-ratio:4/3;background:#000;">
-          <img src="/images/coridoor.jpeg" alt="Corridor" style="width:100%;height:100%;object-fit:cover;" loading="lazy" />
+        <div
+          style="border-radius:14px;overflow:hidden;border:1px solid var(--border);aspect-ratio:4/3;background:#000;">
+          <img src="/images/coridoor.jpeg" alt="Corridor" style="width:100%;height:100%;object-fit:cover;"
+            loading="lazy" />
         </div>
-        <div style="border-radius:14px;overflow:hidden;border:1px solid var(--border);aspect-ratio:4/3;background:#000;">
-          <img src="/images/office.jpeg" alt="Reception Desk" style="width:100%;height:100%;object-fit:cover;" loading="lazy" />
+        <div
+          style="border-radius:14px;overflow:hidden;border:1px solid var(--border);aspect-ratio:4/3;background:#000;">
+          <img src="/images/office.jpeg" alt="Reception Desk" style="width:100%;height:100%;object-fit:cover;"
+            loading="lazy" />
         </div>
       </div>
     </div>
@@ -673,7 +743,8 @@
         <p style="color:var(--text-muted);font-size:14.5px;margin-bottom:24px;">
           Take a look at the facilities, ambience, and peaceful study atmosphere.
         </p>
-        <div style="border-radius:16px;overflow:hidden;box-shadow:var(--shadow-lg);border:1px solid var(--border);background:#000;">
+        <div
+          style="border-radius:16px;overflow:hidden;box-shadow:var(--shadow-lg);border:1px solid var(--border);background:#000;">
           <video controls poster="/images/gallery1.jpeg" style="width:100%;max-height:480px;display:block;">
             <source src="/images/lib.mp4" type="video/mp4" />
             Your browser does not support HTML5 video.
@@ -684,7 +755,8 @@
   </section>
 
   <!-- ─── CALL TO ACTION BANNER ──────────────────────────────────────── -->
-  <section style="background:linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);padding:56px 20px;color:#fff;">
+  <section
+    style="background:linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);padding:56px 20px;color:#fff;">
     <div class="container" style="text-align:center;max-width:700px;margin:0 auto;">
       <h2 style="font-size:clamp(1.7rem,3.2vw,2.4rem);color:#fff;margin-bottom:12px;">
         Ready to Boost Your Exam Preparation?
@@ -696,7 +768,8 @@
         <a href="/seat-availability" class="btn btn-accent btn-lg" style="font-weight:700;">
           <i class="fa-solid fa-chair"></i> Reserve Your Seat
         </a>
-        <a href="https://wa.me/918103485288" target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-lg" style="color:#fff;border-color:rgba(255,255,255,0.4);">
+        <a href="https://wa.me/918103485288" target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-lg"
+          style="color:#fff;border-color:rgba(255,255,255,0.4);">
           <i class="fa-brands fa-whatsapp"></i> Chat on WhatsApp
         </a>
       </div>
@@ -710,16 +783,20 @@
         <div>
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
             <img src="/images/logo.jpg" alt="Logo" style="width:36px;height:36px;border-radius:8px;object-fit:cover;" />
-            <strong style="color:#ffffff;font-size:18px;"><%= libraryName %></strong>
+            <strong style="color:#ffffff;font-size:18px;">
+              <%= libraryName %>
+            </strong>
           </div>
           <p style="font-size:13.5px;line-height:1.6;margin-bottom:16px;">
             Shahdol's premier study library where students come to focus, prepare, and excel in competitive exams.
           </p>
           <div style="display:flex;gap:10px;">
-            <a href="https://wa.me/918103485288" target="_blank" rel="noopener noreferrer" style="color:#fff;background:rgba(255,255,255,0.1);width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;">
+            <a href="https://wa.me/918103485288" target="_blank" rel="noopener noreferrer"
+              style="color:#fff;background:rgba(255,255,255,0.1);width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;">
               <i class="fa-brands fa-whatsapp"></i>
             </a>
-            <a href="mailto:srselfstudyzone@gmail.com" style="color:#fff;background:rgba(255,255,255,0.1);width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;">
+            <a href="mailto:srselfstudyzone@gmail.com"
+              style="color:#fff;background:rgba(255,255,255,0.1);width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;">
               <i class="fa-solid fa-envelope"></i>
             </a>
           </div>
@@ -750,16 +827,21 @@
         <div>
           <h4 style="color:#ffffff;font-size:15px;margin-bottom:16px;">Contact Info</h4>
           <ul style="display:flex;flex-direction:column;gap:10px;font-size:13.5px;">
-            <li><i class="fa-solid fa-location-dot" style="color:#ffd600;margin-right:8px;"></i> Shahdol, Madhya Pradesh</li>
-            <li><i class="fa-solid fa-phone" style="color:#ffd600;margin-right:8px;"></i> +91 8103485288 / 7987526720</li>
-            <li><i class="fa-regular fa-clock" style="color:#ffd600;margin-right:8px;"></i> Open Daily: 6:00 AM – 11:00 PM</li>
+            <li><i class="fa-solid fa-location-dot" style="color:#ffd600;margin-right:8px;"></i> Shahdol, Madhya Pradesh
+            </li>
+            <li><i class="fa-solid fa-phone" style="color:#ffd600;margin-right:8px;"></i> +91 8103485288 / 7987526720
+            </li>
+            <li><i class="fa-regular fa-clock" style="color:#ffd600;margin-right:8px;"></i> Open Daily: 6:00 AM – 11:00
+              PM</li>
           </ul>
         </div>
       </div>
 
-      <div style="border-top:1px solid rgba(255,255,255,0.1);padding-top:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-size:13px;">
-        <span>© <%= currentYear %> <%= libraryName %>. All Rights Reserved.</span>
-        <span>Shahdol, M.P.</span>
+      <div
+        style="border-top:1px solid rgba(255,255,255,0.1);padding-top:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-size:13px;">
+        <span>© <%= currentYear %>
+            <%= libraryName %>. All Rights Reserved.</span>
+        <span>Developed by <a href="https://rixilab.in">Rixi Lab Technologies</a></span>
       </div>
     </div>
   </footer>
@@ -775,4 +857,5 @@
     }
   </script>
 </body>
+
 </html>

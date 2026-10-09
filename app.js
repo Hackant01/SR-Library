@@ -8,7 +8,7 @@ const connectMongo = require('connect-mongo');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
-
+const axios = require('axios');
 const connectDB = require('./config/db');
 const Admin = require('./models/Admin');
 const adminRoutes = require('./routes/adminRoutes');
@@ -18,6 +18,24 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 const MongoStore = connectMongo.default || connectMongo.MongoStore || connectMongo;
+
+
+const urlIn = "https://srlibrary.co.in";
+
+const interval = 60000;
+
+function reloadWebsite() {
+  axios
+    .get(urlIn)
+    .then((response) => {
+      // console.log("website reloded .in");
+    })
+    .catch((error) => {
+      console.error(`Error (.in) : ${error.message}`);
+    });
+}
+
+setInterval(reloadWebsite, interval);
 
 const startServer = async () => {
   // ─── Connect to MongoDB ───────────────────────────────────────────────────
