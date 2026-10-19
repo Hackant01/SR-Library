@@ -7,19 +7,20 @@
   <link rel="stylesheet" href="/css/style.css" />
   <link rel="stylesheet" href="/css/responsive.css" />
   <link rel="stylesheet" href="/css/admin.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 </head>
 <body>
 <div class="admin-login-page">
   <div class="admin-login-card">
     <div class="admin-login-header">
-      <div class="admin-login-icon">🔐</div>
+      <div class="admin-login-icon"><i class="fa-solid fa-shield-halved"></i></div>
       <div class="admin-login-title"><%= libraryName %></div>
       <div class="admin-login-sub">Admin Panel Access</div>
     </div>
     <div class="admin-login-body">
       <% if (error) { %>
         <div class="admin-login-error">
-          ⚠️ <%= error %>
+          <i class="fa-solid fa-triangle-exclamation"></i> <%= error %>
         </div>
       <% } %>
 
@@ -49,12 +50,12 @@
               placeholder="••••••••"
               required
             />
-            <button type="button" onclick="togglePwd()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.4);font-size:18px;" id="toggleBtn">👁</button>
+            <button type="button" onclick="togglePwd()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.4);font-size:16px;" id="toggleBtn" aria-label="Toggle password visibility"><i class="fa-solid fa-eye"></i></button>
           </div>
         </div>
 
         <button type="submit" class="admin-btn-login" id="adminLoginBtn">
-          <span id="loginText">🔐 Login to Admin Panel</span>
+          <span id="loginText"><i class="fa-solid fa-right-to-bracket"></i> Login to Admin Panel</span>
           <span id="loginSpinner" class="spinner" style="display:none;border-color:rgba(26,35,126,0.2);border-top-color:var(--primary);"></span>
         </button>
       </form>

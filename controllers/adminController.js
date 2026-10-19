@@ -524,7 +524,19 @@ const deleteStudent = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Student not found or already deleted' });
     }
 
-    // Delete related payment records appropriately
+    // Free any active seats held by this student
+    const activeBookings = await Booking.find({ student: req.params.id, status: 'active' });
+    for (const b of activeBookings) {
+      if (b.seat) {
+        await Seat.findByIdAndUpdate(b.seat, {
+          status: 'available',
+          currentBooking: null,
+          currentStudent: null,
+        });
+      }
+    }
+
+    await Booking.deleteMany({ student: req.params.id });
     await Payment.deleteMany({ student: req.params.id });
 
     res.json({
@@ -660,21 +672,31 @@ const resendEmail = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Student ID not yet assigned' });
     }
 
-    await sendStudentIdEmail(student);
+    const emailResult = await sendStudentIdEmail(student);
+    if (emailResult && emailResult.notConfigured) {
+      student.emailStatus = 'failed';
+      await student.save({ validateModifiedOnly: true });
+      return res.status(503).json({
+        success: false,
+        notConfigured: true,
+        message: 'SMTP email service is not configured in .env (EMAIL_USER / EMAIL_PASSWORD). Please configure valid credentials to send real emails.',
+      });
+    }
+
     student.emailStatus = 'sent';
     await student.save({ validateModifiedOnly: true });
 
-    res.json({ success: true, message: 'Email resent successfully' });
+    res.json({ success: true, message: `Welcome email sent successfully to ${student.email}` });
   } catch (err) {
     console.error('Resend email error:', err);
-    res.status(500).json({ success: false, message: 'Failed to resend email' });
+    res.status(500).json({ success: false, message: 'Failed to resend email: ' + err.message });
   }
 };
 
 // ─── Seat Management ─────────────────────────────────────────────────────────
 const getSeats = async (req, res) => {
   try {
-    const [seats, totalSeats, availableSeats, occupiedSeats, maintenanceSeats] = await Promise.all([
+    const [seats, totalSeats, availableSeats, occupiedSeats, lockedSeats] = await Promise.all([
       Seat.find()
         .sort({ seatNumber: 1 })
         .populate({
@@ -685,24 +707,18 @@ const getSeats = async (req, res) => {
       Seat.countDocuments(),
       Seat.countDocuments({ status: 'available' }),
       Seat.countDocuments({ status: 'occupied' }),
-      Seat.countDocuments({ status: 'maintenance' }),
+      Seat.countDocuments({ status: { $in: ['maintenance', 'locked'] } }),
     ]);
-
-    // Group seats by section
-    const sectionA = seats.filter((s) => s.section.includes('Section A') || s.seatNumber.startsWith('A-'));
-    const sectionB = seats.filter((s) => s.section.includes('Section B') || s.seatNumber.startsWith('B-'));
 
     res.render('admin/seats', {
       title: 'Seat Management',
       admin: req.admin,
       seats,
-      sectionA,
-      sectionB,
       stats: {
         totalSeats,
         availableSeats,
         occupiedSeats,
-        maintenanceSeats,
+        maintenanceSeats: lockedSeats,
       },
       libraryName: process.env.LIBRARY_NAME || 'SR Library',
     });
@@ -719,11 +735,10 @@ const updateSeatStatus = async (req, res) => {
     const seat = await Seat.findById(req.params.id);
     if (!seat) return res.status(404).json({ success: false, message: 'Seat not found' });
 
-    const previousStatus = seat.status;
     seat.status = status;
 
-    // If making available, clear occupancy
-    if (status === 'available') {
+    // If making available or locking, clear current occupancy
+    if (status === 'available' || status === 'locked' || status === 'maintenance') {
       if (seat.currentBooking) {
         await Booking.findByIdAndUpdate(seat.currentBooking, { status: 'completed' });
       }

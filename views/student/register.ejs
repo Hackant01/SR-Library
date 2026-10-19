@@ -7,6 +7,7 @@
   <title><%= title %> | <%= libraryName %></title>
   <link rel="stylesheet" href="/css/style.css" />
   <link rel="stylesheet" href="/css/responsive.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 </head>
 <body>
 
@@ -14,7 +15,7 @@
 <nav class="navbar" style="position:sticky;top:0;z-index:100;background:var(--surface,#fff);box-shadow:0 1px 3px rgba(0,0,0,0.08);">
   <div class="nav-container" style="display:flex;justify-content:space-between;align-items:center;padding:12px 24px;">
     <a href="/" class="nav-logo" style="text-decoration:none;display:flex;align-items:center;gap:8px;font-weight:700;color:var(--primary,#1e293b);font-size:18px;">
-      📚 <span><%= libraryName %></span>
+      <i class="fa-solid fa-book-open-reader" style="color:var(--primary);"></i> <span><%= libraryName %></span>
     </a>
     <div class="nav-actions">
       <a href="/student/login" class="btn btn-ghost btn-sm" style="font-weight:600;">Already Registered? Login</a>
@@ -26,15 +27,15 @@
   <div class="registration-container" style="max-width:760px;margin:0 auto;">
 
     <div class="registration-header" style="text-align:center;margin-bottom:28px;">
-      <div style="font-size:12px;font-weight:700;letter-spacing:1.5px;color:var(--primary,#4f46e5);text-transform:uppercase;margin-bottom:6px;">SR SELF STUDY ZONE & LIBRARY</div>
-      <h1 style="font-size:clamp(1.5rem,3vw,2rem);margin-bottom:8px;color:#0f172a;font-weight:800;">📝 Membership Registration Form</h1>
+      <div style="font-size:12px;font-weight:700;letter-spacing:1.5px;color:var(--primary,#4f46e5);text-transform:uppercase;margin-bottom:6px;">SR SELF STUDY ZONE &amp; LIBRARY</div>
+      <h1 style="font-size:clamp(1.5rem,3vw,2rem);margin-bottom:8px;color:#0f172a;font-weight:800;display:flex;align-items:center;justify-content:center;gap:10px;"><i class="fa-solid fa-file-pen" style="color:var(--primary);"></i> Membership Registration Form</h1>
       <p style="color:var(--text-muted,#64748b);font-size:14px;max-width:560px;margin:0 auto;">Fill in your details below to register for library membership. Please ensure all details are accurate.</p>
     </div>
 
     <!-- Error alerts -->
     <% if (errors && errors.length > 0) { %>
       <div class="alert alert-danger" id="error-alert" style="margin-bottom:24px;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:16px;border-radius:10px;display:flex;gap:12px;">
-        <span style="font-size:20px;">⚠️</span>
+        <span style="font-size:20px;"><i class="fa-solid fa-triangle-exclamation"></i></span>
         <div>
           <strong>Please fix the following errors:</strong>
           <ul style="margin-top:6px;padding-left:18px;font-size:13.5px;">
@@ -51,7 +52,7 @@
       <!-- 1. PERSONAL INFORMATION -->
       <div class="card mb-24" style="background:#fff;border-radius:12px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,0.05);overflow:hidden;margin-bottom:20px;">
         <div class="card-header" style="padding:16px 20px;border-bottom:1px solid #f1f5f9;background:#f8fafc;display:flex;justify-content:space-between;align-items:center;">
-          <div class="card-title" style="font-weight:700;font-size:15px;color:#0f172a;">👤 1. PERSONAL INFORMATION</div>
+          <div class="card-title" style="font-weight:700;font-size:15px;color:#0f172a;display:flex;align-items:center;gap:8px;"><i class="fa-solid fa-user"></i> 1. PERSONAL INFORMATION</div>
           <span class="badge" style="background:#e0e7ff;color:#4338ca;font-size:11px;padding:3px 8px;border-radius:4px;font-weight:600;">Personal</span>
         </div>
         <div class="card-body" style="padding:20px;">
@@ -96,7 +97,7 @@
       <!-- 2. CONTACT DETAILS -->
       <div class="card mb-24" style="background:#fff;border-radius:12px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,0.05);overflow:hidden;margin-bottom:20px;">
         <div class="card-header" style="padding:16px 20px;border-bottom:1px solid #f1f5f9;background:#f8fafc;display:flex;justify-content:space-between;align-items:center;">
-          <div class="card-title" style="font-weight:700;font-size:15px;color:#0f172a;">📞 2. CONTACT DETAILS</div>
+          <div class="card-title" style="font-weight:700;font-size:15px;color:#0f172a;display:flex;align-items:center;gap:8px;"><i class="fa-solid fa-phone"></i> 2. CONTACT DETAILS</div>
           <span class="badge" style="background:#e0f2fe;color:#0369a1;font-size:11px;padding:3px 8px;border-radius:4px;font-weight:600;">Contact</span>
         </div>
         <div class="card-body" style="padding:20px;">
@@ -127,7 +128,7 @@
       <!-- 3. IDENTIFICATION -->
       <div class="card mb-24" style="background:#fff;border-radius:12px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,0.05);overflow:hidden;margin-bottom:20px;">
         <div class="card-header" style="padding:16px 20px;border-bottom:1px solid #f1f5f9;background:#f8fafc;display:flex;justify-content:space-between;align-items:center;">
-          <div class="card-title" style="font-weight:700;font-size:15px;color:#0f172a;">🆔 3. IDENTIFICATION</div>
+          <div class="card-title" style="font-weight:700;font-size:15px;color:#0f172a;display:flex;align-items:center;gap:8px;"><i class="fa-solid fa-id-card"></i> 3. IDENTIFICATION</div>
           <span class="badge" style="background:#fef3c7;color:#92400e;font-size:11px;padding:3px 8px;border-radius:4px;font-weight:600;">ID Proof</span>
         </div>
         <div class="card-body" style="padding:20px;">
@@ -157,7 +158,7 @@
       <!-- 4. EDUCATION -->
       <div class="card mb-24" style="background:#fff;border-radius:12px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,0.05);overflow:hidden;margin-bottom:20px;">
         <div class="card-header" style="padding:16px 20px;border-bottom:1px solid #f1f5f9;background:#f8fafc;display:flex;justify-content:space-between;align-items:center;">
-          <div class="card-title" style="font-weight:700;font-size:15px;color:#0f172a;">🎓 4. EDUCATION</div>
+          <div class="card-title" style="font-weight:700;font-size:15px;color:#0f172a;display:flex;align-items:center;gap:8px;"><i class="fa-solid fa-graduation-cap"></i> 4. EDUCATION</div>
           <span class="badge" style="background:#dcfce7;color:#166534;font-size:11px;padding:3px 8px;border-radius:4px;font-weight:600;">Academic</span>
         </div>
         <div class="card-body" style="padding:20px;">
@@ -200,8 +201,8 @@
       <!-- 5. MEMBERSHIP DETAILS -->
       <div class="card mb-24" style="background:#fff;border-radius:12px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,0.05);overflow:hidden;margin-bottom:20px;">
         <div class="card-header" style="padding:16px 20px;border-bottom:1px solid #f1f5f9;background:#f8fafc;display:flex;justify-content:space-between;align-items:center;">
-          <div class="card-title" style="font-weight:700;font-size:15px;color:#0f172a;">📚 5. MEMBERSHIP DETAILS</div>
-          <span class="badge" style="background:#f3e8ff;color:#7e22ce;font-size:11px;padding:3px 8px;border-radius:4px;font-weight:600;">Plan & Slot</span>
+          <div class="card-title" style="font-weight:700;font-size:15px;color:#0f172a;display:flex;align-items:center;gap:8px;"><i class="fa-solid fa-book-bookmark"></i> 5. MEMBERSHIP DETAILS</div>
+          <span class="badge" style="background:#f3e8ff;color:#7e22ce;font-size:11px;padding:3px 8px;border-radius:4px;font-weight:600;">Plan &amp; Slot</span>
         </div>
         <div class="card-body" style="padding:20px;">
           <div class="form-row" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:16px;margin-bottom:16px;">
@@ -258,8 +259,8 @@
       <!-- 6. ACCOUNT SECURITY (Password - Case-Sensitive) -->
       <div class="card mb-24" style="background:#fff;border-radius:12px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,0.05);overflow:hidden;margin-bottom:20px;">
         <div class="card-header" style="padding:16px 20px;border-bottom:1px solid #f1f5f9;background:#f8fafc;display:flex;justify-content:space-between;align-items:center;">
-          <div class="card-title" style="font-weight:700;font-size:15px;color:#0f172a;">🔐 6. CREATE YOUR PORTAL PASSWORD</div>
-          <span class="badge" style="background:#f1f5f9;color:#475569;font-size:11px;padding:3px 8px;border-radius:4px;font-weight:600;">Secure & Case-Sensitive</span>
+          <div class="card-title" style="font-weight:700;font-size:15px;color:#0f172a;display:flex;align-items:center;gap:8px;"><i class="fa-solid fa-lock"></i> 6. CREATE YOUR PORTAL PASSWORD</div>
+          <span class="badge" style="background:#f1f5f9;color:#475569;font-size:11px;padding:3px 8px;border-radius:4px;font-weight:600;">Secure &amp; Case-Sensitive</span>
         </div>
         <div class="card-body" style="padding:20px;">
           <div class="form-row" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:16px;">
@@ -267,7 +268,7 @@
               <label class="form-label" for="password" style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#334155;">Create Password <span class="required" style="color:#ef4444;">*</span></label>
               <div style="position:relative;">
                 <input type="password" id="password" name="password" class="form-control" placeholder="Create a strong password" required minlength="6" style="width:100%;padding:10px 38px 10px 14px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;" />
-                <button type="button" class="toggle-password" data-target="password" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#94a3b8;font-size:16px;">👁</button>
+                <button type="button" class="toggle-password" data-target="password" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#94a3b8;font-size:14px;"><i class="fa-solid fa-eye"></i></button>
               </div>
               <div id="password-strength" style="margin-top:4px;"></div>
               <span class="form-text" style="font-size:11px;color:#64748b;margin-top:2px;display:block;">Passwords are case-sensitive.</span>
@@ -276,7 +277,7 @@
               <label class="form-label" for="confirmPassword" style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#334155;">Confirm Password <span class="required" style="color:#ef4444;">*</span></label>
               <div style="position:relative;">
                 <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="Confirm your password" required style="width:100%;padding:10px 38px 10px 14px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;" />
-                <button type="button" class="toggle-password" data-target="confirmPassword" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#94a3b8;font-size:16px;">👁</button>
+                <button type="button" class="toggle-password" data-target="confirmPassword" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#94a3b8;font-size:14px;"><i class="fa-solid fa-eye"></i></button>
               </div>
               <span id="password-match-msg" class="form-text" style="font-size:12px;margin-top:4px;display:block;"></span>
             </div>
@@ -287,7 +288,7 @@
       <!-- 7. PAYMENT METHOD (Online ₹150 vs Cash ₹150) -->
       <div class="card mb-24" style="background:#fff;border-radius:12px;border:2px solid #e0e7ff;box-shadow:0 1px 3px rgba(0,0,0,0.05);overflow:hidden;margin-bottom:20px;">
         <div class="card-header" style="padding:16px 20px;border-bottom:1px solid #eef2ff;background:linear-gradient(135deg,rgba(79,70,229,0.05),rgba(99,102,241,0.05));display:flex;justify-content:space-between;align-items:center;">
-          <div class="card-title" style="font-weight:700;font-size:15px;color:#312e81;">💳 7. REGISTRATION FEE & PAYMENT METHOD</div>
+          <div class="card-title" style="font-weight:700;font-size:15px;color:#312e81;display:flex;align-items:center;gap:8px;"><i class="fa-solid fa-credit-card"></i> 7. REGISTRATION FEE &amp; PAYMENT METHOD</div>
           <span class="badge" style="background:#e0e7ff;color:#4338ca;font-weight:700;">₹150.00 Fixed</span>
         </div>
         <div class="card-body" style="padding:20px;">

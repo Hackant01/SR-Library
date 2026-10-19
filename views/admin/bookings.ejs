@@ -16,7 +16,7 @@
 
   <div class="admin-main">
     <div class="admin-topbar">
-      <button class="admin-sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">☰</button>
+      <button class="admin-sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" aria-label="Toggle Sidebar"><i class="fa-solid fa-bars"></i></button>
       <div class="admin-topbar-title">Booking Management</div>
       <div style="font-size:13px;color:var(--text-muted);">
         <span><%= total %></span> Total Bookings
@@ -28,7 +28,7 @@
       <!-- Stat Cards -->
       <div class="admin-stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));gap:16px;margin-bottom:24px;">
         <div class="stat-card" style="--stat-color:#16a34a;--stat-bg:rgba(22,163,74,0.1);border:1px solid #bbf7d0;">
-          <div class="stat-icon">📅</div>
+          <div class="stat-icon"><i class="fa-solid fa-calendar-check" style="color:#16a34a;"></i></div>
           <div class="stat-info">
             <div class="stat-value" style="color:#15803d;"><%= stats.totalActive %></div>
             <div class="stat-label">Active Bookings</div>
@@ -37,7 +37,7 @@
         </div>
 
         <div class="stat-card" style="--stat-color:#0284c7;--stat-bg:rgba(2,132,199,0.1);border:1px solid #bae6fd;">
-          <div class="stat-icon">✓</div>
+          <div class="stat-icon"><i class="fa-solid fa-circle-check" style="color:#0284c7;"></i></div>
           <div class="stat-info">
             <div class="stat-value" style="color:#0369a1;"><%= stats.totalCompleted %></div>
             <div class="stat-label">Completed Sessions</div>
@@ -46,7 +46,7 @@
         </div>
 
         <div class="stat-card" style="--stat-color:#dc2626;--stat-bg:rgba(220,38,38,0.1);border:1px solid #fecaca;">
-          <div class="stat-icon">✗</div>
+          <div class="stat-icon"><i class="fa-solid fa-ban" style="color:#dc2626;"></i></div>
           <div class="stat-info">
             <div class="stat-value" style="color:#b91c1c;"><%= stats.totalCancelled %></div>
             <div class="stat-label">Cancelled Bookings</div>
@@ -59,7 +59,7 @@
       <form id="filterForm" method="GET" action="/admin/bookings">
         <div class="admin-table-toolbar" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:20px;">
           <div class="search-input-wrapper" style="flex:1;min-width:240px;">
-            <span class="search-icon">🔍</span>
+            <span class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
             <input
               type="text"
               name="search"

@@ -487,20 +487,14 @@ const getSeatBooking = async (req, res) => {
     if (!student) return res.redirect('/student/login');
 
     const [seats, activeBooking] = await Promise.all([
-      Seat.find().sort({ seatNumber: 1 }),
+      Seat.find(),
       Booking.findOne({ student: student._id, status: 'active' }).populate('seat'),
     ]);
-
-    // Group seats by section
-    const sectionA = seats.filter((s) => s.section.includes('Section A') || s.seatNumber.startsWith('A-'));
-    const sectionB = seats.filter((s) => s.section.includes('Section B') || s.seatNumber.startsWith('B-'));
 
     res.render('student/booking', {
       title: 'Book a Study Seat',
       student,
       activeBooking,
-      sectionA,
-      sectionB,
       seats,
       libraryName: process.env.LIBRARY_NAME || 'SR Library',
     });

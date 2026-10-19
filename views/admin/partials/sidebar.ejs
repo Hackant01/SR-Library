@@ -3,7 +3,9 @@
 
 <aside class="admin-sidebar" id="adminSidebar">
   <a href="/admin/dashboard" class="sidebar-logo">
-    <div class="sidebar-logo-icon">📚</div>
+    <div class="sidebar-logo-icon">
+      <i class="fa-solid fa-book-open-reader"></i>
+    </div>
     <div>
       <div class="sidebar-logo-text"><%= libraryName %></div>
       <div class="sidebar-logo-sub">Admin Panel</div>
@@ -14,27 +16,27 @@
     <div class="sidebar-section-label">Navigation</div>
 
     <a href="/admin/dashboard" class="sidebar-link <%= typeof currentPage !== 'undefined' && currentPage === 'dashboard' ? 'active' : '' %>">
-      <span class="sidebar-link-icon">📊</span>
-      Dashboard
+      <span class="sidebar-link-icon"><i class="fa-solid fa-gauge-high"></i></span>
+      Overview
     </a>
 
     <a href="/admin/students" class="sidebar-link <%= typeof currentPage !== 'undefined' && currentPage === 'students' ? 'active' : '' %>">
-      <span class="sidebar-link-icon">👥</span>
+      <span class="sidebar-link-icon"><i class="fa-solid fa-users"></i></span>
       Students
     </a>
 
     <a href="/admin/seats" class="sidebar-link <%= typeof currentPage !== 'undefined' && currentPage === 'seats' ? 'active' : '' %>">
-      <span class="sidebar-link-icon">🪑</span>
-      Seats
+      <span class="sidebar-link-icon"><i class="fa-solid fa-chair"></i></span>
+      Seat Management
     </a>
 
     <a href="/admin/bookings" class="sidebar-link <%= typeof currentPage !== 'undefined' && currentPage === 'bookings' ? 'active' : '' %>">
-      <span class="sidebar-link-icon">📅</span>
+      <span class="sidebar-link-icon"><i class="fa-solid fa-calendar-check"></i></span>
       Bookings
     </a>
 
     <a href="/admin/students?payment=pending" class="sidebar-link <%= typeof currentPage !== 'undefined' && currentPage === 'pending-payments' ? 'active' : '' %>">
-      <span class="sidebar-link-icon">⏳</span>
+      <span class="sidebar-link-icon"><i class="fa-solid fa-clock-rotate-left"></i></span>
       Pending Payments
       <% if (typeof pendingCount !== 'undefined' && pendingCount > 0) { %>
         <span class="sidebar-badge"><%= pendingCount %></span>
@@ -42,20 +44,20 @@
     </a>
 
     <a href="/admin/payments" class="sidebar-link <%= typeof currentPage !== 'undefined' && currentPage === 'payments' ? 'active' : '' %>">
-      <span class="sidebar-link-icon">💳</span>
+      <span class="sidebar-link-icon"><i class="fa-solid fa-credit-card"></i></span>
       Payments
     </a>
 
     <div class="sidebar-section-label">System</div>
 
     <a href="/admin/profile" class="sidebar-link <%= typeof currentPage !== 'undefined' && currentPage === 'profile' ? 'active' : '' %>">
-      <span class="sidebar-link-icon">⚙️</span>
+      <span class="sidebar-link-icon"><i class="fa-solid fa-sliders"></i></span>
       Settings
     </a>
 
     <form action="/admin/logout" method="POST" style="margin:0;">
       <button type="submit" class="sidebar-link" style="width:100%;text-align:left;border:none;cursor:pointer;background:transparent;color:rgba(255,255,255,0.7);">
-        <span class="sidebar-link-icon">🚪</span>
+        <span class="sidebar-link-icon"><i class="fa-solid fa-right-from-bracket"></i></span>
         Logout
       </button>
     </form>

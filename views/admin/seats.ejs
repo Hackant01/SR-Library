@@ -7,78 +7,8 @@
   <link rel="stylesheet" href="/css/style.css" />
   <link rel="stylesheet" href="/css/responsive.css" />
   <link rel="stylesheet" href="/css/admin.css" />
+  <link rel="stylesheet" href="/css/seating.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-  <style>
-    .admin-seat-card {
-      min-height: 80px;
-      padding: 10px 6px;
-      border-radius: 12px;
-      border: 2px solid var(--border);
-      background: #ffffff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-      position: relative;
-    }
-    .admin-seat-card.available {
-      border-color: #86efac;
-      background: #f0fdf4;
-      color: #166534;
-    }
-    .admin-seat-card.available:hover {
-      border-color: #22c55e;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);
-    }
-    .admin-seat-card.occupied {
-      border-color: #fca5a5;
-      background: #fef2f2;
-      color: #991b1b;
-    }
-    .admin-seat-card.occupied:hover {
-      border-color: #ef4444;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
-    }
-    .admin-seat-card.maintenance {
-      border-color: #cbd5e1;
-      background: #f8fafc;
-      color: #64748b;
-    }
-    .admin-seat-card.maintenance:hover {
-      border-color: #94a3b8;
-      transform: translateY(-2px);
-    }
-    .admin-seat-occupant {
-      font-size: 10px;
-      font-weight: 600;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 90%;
-      text-align: center;
-    }
-
-    /* Modal Backdrop */
-    .seat-modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.65);
-      backdrop-filter: blur(4px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-      padding: 16px;
-    }
-    .seat-modal-backdrop.active {
-      display: flex;
-    }
-  </style>
 </head>
 <body>
 <div class="admin-wrapper">
@@ -88,10 +18,10 @@
   <div class="admin-main">
     <!-- Topbar -->
     <div class="admin-topbar">
-      <button class="admin-sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">☰</button>
+      <button class="admin-sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
       <div class="admin-topbar-title">Physical Study Seats</div>
       <div style="font-size:13px;color:var(--text-muted);">
-        <span><%= stats.totalSeats %></span> Desks Configured
+        <span>43</span> Desks Configured
       </div>
     </div>
 
@@ -99,18 +29,18 @@
     <div class="admin-content">
 
       <!-- Seat Stats -->
-      <div class="admin-stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));gap:16px;margin-bottom:24px;">
+      <div class="admin-stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));gap:16px;margin-bottom:20px;">
         <div class="stat-card" style="--stat-color:#2563eb;--stat-bg:rgba(37,99,235,0.1);border:1px solid #bfdbfe;">
-          <div class="stat-icon">🪑</div>
+          <div class="stat-icon"><i class="fa-solid fa-chair" style="color:#2563eb;"></i></div>
           <div class="stat-info">
-            <div class="stat-value" style="color:#1d4ed8;"><%= stats.totalSeats %></div>
-            <div class="stat-label">Total Seats</div>
-            <div class="stat-change" style="color:#2563eb;">All library rooms</div>
+            <div class="stat-value" style="color:#1d4ed8;">43</div>
+            <div class="stat-label">Total Hall Seats</div>
+            <div class="stat-change" style="color:#2563eb;">Physical hall capacity</div>
           </div>
         </div>
 
         <div class="stat-card" style="--stat-color:#16a34a;--stat-bg:rgba(22,163,74,0.1);border:1px solid #bbf7d0;">
-          <div class="stat-icon">✅</div>
+          <div class="stat-icon"><i class="fa-solid fa-circle-check" style="color:#16a34a;"></i></div>
           <div class="stat-info">
             <div class="stat-value" style="color:#15803d;"><%= stats.availableSeats %></div>
             <div class="stat-label">Available Desks</div>
@@ -119,110 +49,193 @@
         </div>
 
         <div class="stat-card" style="--stat-color:#dc2626;--stat-bg:rgba(220,38,38,0.1);border:1px solid #fecaca;">
-          <div class="stat-icon">👥</div>
+          <div class="stat-icon"><i class="fa-solid fa-user-check" style="color:#dc2626;"></i></div>
           <div class="stat-info">
             <div class="stat-value" style="color:#b91c1c;"><%= stats.occupiedSeats %></div>
             <div class="stat-label">Occupied / Booked</div>
-            <div class="stat-change" style="color:#dc2626;">Reserved by students</div>
+            <div class="stat-change" style="color:#dc2626;">Assigned to students</div>
           </div>
         </div>
 
         <div class="stat-card" style="--stat-color:#64748b;--stat-bg:rgba(100,116,139,0.1);border:1px solid #e2e8f0;">
-          <div class="stat-icon">🔧</div>
+          <div class="stat-icon"><i class="fa-solid fa-lock" style="color:#64748b;"></i></div>
           <div class="stat-info">
             <div class="stat-value" style="color:#475569;"><%= stats.maintenanceSeats %></div>
-            <div class="stat-label">Maintenance / Reserved</div>
-            <div class="stat-change" style="color:#64748b;">Unavailable to book</div>
+            <div class="stat-label">Locked / Unavailable</div>
+            <div class="stat-change" style="color:#64748b;">13, 14, 15, 17, 19</div>
           </div>
         </div>
       </div>
 
       <!-- Legend -->
-      <div class="seat-legend" style="margin-bottom:20px;">
-        <div class="seat-legend-item">
-          <span class="seat-legend-swatch available"></span>
+      <div class="hall-legend-bar" style="margin-bottom:20px;">
+        <div class="legend-badge-item">
+          <span class="legend-color-box available"></span>
           <span>Available</span>
         </div>
-        <div class="seat-legend-item">
-          <span class="seat-legend-swatch occupied"></span>
-          <span>Occupied / Booked</span>
+        <div class="legend-badge-item">
+          <span class="legend-color-box occupied"></span>
+          <span>Occupied</span>
         </div>
-        <div class="seat-legend-item">
-          <span class="seat-legend-swatch maintenance"></span>
-          <span>Maintenance / Inactive</span>
+        <div class="legend-badge-item">
+          <span class="legend-color-box locked"></span>
+          <span>Locked / Maintenance</span>
         </div>
         <span style="margin-left:auto;font-size:12.5px;color:var(--text-muted);">
-          💡 Tip: Click any desk to view occupant details or toggle status.
+          <i class="fa-regular fa-lightbulb"></i> Click any desk to change status, lock/unlock, or view occupant details.
         </span>
       </div>
 
-      <!-- Section A: Main Quiet Study Hall -->
-      <div class="card mb-24" style="padding:22px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);">
-          <div>
-            <h2 style="font-size:16px;margin:0;font-weight:700;">Section A — Main Quiet Study Hall</h2>
-            <span style="font-size:12.5px;color:var(--text-muted);">Individual study desks with individual lighting &amp; power point</span>
+      <!-- Seat Lookup & Renderer -->
+      <%
+        const seatDict = {};
+        seats.forEach(s => {
+          seatDict[s.seatNumber] = s;
+        });
+
+        function renderAdminSeat(num) {
+          const s = seatDict[String(num)] || { seatNumber: String(num), status: 'available', section: 'Main Study Hall' };
+          let statusClass = s.status;
+          let statusLabel = s.status;
+          let statusIcon = 'fa-solid fa-chair';
+
+          if (s.status === 'occupied') {
+            statusLabel = s.currentStudent ? s.currentStudent.fullName.split(' ')[0] : 'Booked';
+            statusIcon = 'fa-solid fa-user';
+          } else if (s.status === 'locked' || s.status === 'maintenance') {
+            statusClass = 'locked';
+            statusLabel = 'Locked';
+            statusIcon = 'fa-solid fa-lock';
+          }
+      %>
+        <button 
+          type="button"
+          class="seat-unit <%= statusClass %>"
+          data-id="<%= s._id %>"
+          data-number="<%= s.seatNumber %>"
+          data-section="<%= s.section || 'Hall' %>"
+          data-status="<%= s.status %>"
+          data-student="<%= s.currentStudent ? s.currentStudent.fullName : '' %>"
+          data-studentid="<%= s.currentStudent ? (s.currentStudent.studentId || '') : '' %>"
+          data-mobile="<%= s.currentStudent ? s.currentStudent.mobile : '' %>"
+          data-email="<%= s.currentStudent ? s.currentStudent.email : '' %>"
+          data-booking="<%= s.currentBooking ? (s.currentBooking.bookingId || '') : '' %>"
+          title="Seat <%= s.seatNumber %> (<%= s.status %>)"
+          onclick="openSeatModal(this)"
+          aria-label="Seat <%= s.seatNumber %>, <%= s.status %>"
+        >
+          <span class="seat-number-text"><%= s.seatNumber %></span>
+          <span class="seat-status-sub"><i class="<%= statusIcon %>" style="font-size:8px;"></i> <%= statusLabel %></span>
+        </button>
+      <% } %>
+
+      <!-- Blueprint Hall Container -->
+      <div class="hall-blueprint-wrapper">
+        <div class="hall-blueprint-header">
+          <div class="hall-blueprint-title">
+            <i class="fa-solid fa-compass-drafting" style="color:var(--primary);"></i>
+            <span>Official 43-Seat Room Blueprint</span>
           </div>
-          <span class="badge" style="background:#e0e7ff;color:#4338ca;">A-01 to A-20</span>
+          <span class="hall-scroll-hint"><i class="fa-solid fa-arrows-left-right"></i> Swipe to explore hall</span>
         </div>
 
-        <div class="seat-grid" style="grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));gap:12px;">
-          <% sectionA.forEach(seat => { %>
-            <div 
-              class="admin-seat-card <%= seat.status %>"
-              data-id="<%= seat._id %>"
-              data-number="<%= seat.seatNumber %>"
-              data-section="<%= seat.section %>"
-              data-status="<%= seat.status %>"
-              data-student="<%= seat.currentStudent ? seat.currentStudent.fullName : '' %>"
-              data-studentid="<%= seat.currentStudent ? (seat.currentStudent.studentId || '') : '' %>"
-              data-mobile="<%= seat.currentStudent ? seat.currentStudent.mobile : '' %>"
-              onclick="openSeatModal(this)"
-            >
-              <i class="fa-solid fa-chair" style="font-size:18px;"></i>
-              <strong style="font-size:14.5px;"><%= seat.seatNumber %></strong>
-              <% if (seat.status === 'occupied' && seat.currentStudent) { %>
-                <span class="admin-seat-occupant"><%= seat.currentStudent.fullName.split(' ')[0] %></span>
-              <% } else { %>
-                <span style="font-size:9.5px;text-transform:uppercase;font-weight:600;"><%= seat.status %></span>
-              <% } %>
+        <div class="hall-scroll-container">
+          <div class="hall-floorplan">
+            
+            <div class="hall-wall-label hall-wall-top">↑ Front of Hall / Whiteboard Wall ↑</div>
+
+            <div class="hall-grid-layout">
+              
+              <!-- Left Wall Column (Seats 43 down to 31) -->
+              <div class="left-wall-column">
+                <div class="left-wall-header">Left Wall</div>
+                <% const leftWallSeats = [43, 42, 41, 40, 39, 38, 37, 36, 35, 34, 33, 32, 31]; %>
+                <% leftWallSeats.forEach(num => renderAdminSeat(num)); %>
+              </div>
+
+              <!-- Central Aisle / Walkway -->
+              <div class="central-aisle">
+                <span class="aisle-text">Aisle / Walkway</span>
+                <span class="aisle-text">Aisle / Walkway</span>
+              </div>
+
+              <!-- Right Hall Blocks -->
+              <div class="right-hall-content">
+                
+                <!-- Block 1 (Top Block: 4 3 2 1 & 5 6 7 8) -->
+                <div class="hall-block-card">
+                  <div class="hall-block-header">
+                    <span>Block 1 (Front Hall)</span>
+                    <span style="font-size:10px;color:#94a3b8;">Desks 1 – 8</span>
+                  </div>
+                  <div class="hall-row-grid cols-4">
+                    <% [4, 3, 2, 1].forEach(num => renderAdminSeat(num)); %>
+                  </div>
+                  <div class="hall-row-subgap"></div>
+                  <div class="hall-row-grid cols-4">
+                    <% [5, 6, 7, 8].forEach(num => renderAdminSeat(num)); %>
+                  </div>
+                </div>
+
+                <!-- Block 2 (Mid Block: 12 11 10 9 & 13 14 15 16) -->
+                <div class="hall-block-card">
+                  <div class="hall-block-header">
+                    <span>Block 2 (Mid Hall)</span>
+                    <span style="font-size:10px;color:#94a3b8;">Desks 9 – 16 (13-15 Locked)</span>
+                  </div>
+                  <div class="hall-row-grid cols-4">
+                    <% [12, 11, 10, 9].forEach(num => renderAdminSeat(num)); %>
+                  </div>
+                  <div class="hall-row-subgap"></div>
+                  <div class="hall-row-grid cols-4">
+                    <% [13, 14, 15, 16].forEach(num => renderAdminSeat(num)); %>
+                  </div>
+                </div>
+
+                <!-- Door / Hall Entrance Position (Right Edge) -->
+                <div class="hall-door-zone">
+                  <div class="hall-door-badge">
+                    <i class="fa-solid fa-door-open"></i> MAIN ENTRANCE / DOOR ➔
+                  </div>
+                </div>
+
+                <!-- Block 3 (Opposite Door: 19 18 17 & 20 21 22) - 3 Columns wide -->
+                <div class="hall-block-card">
+                  <div class="hall-block-header">
+                    <span>Block 3 (Opposite Door)</span>
+                    <span style="font-size:10px;color:#94a3b8;">Desks 17 – 22 (17, 19 Locked)</span>
+                  </div>
+                  <div class="hall-row-grid cols-3">
+                    <% [19, 18, 17].forEach(num => renderAdminSeat(num)); %>
+                  </div>
+                  <div class="hall-row-subgap"></div>
+                  <div class="hall-row-grid cols-3">
+                    <% [20, 21, 22].forEach(num => renderAdminSeat(num)); %>
+                  </div>
+                </div>
+
+                <!-- Block 4 (Bottom Block: 26 25 24 23 & 27 28 29 30) -->
+                <div class="hall-block-card">
+                  <div class="hall-block-header">
+                    <span>Block 4 (Back Hall)</span>
+                    <span style="font-size:10px;color:#94a3b8;">Desks 23 – 30</span>
+                  </div>
+                  <div class="hall-row-grid cols-4">
+                    <% [26, 25, 24, 23].forEach(num => renderAdminSeat(num)); %>
+                  </div>
+                  <div class="hall-row-subgap"></div>
+                  <div class="hall-row-grid cols-4">
+                    <% [27, 28, 29, 30].forEach(num => renderAdminSeat(num)); %>
+                  </div>
+                </div>
+
+              </div>
+
             </div>
-          <% }) %>
-        </div>
-      </div>
 
-      <!-- Section B: Reserved Cabins -->
-      <div class="card mb-24" style="padding:22px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);">
-          <div>
-            <h2 style="font-size:16px;margin:0;font-weight:700;">Section B — Dedicated Reserved Cabins</h2>
-            <span style="font-size:12.5px;color:var(--text-muted);">Private partitions with personal lockers</span>
+            <div class="hall-wall-label hall-wall-bottom">↓ Back Wall / Quiet Zone ↓</div>
+
           </div>
-          <span class="badge" style="background:#fef3c7;color:#92400e;">B-01 to B-20</span>
-        </div>
-
-        <div class="seat-grid" style="grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));gap:12px;">
-          <% sectionB.forEach(seat => { %>
-            <div 
-              class="admin-seat-card <%= seat.status %>"
-              data-id="<%= seat._id %>"
-              data-number="<%= seat.seatNumber %>"
-              data-section="<%= seat.section %>"
-              data-status="<%= seat.status %>"
-              data-student="<%= seat.currentStudent ? seat.currentStudent.fullName : '' %>"
-              data-studentid="<%= seat.currentStudent ? (seat.currentStudent.studentId || '') : '' %>"
-              data-mobile="<%= seat.currentStudent ? seat.currentStudent.mobile : '' %>"
-              onclick="openSeatModal(this)"
-            >
-              <i class="fa-solid fa-chair" style="font-size:18px;"></i>
-              <strong style="font-size:14.5px;"><%= seat.seatNumber %></strong>
-              <% if (seat.status === 'occupied' && seat.currentStudent) { %>
-                <span class="admin-seat-occupant"><%= seat.currentStudent.fullName.split(' ')[0] %></span>
-              <% } else { %>
-                <span style="font-size:9.5px;text-transform:uppercase;font-weight:600;"><%= seat.status %></span>
-              <% } %>
-            </div>
-          <% }) %>
         </div>
       </div>
 
@@ -240,20 +253,23 @@
           <i class="fa-solid fa-chair"></i>
         </div>
         <div>
-          <h3 id="modalSeatTitle" style="margin:0;font-size:17px;font-weight:800;">Seat A-01</h3>
-          <span id="modalSeatSection" style="font-size:12px;color:var(--text-muted);">Section A</span>
+          <h3 id="modalSeatTitle" style="margin:0;font-size:17px;font-weight:800;">Seat --</h3>
+          <span id="modalSeatSection" style="font-size:12px;color:var(--text-muted);">Section</span>
         </div>
       </div>
-      <button type="button" onclick="closeSeatModal()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-muted);">&times;</button>
+      <button type="button" onclick="closeSeatModal()" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--text-muted);">&times;</button>
     </div>
 
     <div style="padding:24px;">
       <!-- Occupant Info (if any) -->
       <div id="modalOccupantCard" style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:14px;margin-bottom:18px;display:none;">
-        <div style="font-size:11.5px;font-weight:700;color:#991b1b;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Current Occupant</div>
+        <div style="font-size:11.5px;font-weight:700;color:#991b1b;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Current Student Occupant</div>
         <div style="font-size:15px;font-weight:700;color:#1e293b;" id="modalOccupantName">Student Name</div>
         <div style="font-size:12.5px;color:#475569;margin-top:2px;">
-          <span id="modalOccupantId">ID</span> &nbsp;|&nbsp; 📞 <span id="modalOccupantMobile">Mobile</span>
+          <span id="modalOccupantId" style="font-family:monospace;font-weight:600;">ID</span> &nbsp;|&nbsp; 📞 <span id="modalOccupantMobile">Mobile</span>
+        </div>
+        <div style="font-size:12px;color:#64748b;margin-top:4px;" id="modalOccupantBooking">
+          Booking: --
         </div>
       </div>
 
@@ -262,18 +278,18 @@
         <input type="hidden" id="modalSeatId" />
 
         <div class="form-group" style="margin-bottom:18px;">
-          <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;">Seat Status</label>
+          <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;">Update Seat Availability Status</label>
           <select id="modalSeatStatusSelect" class="form-control" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;background:#fff;">
             <option value="available">Available (Green - Ready to Book)</option>
-            <option value="occupied">Occupied (Red - Assigned)</option>
-            <option value="maintenance">Maintenance (Gray - Unavailable)</option>
+            <option value="locked">Locked / Unavailable (Gray - Disabled for Students)</option>
+            <option value="maintenance">Maintenance (Gray - Service / Inactive)</option>
           </select>
         </div>
 
         <div style="display:flex;gap:10px;justify-content:flex-end;">
           <button type="button" class="btn btn-ghost" onclick="closeSeatModal()">Cancel</button>
           <button type="submit" class="btn btn-primary" id="saveSeatStatusBtn">
-            Update Status
+            <i class="fa-solid fa-floppy-disk"></i> Update Status
           </button>
         </div>
       </form>
@@ -282,7 +298,6 @@
   </div>
 </div>
 
-<!-- Toast Container -->
 <div class="toast-container" id="toastContainer"></div>
 
 <script src="/js/admin.js"></script>
@@ -298,17 +313,19 @@
     const student = card.dataset.student;
     const studentId = card.dataset.studentid;
     const mobile = card.dataset.mobile;
+    const booking = card.dataset.booking;
 
     document.getElementById('modalSeatId').value = id;
     document.getElementById('modalSeatTitle').textContent = `Seat ${number}`;
     document.getElementById('modalSeatSection').textContent = section;
-    document.getElementById('modalSeatStatusSelect').value = status;
+    document.getElementById('modalSeatStatusSelect').value = (status === 'maintenance' || status === 'locked') ? status : (status === 'available' ? 'available' : 'locked');
 
     const occupantCard = document.getElementById('modalOccupantCard');
     if (student) {
       document.getElementById('modalOccupantName').textContent = student;
-      document.getElementById('modalOccupantId').textContent = studentId || 'Verified';
+      document.getElementById('modalOccupantId').textContent = studentId || 'Assigned';
       document.getElementById('modalOccupantMobile').textContent = mobile || 'No phone';
+      document.getElementById('modalOccupantBooking').textContent = booking ? `Booking ID: ${booking}` : '';
       occupantCard.style.display = 'block';
     } else {
       occupantCard.style.display = 'none';
@@ -345,12 +362,12 @@
       } else {
         showToast('❌ ' + (data.message || 'Error updating seat'), 'danger');
         btn.disabled = false;
-        btn.innerHTML = 'Update Status';
+        btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Update Status';
       }
     } catch (err) {
       showToast('❌ Server error: ' + err.message, 'danger');
       btn.disabled = false;
-      btn.innerHTML = 'Update Status';
+      btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Update Status';
     }
   }
 </script>

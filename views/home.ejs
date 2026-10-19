@@ -6,21 +6,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description"
     content="SR Self Study Zone & Library — Shahdol's premier study library. Reserve dedicated study seats with AC, High-Speed WiFi, Lockers, and 24/7 Power Backup." />
-  <title>
-    <%= title %>
-  </title>
+  <title><%= title %></title>
   <link rel="icon" href="/images/logo.jpg" />
   <link rel="stylesheet" href="/css/style.css" />
   <link rel="stylesheet" href="/css/responsive.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <style>
-    /* Navbar enhancements */
+    /* Navbar styles */
     .header-nav {
       position: sticky;
       top: 0;
       z-index: 1000;
-      background: rgba(255, 255, 255, 0.96);
-      backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
       height: 68px;
       display: flex;
@@ -63,7 +61,7 @@
     .nav-menu-links {
       display: flex;
       align-items: center;
-      gap: 24px;
+      gap: 22px;
     }
 
     .nav-item-link {
@@ -72,6 +70,7 @@
       font-weight: 600;
       transition: var(--transition);
       text-decoration: none;
+      padding: 6px 4px;
     }
 
     .nav-item-link:hover {
@@ -90,6 +89,7 @@
       gap: 8px;
       transition: var(--transition);
       box-shadow: 0 2px 8px rgba(26, 35, 126, 0.25);
+      text-decoration: none;
     }
 
     .nav-login-btn:hover {
@@ -100,12 +100,21 @@
 
     .nav-mobile-toggle {
       display: none;
-      background: none;
-      border: none;
-      font-size: 24px;
-      color: var(--text-primary);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--primary-dark);
       cursor: pointer;
-      padding: 6px;
+      padding: 8px 12px;
+      font-size: 18px;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+
+    .nav-mobile-toggle:hover {
+      background: #eef2ff;
+      border-color: #cbd5e1;
     }
 
     /* Mobile drawer */
@@ -117,7 +126,7 @@
       z-index: 1050;
       opacity: 0;
       visibility: hidden;
-      transition: var(--transition);
+      transition: all 0.25s ease;
     }
 
     .mobile-drawer-overlay.active {
@@ -128,17 +137,19 @@
     .mobile-drawer {
       position: fixed;
       top: 0;
-      right: -290px;
-      width: 280px;
+      right: -310px;
+      width: 290px;
+      max-width: 85vw;
       height: 100%;
       background: #ffffff;
       z-index: 1060;
       padding: 24px 20px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 12px;
       box-shadow: var(--shadow-xl);
       transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow-y: auto;
     }
 
     .mobile-drawer.active {
@@ -157,6 +168,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      color: var(--text-primary);
+      margin-bottom: 8px;
     }
 
     .mobile-drawer-link {
@@ -174,8 +187,41 @@
 
     .mobile-drawer-link:hover,
     .mobile-drawer-link.active {
-      background: var(--surface-2);
+      background: #eef2ff;
       color: var(--primary);
+    }
+
+    .mobile-drawer-link i {
+      width: 20px;
+      text-align: center;
+      color: var(--primary);
+      font-size: 16px;
+    }
+
+    /* Floating WhatsApp Button */
+    .whatsapp-float {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 56px;
+      height: 56px;
+      background: #25d366;
+      color: #ffffff !important;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      box-shadow: 0 4px 18px rgba(37, 211, 102, 0.4);
+      z-index: 1000;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      text-decoration: none;
+    }
+
+    .whatsapp-float:hover {
+      transform: scale(1.08);
+      box-shadow: 0 6px 24px rgba(37, 211, 102, 0.55);
+      color: #ffffff;
     }
 
     /* Hero section */
@@ -190,10 +236,7 @@
     .hero-lib::after {
       content: '';
       position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
+      inset: 0;
       background: radial-gradient(circle at 85% 20%, rgba(255, 214, 0, 0.12) 0%, transparent 50%);
       pointer-events: none;
     }
@@ -312,7 +355,7 @@
     .live-strip {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
-      padding: 18px 20px;
+      padding: 16px 20px;
     }
 
     .live-strip-inner {
@@ -321,7 +364,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 20px;
+      gap: 18px;
       flex-wrap: wrap;
     }
 
@@ -345,42 +388,73 @@
     .live-strip-details {
       display: flex;
       align-items: center;
-      gap: 24px;
+      gap: 20px;
       font-size: 13.5px;
       color: var(--text-secondary);
       flex-wrap: wrap;
     }
 
-    /* Step flow */
-    .step-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 24px;
-      text-align: center;
-      position: relative;
-      transition: var(--transition);
+    /* About Section */
+    .about-section {
+      padding: 64px 20px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
     }
 
-    .step-card:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--shadow);
-      border-color: rgba(26, 35, 126, 0.2);
-    }
-
-    .step-num-bubble {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-      color: #fff;
-      display: inline-flex;
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
       align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 16px;
-      margin-bottom: 16px;
-      box-shadow: 0 3px 10px rgba(26, 35, 126, 0.25);
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .about-image-stack {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .about-photo {
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      aspect-ratio: 4/3;
+    }
+
+    .about-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .about-photo:hover img {
+      transform: scale(1.03);
+    }
+
+    .about-highlights-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    .about-highlight-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13.5px;
+      color: var(--text-secondary);
+    }
+
+    .about-highlight-item i {
+      color: var(--primary);
+      font-size: 15px;
+      margin-top: 3px;
+      flex-shrink: 0;
     }
 
     /* Facility card */
@@ -388,11 +462,12 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      padding: 24px 20px;
+      padding: 22px 18px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
       transition: var(--transition);
+      height: 100%;
     }
 
     .fac-card:hover {
@@ -402,15 +477,51 @@
     }
 
     .fac-icon-circle {
-      width: 48px;
-      height: 48px;
+      width: 46px;
+      height: 46px;
       border-radius: 12px;
       background: #eef2ff;
       color: var(--primary);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 22px;
+      font-size: 20px;
+    }
+
+    /* Step flow */
+    .step-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px 18px;
+      text-align: center;
+      position: relative;
+      transition: var(--transition);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .step-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow);
+      border-color: rgba(26, 35, 126, 0.2);
+    }
+
+    .step-num-bubble {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 16px;
+      margin-bottom: 14px;
+      box-shadow: 0 3px 10px rgba(26, 35, 126, 0.25);
     }
 
     /* Media query adjustments */
@@ -429,8 +540,12 @@
       }
 
       .hero-card-img {
-        max-width: 520px;
+        max-width: 500px;
         margin: 0 auto;
+      }
+
+      .about-grid {
+        grid-template-columns: 1fr;
       }
 
       .nav-menu-links {
@@ -438,7 +553,16 @@
       }
 
       .nav-mobile-toggle {
-        display: block;
+        display: flex;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .about-highlights-grid {
+        grid-template-columns: 1fr;
+      }
+      .about-image-stack {
+        grid-template-columns: 1fr 1fr;
       }
     }
   </style>
@@ -453,23 +577,35 @@
   </a>
 
   <!-- Mobile Navigation Drawer -->
-  <div class="mobile-drawer-overlay" id="drawerOverlay" onclick="toggleMobileDrawer()"></div>
+  <div class="mobile-drawer-overlay" id="drawerOverlay" onclick="closeMobileDrawer()"></div>
   <div class="mobile-drawer" id="mobileDrawer" role="dialog" aria-modal="true" aria-label="Mobile Navigation">
-    <button class="mobile-drawer-close" onclick="toggleMobileDrawer()" aria-label="Close Menu">&times;</button>
+    <button class="mobile-drawer-close" onclick="closeMobileDrawer()" aria-label="Close Menu">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
     <a href="/" class="nav-brand" style="margin-bottom:8px;">
       <img src="/images/logo.jpg" alt="Logo" class="nav-brand-img" />
       <span class="nav-brand-text">
         <%= libraryName %>
       </span>
     </a>
-    <a href="/" class="mobile-drawer-link active"><i class="fa-solid fa-house"></i> Home</a>
-    <a href="/about.html" class="mobile-drawer-link"><i class="fa-solid fa-building-columns"></i> About Library</a>
-    <a href="#facilities" class="mobile-drawer-link" onclick="toggleMobileDrawer()"><i
-        class="fa-solid fa-layer-group"></i> Facilities</a>
-    <a href="#how-it-works" class="mobile-drawer-link" onclick="toggleMobileDrawer()"><i
-        class="fa-solid fa-list-check"></i> How It Works</a>
-    <a href="/seat-availability" class="mobile-drawer-link"><i class="fa-solid fa-chair"></i> Seat Availability</a>
-    <a href="/contact.html" class="mobile-drawer-link"><i class="fa-solid fa-phone"></i> Contact</a>
+    <a href="/" class="mobile-drawer-link" onclick="closeMobileDrawer()">
+      <i class="fa-solid fa-house"></i> Home
+    </a>
+    <a href="#about" class="mobile-drawer-link" onclick="closeMobileDrawer()">
+      <i class="fa-solid fa-building-columns"></i> About Library
+    </a>
+    <a href="#facilities" class="mobile-drawer-link" onclick="closeMobileDrawer()">
+      <i class="fa-solid fa-layer-group"></i> Facilities
+    </a>
+    <a href="#how-it-works" class="mobile-drawer-link" onclick="closeMobileDrawer()">
+      <i class="fa-solid fa-list-check"></i> How It Works
+    </a>
+    <a href="/seat-availability" class="mobile-drawer-link" onclick="closeMobileDrawer()">
+      <i class="fa-solid fa-chair"></i> 43-Seat Layout
+    </a>
+    <a href="#contact" class="mobile-drawer-link" onclick="closeMobileDrawer()">
+      <i class="fa-solid fa-phone"></i> Contact
+    </a>
     <div
       style="margin-top:auto;padding-top:16px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:10px;">
       <a href="/student/login" class="btn btn-primary btn-block" style="justify-content:center;">
@@ -494,11 +630,11 @@
       <!-- Desktop Links -->
       <nav class="nav-menu-links">
         <a href="/" class="nav-item-link" style="color:var(--primary);font-weight:700;">Home</a>
-        <a href="/about.html" class="nav-item-link">About</a>
+        <a href="#about" class="nav-item-link">About</a>
         <a href="#facilities" class="nav-item-link">Facilities</a>
         <a href="#how-it-works" class="nav-item-link">How It Works</a>
-        <a href="/seat-availability" class="nav-item-link">Seats</a>
-        <a href="/contact.html" class="nav-item-link">Contact</a>
+        <a href="/seat-availability" class="nav-item-link">43 Seats</a>
+        <a href="#contact" class="nav-item-link">Contact</a>
         <a href="/student/login" class="nav-login-btn">
           <i class="fa-solid fa-user-graduate"></i> Student Login
         </a>
@@ -528,7 +664,7 @@
         </p>
         <div class="hero-cta-group">
           <a href="/seat-availability" class="btn-hero-primary" id="heroBookSeatBtn">
-            <i class="fa-solid fa-chair"></i> Book a Seat
+            <i class="fa-solid fa-chair"></i> View 43 Seats
           </a>
           <a href="/student/login" class="btn-hero-secondary" id="heroStudentLoginBtn">
             <i class="fa-solid fa-arrow-right-to-bracket"></i> Student Login
@@ -547,16 +683,90 @@
     <div class="live-strip-inner">
       <div class="live-status-badge">
         <span class="live-pulse-dot"></span>
-        <span>Physical Seats: <strong>
-            <%= typeof totalSeats !=='undefined' ? totalSeats : 40 %> Available
-          </strong> across Section A & B</span>
+        <span>Physical Study Hall: <strong><%= typeof availableSeats !== 'undefined' ? availableSeats : 36 %> Desks Available</strong> (43 Total)</span>
       </div>
       <div class="live-strip-details">
-        <span><i class="fa-regular fa-clock" style="color:var(--primary);"></i> Daily: <strong>6:00 AM – 11:00
-            PM</strong></span>
-        <span><i class="fa-solid fa-location-dot" style="color:var(--primary);"></i> <strong>Shahdol,
-            M.P.</strong></span>
-        <a href="/seat-availability" class="btn btn-sm btn-outline" style="font-size:12.5px;">View Live Seat Map →</a>
+        <span><i class="fa-regular fa-clock" style="color:var(--primary);"></i> Daily: <strong>6:00 AM – 11:00 PM</strong></span>
+        <span><i class="fa-solid fa-location-dot" style="color:var(--primary);"></i> <strong>Shahdol, M.P.</strong></span>
+        <a href="/seat-availability" class="btn btn-sm btn-outline" style="font-size:12.5px;">View 43-Seat Layout →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── ABOUT SECTION (REORGANIZED) ────────────────────────────────── -->
+  <section class="about-section" id="about">
+    <div class="about-grid">
+      <div>
+        <span class="badge badge-primary" style="margin-bottom:10px;">About SR Library</span>
+        <h2 style="font-size:clamp(1.7rem,3vw,2.3rem);margin-bottom:14px;font-weight:800;">
+          A Dedicated Environment Built for <span style="color:var(--primary);">Serious Students</span>
+        </h2>
+        <p style="color:var(--text-secondary);font-size:15px;line-height:1.7;margin-bottom:14px;">
+          <strong>SR Self Study Zone &amp; Library</strong> in Shahdol, Madhya Pradesh provides serious competitive exam aspirants with a world-class, peaceful, and disciplined study environment without having to relocate to a metro city.
+        </p>
+        <p style="color:var(--text-secondary);font-size:15px;line-height:1.7;margin-bottom:20px;">
+          Whether you are preparing for UPSC, MPPSC, SSC, Banking, Railways, Defense, or State Examinations, our hall is specifically designed to maximize deep concentration and minimize daily fatigue.
+        </p>
+
+        <div class="about-highlights-grid">
+          <div class="about-highlight-item">
+            <i class="fa-solid fa-volume-xmark"></i>
+            <div>
+              <strong>Strict Silence Zone</strong>
+              <div>Zero noise and distraction-free hall</div>
+            </div>
+          </div>
+          <div class="about-highlight-item">
+            <i class="fa-solid fa-wifi"></i>
+            <div>
+              <strong>High-Speed Wi-Fi</strong>
+              <div>Optical fiber connection for lectures</div>
+            </div>
+          </div>
+          <div class="about-highlight-item">
+            <i class="fa-solid fa-bolt"></i>
+            <div>
+              <strong>24/7 Power Backup</strong>
+              <div>Inverter and generator backup</div>
+            </div>
+          </div>
+          <div class="about-highlight-item">
+            <i class="fa-solid fa-snowflake"></i>
+            <div>
+              <strong>Fully Air Conditioned</strong>
+              <div>Comfortable study environment all year</div>
+            </div>
+          </div>
+          <div class="about-highlight-item">
+            <i class="fa-solid fa-video"></i>
+            <div>
+              <strong>CCTV Surveillance</strong>
+              <div>24-hour monitoring for safety</div>
+            </div>
+          </div>
+          <div class="about-highlight-item">
+            <i class="fa-solid fa-bottle-water"></i>
+            <div>
+              <strong>Purified RO Water</strong>
+              <div>Hygienic drinking water dispenser</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="about-image-stack">
+        <div class="about-photo">
+          <img src="/images/gallery1.jpeg" alt="Study Hall Interior" loading="lazy" />
+        </div>
+        <div class="about-photo">
+          <img src="/images/office.jpeg" alt="Library Reception" loading="lazy" />
+        </div>
+        <div class="about-photo">
+          <img src="/images/coridoor.jpeg" alt="Clean Corridor" loading="lazy" />
+        </div>
+        <div class="about-photo">
+          <img src="/images/gallery3.jpeg" alt="Study Desk Setup" loading="lazy" />
+        </div>
       </div>
     </div>
   </section>
@@ -564,84 +774,84 @@
   <!-- ─── FACILITIES SECTION ─────────────────────────────────────────── -->
   <section class="section" id="facilities" style="background:var(--bg);">
     <div class="container">
-      <div style="text-align:center;max-width:640px;margin:0 auto 44px;">
-        <span class="badge badge-primary" style="margin-bottom:10px;">Built for Focus</span>
-        <h2 style="font-size:clamp(1.6rem,3vw,2.3rem);margin-bottom:10px;">Library Facilities</h2>
+      <div style="text-align:center;max-width:640px;margin:0 auto 40px;">
+        <span class="badge badge-primary" style="margin-bottom:10px;">Library Facilities</span>
+        <h2 style="font-size:clamp(1.6rem,3vw,2.3rem);margin-bottom:10px;">Designed for Maximum Productivity</h2>
         <p style="color:var(--text-muted);font-size:15px;">
-          Carefully designed study atmosphere with every essential amenity for competitive exam aspirants.
+          Every facility you need to stay focused, comfortable, and consistent during your study marathon.
         </p>
       </div>
 
-      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));gap:20px;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:20px;">
         <!-- 1. Comfortable Study Seats -->
         <div class="fac-card">
           <div class="fac-icon-circle"><i class="fa-solid fa-chair"></i></div>
-          <h3 style="font-size:16px;margin:0;">Comfortable Study Seats</h3>
+          <h3 style="font-size:16px;margin:0;font-weight:700;">43 Ergonomic Desks</h3>
           <p style="font-size:13.5px;color:var(--text-muted);margin:0;line-height:1.5;">
-            Spacious, dedicated desks with posture-friendly ergonomic chairs for long study hours without fatigue.
+            Individual study desks with posture-friendly chairs and personal power sockets for laptop and mobile charging.
           </p>
         </div>
 
         <!-- 2. High-Speed Wi-Fi -->
         <div class="fac-card">
           <div class="fac-icon-circle"><i class="fa-solid fa-wifi"></i></div>
-          <h3 style="font-size:16px;margin:0;">High-Speed Wi-Fi</h3>
+          <h3 style="font-size:16px;margin:0;font-weight:700;">High-Speed Wi-Fi</h3>
           <p style="font-size:13.5px;color:var(--text-muted);margin:0;line-height:1.5;">
-            High-speed optical fiber internet for uninterrupted online video lectures, test series, and research.
+            High-speed optical fiber internet ensuring lag-free video lectures, mock test practice, and research.
           </p>
         </div>
 
         <!-- 3. Peaceful Environment -->
         <div class="fac-card">
           <div class="fac-icon-circle"><i class="fa-solid fa-volume-xmark"></i></div>
-          <h3 style="font-size:16px;margin:0;">Peaceful Environment</h3>
+          <h3 style="font-size:16px;margin:0;font-weight:700;">Strict Silence Zone</h3>
           <p style="font-size:13.5px;color:var(--text-muted);margin:0;line-height:1.5;">
-            Strictly maintained silence zone ensuring 100% distraction-free deep concentration for serious aspirants.
+            Zero disturbance policy strictly monitored to maintain a deep, focused study atmosphere.
           </p>
         </div>
 
         <!-- 4. Power Backup -->
         <div class="fac-card">
           <div class="fac-icon-circle"><i class="fa-solid fa-bolt"></i></div>
-          <h3 style="font-size:16px;margin:0;">100% Power Backup</h3>
+          <h3 style="font-size:16px;margin:0;font-weight:700;">100% Power Backup</h3>
           <p style="font-size:13.5px;color:var(--text-muted);margin:0;line-height:1.5;">
-            Full inverter & generator power backup so your learning is never interrupted during power outages.
+            Uninterrupted inverter and generator backup so electricity cuts never disturb your preparation.
           </p>
         </div>
 
         <!-- 5. Air Conditioning -->
         <div class="fac-card">
           <div class="fac-icon-circle"><i class="fa-solid fa-snowflake"></i></div>
-          <h3 style="font-size:16px;margin:0;">Air Conditioning</h3>
+          <h3 style="font-size:16px;margin:0;font-weight:700;">Full Air Conditioning</h3>
           <p style="font-size:13.5px;color:var(--text-muted);margin:0;line-height:1.5;">
-            Evenly cooled, temperature-controlled environment providing maximum comfort in all seasons.
+            Evenly cooled, temperature-controlled hall ensuring comfort across all seasons.
           </p>
         </div>
 
         <!-- 6. CCTV Security -->
         <div class="fac-card">
           <div class="fac-icon-circle"><i class="fa-solid fa-video"></i></div>
-          <h3 style="font-size:16px;margin:0;">24/7 CCTV Surveillance</h3>
+          <h3 style="font-size:16px;margin:0;font-weight:700;">24/7 CCTV Monitoring</h3>
           <p style="font-size:13.5px;color:var(--text-muted);margin:0;line-height:1.5;">
-            Full round-the-clock camera monitoring ensuring complete safety for students and their belongings.
+            Complete camera surveillance coverage for the security of students and their belongings.
           </p>
         </div>
 
         <!-- 7. Purified RO Water -->
         <div class="fac-card">
           <div class="fac-icon-circle"><i class="fa-solid fa-bottle-water"></i></div>
-          <h3 style="font-size:16px;margin:0;">RO Drinking Water</h3>
+          <h3 style="font-size:16px;margin:0;font-weight:700;">RO Drinking Water</h3>
           <p style="font-size:13.5px;color:var(--text-muted);margin:0;line-height:1.5;">
-            Hygienic, multi-stage RO purified chilled and normal drinking water dispenser available continuously.
+            Clean and hygienic multi-stage RO purified chilled and normal drinking water dispenser.
           </p>
         </div>
 
         <!-- 8. Long Study Hours -->
         <div class="fac-card">
           <div class="fac-icon-circle"><i class="fa-solid fa-clock"></i></div>
-          <h3 style="font-size:16px;margin:0;">Long Study Hours</h3>
+          <h3 style="font-size:16px;margin:0;font-weight:700;">Long Study Hours</h3>
           <p style="font-size:13.5px;color:var(--text-muted);margin:0;line-height:1.5;">
-            Open 7 days a week from 6:00 AM to 11:00 PM to accommodate early risers and late-night study routines.
+            Open 7 days a week from 6:00 AM to 11:00 PM to support both early risers and late evening learners.
           </p>
         </div>
       </div>
@@ -652,42 +862,50 @@
   <section class="section" id="how-it-works"
     style="background:#ffffff;border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
     <div class="container">
-      <div style="text-align:center;max-width:600px;margin:0 auto 44px;">
-        <span class="badge badge-primary" style="margin-bottom:10px;">Simple Process</span>
-        <h2 style="font-size:clamp(1.6rem,3vw,2.3rem);margin-bottom:10px;">How Seat Booking Works</h2>
-        <p style="color:var(--text-muted);font-size:15px;">Book and reserve your study seat in four easy steps.</p>
+      <div style="text-align:center;max-width:600px;margin:0 auto 40px;">
+        <span class="badge badge-primary" style="margin-bottom:10px;">Simple Student Journey</span>
+        <h2 style="font-size:clamp(1.6rem,3vw,2.3rem);margin-bottom:10px;">How It Works</h2>
+        <p style="color:var(--text-muted);font-size:15px;">Book your study desk in five straightforward steps.</p>
       </div>
 
-      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(230px, 1fr));gap:20px;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:18px;">
         <div class="step-card">
           <div class="step-num-bubble">1</div>
-          <h3 style="font-size:16px;margin-bottom:8px;">Create Account</h3>
-          <p style="font-size:13.5px;color:var(--text-muted);margin:0;line-height:1.5;">
-            Register with your name, phone number, and address.
+          <h3 style="font-size:15px;margin-bottom:8px;font-weight:700;">Register Account</h3>
+          <p style="font-size:13px;color:var(--text-muted);margin:0;line-height:1.5;">
+            Register with your name, phone number, and address online or at the library counter.
           </p>
         </div>
 
         <div class="step-card">
           <div class="step-num-bubble">2</div>
-          <h3 style="font-size:16px;margin-bottom:8px;">Login</h3>
-          <p style="font-size:13.5px;color:var(--text-muted);margin:0;line-height:1.5;">
-            Access your student portal using your registered mobile or email.
+          <h3 style="font-size:15px;margin-bottom:8px;font-weight:700;">Student Login</h3>
+          <p style="font-size:13px;color:var(--text-muted);margin:0;line-height:1.5;">
+            Log in to the student portal using your registered credentials.
           </p>
         </div>
 
         <div class="step-card">
           <div class="step-num-bubble">3</div>
-          <h3 style="font-size:16px;margin-bottom:8px;">Select Seat</h3>
-          <p style="font-size:13.5px;color:var(--text-muted);margin:0;line-height:1.5;">
-            Pick an available seat from Section A or Section B on the interactive map.
+          <h3 style="font-size:15px;margin-bottom:8px;font-weight:700;">Select Your Seat</h3>
+          <p style="font-size:13px;color:var(--text-muted);margin:0;line-height:1.5;">
+            Choose any available green desk from our interactive 43-seat hall map.
           </p>
         </div>
 
         <div class="step-card">
           <div class="step-num-bubble">4</div>
-          <h3 style="font-size:16px;margin-bottom:8px;">Confirm Booking</h3>
-          <p style="font-size:13.5px;color:var(--text-muted);margin:0;line-height:1.5;">
-            Receive your booking confirmation instantly and start studying.
+          <h3 style="font-size:15px;margin-bottom:8px;font-weight:700;">Confirm Booking</h3>
+          <p style="font-size:13px;color:var(--text-muted);margin:0;line-height:1.5;">
+            Select your study shift and confirm your seat booking instantly.
+          </p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-num-bubble">5</div>
+          <h3 style="font-size:15px;margin-bottom:8px;font-weight:700;">View &amp; Study</h3>
+          <p style="font-size:13px;color:var(--text-muted);margin:0;line-height:1.5;">
+            View your active booking details on your dashboard and come to study.
           </p>
         </div>
       </div>
@@ -703,32 +921,24 @@
   <!-- ─── STUDY ENVIRONMENT & GALLERY ─────────────────────────────────── -->
   <section class="section" id="gallery" style="background:var(--bg);">
     <div class="container">
-      <div style="text-align:center;max-width:600px;margin:0 auto 40px;">
+      <div style="text-align:center;max-width:600px;margin:0 auto 36px;">
         <span class="badge badge-primary" style="margin-bottom:10px;">Our Space</span>
-        <h2 style="font-size:clamp(1.6rem,3vw,2.3rem);margin-bottom:10px;">Inside the Library</h2>
+        <h2 style="font-size:clamp(1.6rem,3vw,2.3rem);margin-bottom:10px;">Inside SR Library</h2>
         <p style="color:var(--text-muted);font-size:15px;">Real photographs from SR Self Study Zone &amp; Library.</p>
       </div>
 
       <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:20px;">
-        <div
-          style="border-radius:14px;overflow:hidden;border:1px solid var(--border);aspect-ratio:4/3;background:#000;">
-          <img src="/images/gallery1.jpeg" alt="Study Hall" style="width:100%;height:100%;object-fit:cover;"
-            loading="lazy" />
+        <div style="border-radius:14px;overflow:hidden;border:1px solid var(--border);aspect-ratio:4/3;background:#000;">
+          <img src="/images/gallery1.jpeg" alt="Study Hall" style="width:100%;height:100%;object-fit:cover;" loading="lazy" />
         </div>
-        <div
-          style="border-radius:14px;overflow:hidden;border:1px solid var(--border);aspect-ratio:4/3;background:#000;">
-          <img src="/images/gallery3.jpeg" alt="Private Desk" style="width:100%;height:100%;object-fit:cover;"
-            loading="lazy" />
+        <div style="border-radius:14px;overflow:hidden;border:1px solid var(--border);aspect-ratio:4/3;background:#000;">
+          <img src="/images/gallery3.jpeg" alt="Private Desk" style="width:100%;height:100%;object-fit:cover;" loading="lazy" />
         </div>
-        <div
-          style="border-radius:14px;overflow:hidden;border:1px solid var(--border);aspect-ratio:4/3;background:#000;">
-          <img src="/images/coridoor.jpeg" alt="Corridor" style="width:100%;height:100%;object-fit:cover;"
-            loading="lazy" />
+        <div style="border-radius:14px;overflow:hidden;border:1px solid var(--border);aspect-ratio:4/3;background:#000;">
+          <img src="/images/coridoor.jpeg" alt="Corridor" style="width:100%;height:100%;object-fit:cover;" loading="lazy" />
         </div>
-        <div
-          style="border-radius:14px;overflow:hidden;border:1px solid var(--border);aspect-ratio:4/3;background:#000;">
-          <img src="/images/office.jpeg" alt="Reception Desk" style="width:100%;height:100%;object-fit:cover;"
-            loading="lazy" />
+        <div style="border-radius:14px;overflow:hidden;border:1px solid var(--border);aspect-ratio:4/3;background:#000;">
+          <img src="/images/office.jpeg" alt="Reception Desk" style="width:100%;height:100%;object-fit:cover;" loading="lazy" />
         </div>
       </div>
     </div>
@@ -743,8 +953,7 @@
         <p style="color:var(--text-muted);font-size:14.5px;margin-bottom:24px;">
           Take a look at the facilities, ambience, and peaceful study atmosphere.
         </p>
-        <div
-          style="border-radius:16px;overflow:hidden;box-shadow:var(--shadow-lg);border:1px solid var(--border);background:#000;">
+        <div style="border-radius:16px;overflow:hidden;box-shadow:var(--shadow-lg);border:1px solid var(--border);background:#000;">
           <video controls poster="/images/gallery1.jpeg" style="width:100%;max-height:480px;display:block;">
             <source src="/images/lib.mp4" type="video/mp4" />
             Your browser does not support HTML5 video.
@@ -766,7 +975,7 @@
       </p>
       <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
         <a href="/seat-availability" class="btn btn-accent btn-lg" style="font-weight:700;">
-          <i class="fa-solid fa-chair"></i> Reserve Your Seat
+          <i class="fa-solid fa-chair"></i> Reserve Your Desk
         </a>
         <a href="https://wa.me/918103485288" target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-lg"
           style="color:#fff;border-color:rgba(255,255,255,0.4);">
@@ -776,8 +985,8 @@
     </div>
   </section>
 
-  <!-- ─── FOOTER ─────────────────────────────────────────────────────── -->
-  <footer style="background:#0f172a;color:#94a3b8;padding:48px 20px 24px;">
+  <!-- ─── FOOTER & CONTACT ────────────────────────────────────────────── -->
+  <footer id="contact" style="background:#0f172a;color:#94a3b8;padding:48px 20px 24px;">
     <div class="container" style="max-width:1200px;margin:0 auto;">
       <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:32px;margin-bottom:40px;">
         <div>
@@ -792,11 +1001,19 @@
           </p>
           <div style="display:flex;gap:10px;">
             <a href="https://wa.me/918103485288" target="_blank" rel="noopener noreferrer"
-              style="color:#fff;background:rgba(255,255,255,0.1);width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;">
+              aria-label="WhatsApp"
+              style="color:#fff;background:rgba(255,255,255,0.1);width:36px;height:36px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font-size:18px;">
               <i class="fa-brands fa-whatsapp"></i>
             </a>
+            <a href="https://www.instagram.com/sr_self_study_zone_and_library?igsh=ZTg3MWJrOHRra3I2&utm_source=qr"
+              target="_blank" rel="noopener noreferrer"
+              aria-label="Instagram"
+              style="color:#fff;background:rgba(255,255,255,0.1);width:36px;height:36px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font-size:18px;">
+              <i class="fa-brands fa-instagram"></i>
+            </a>
             <a href="mailto:srselfstudyzone@gmail.com"
-              style="color:#fff;background:rgba(255,255,255,0.1);width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;">
+              aria-label="Email"
+              style="color:#fff;background:rgba(255,255,255,0.1);width:36px;height:36px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font-size:18px;">
               <i class="fa-solid fa-envelope"></i>
             </a>
           </div>
@@ -806,11 +1023,10 @@
           <h4 style="color:#ffffff;font-size:15px;margin-bottom:16px;">Quick Links</h4>
           <ul style="display:flex;flex-direction:column;gap:10px;font-size:13.5px;">
             <li><a href="/" style="color:#cbd5e1;text-decoration:none;">Home</a></li>
-            <li><a href="/about.html" style="color:#cbd5e1;text-decoration:none;">About Library</a></li>
+            <li><a href="#about" style="color:#cbd5e1;text-decoration:none;">About Library</a></li>
             <li><a href="#facilities" style="color:#cbd5e1;text-decoration:none;">Facilities</a></li>
             <li><a href="#how-it-works" style="color:#cbd5e1;text-decoration:none;">How It Works</a></li>
-            <li><a href="/seat-availability" style="color:#cbd5e1;text-decoration:none;">Seat Availability</a></li>
-            <li><a href="/contact.html" style="color:#cbd5e1;text-decoration:none;">Contact</a></li>
+            <li><a href="/seat-availability" style="color:#cbd5e1;text-decoration:none;">43-Seat Layout</a></li>
           </ul>
         </div>
 
@@ -827,21 +1043,18 @@
         <div>
           <h4 style="color:#ffffff;font-size:15px;margin-bottom:16px;">Contact Info</h4>
           <ul style="display:flex;flex-direction:column;gap:10px;font-size:13.5px;">
-            <li><i class="fa-solid fa-location-dot" style="color:#ffd600;margin-right:8px;"></i> Shahdol, Madhya Pradesh
-            </li>
-            <li><i class="fa-solid fa-phone" style="color:#ffd600;margin-right:8px;"></i> +91 8103485288 / 7987526720
-            </li>
-            <li><i class="fa-regular fa-clock" style="color:#ffd600;margin-right:8px;"></i> Open Daily: 6:00 AM – 11:00
-              PM</li>
+            <li><i class="fa-solid fa-location-dot" style="color:#ffd600;margin-right:8px;"></i> Shahdol, Madhya Pradesh</li>
+            <li><i class="fa-solid fa-phone" style="color:#ffd600;margin-right:8px;"></i> +91 8103485288 / 7987526720</li>
+            <li><i class="fa-solid fa-envelope" style="color:#ffd600;margin-right:8px;"></i> srselfstudyzone@gmail.com</li>
+            <li><i class="fa-regular fa-clock" style="color:#ffd600;margin-right:8px;"></i> Open Daily: 6:00 AM – 11:00 PM</li>
           </ul>
         </div>
       </div>
 
       <div
         style="border-top:1px solid rgba(255,255,255,0.1);padding-top:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-size:13px;">
-        <span>© <%= currentYear %>
-            <%= libraryName %>. All Rights Reserved.</span>
-        <span>Developed by <a href="https://rixilab.in">Rixi Lab Technologies</a></span>
+        <span>© <%= currentYear %> <%= libraryName %>. All Rights Reserved.</span>
+        <span>Shahdol, Madhya Pradesh</span>
       </div>
     </div>
   </footer>
@@ -853,6 +1066,15 @@
       if (drawer && overlay) {
         drawer.classList.toggle('active');
         overlay.classList.toggle('active');
+      }
+    }
+
+    function closeMobileDrawer() {
+      const drawer = document.getElementById('mobileDrawer');
+      const overlay = document.getElementById('drawerOverlay');
+      if (drawer && overlay) {
+        drawer.classList.remove('active');
+        overlay.classList.remove('active');
       }
     }
   </script>

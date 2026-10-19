@@ -670,3 +670,141 @@
     width: 100%;
   }
 }
+
+/* ─── Actions Dropdown & Responsive Table Cards ──────────────────── */
+.actions-dropdown-container {
+  position: relative;
+  display: inline-block;
+}
+
+.action-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  min-width: 200px;
+  z-index: 999;
+  padding: 6px;
+  display: none;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.action-dropdown-menu.active {
+  display: flex;
+}
+
+.action-dropdown-item {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.15s ease;
+  text-decoration: none;
+}
+
+.action-dropdown-item:hover {
+  background: #f1f5f9;
+}
+
+.action-dropdown-item.text-success {
+  color: #059669;
+}
+.action-dropdown-item.text-warning {
+  color: #d97706;
+}
+.action-dropdown-item.text-danger {
+  color: #dc2626;
+}
+.action-dropdown-item.text-danger:hover {
+  background: #fee2e2;
+}
+
+.action-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+}
+
+/* Responsive cards on tablets and phones */
+@media (max-width: 900px) {
+  .responsive-card-table thead {
+    display: none;
+  }
+  .responsive-card-table, 
+  .responsive-card-table tbody, 
+  .responsive-card-table tr, 
+  .responsive-card-table td {
+    display: block;
+    width: 100%;
+  }
+  .responsive-card-table tr {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    margin-bottom: 16px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .responsive-card-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 13.5px;
+    text-align: right;
+  }
+  .responsive-card-table td:last-child {
+    border-bottom: none;
+    padding-top: 14px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .responsive-card-table td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    color: #64748b;
+    font-size: 12px;
+    text-transform: uppercase;
+    text-align: left;
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+  .responsive-card-table td[data-label="Actions"]::before {
+    display: none;
+  }
+  .responsive-card-table .action-btn-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    width: 100%;
+  }
+  .responsive-card-table .action-btn-group .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .responsive-card-table .actions-dropdown-container {
+    grid-column: span 2;
+    width: 100%;
+  }
+  .responsive-card-table .actions-dropdown-container .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
