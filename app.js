@@ -134,15 +134,15 @@ const startServer = async () => {
       res.render('home', {
         title: `${process.env.LIBRARY_NAME || 'SR Library'} - Physical Study Library & Seat Booking`,
         libraryName: process.env.LIBRARY_NAME || 'SR Library',
-        availableSeats: availableSeats || 35,
-        totalSeats: totalSeats || 40,
+        availableSeats: availableSeats !== undefined ? availableSeats : 38,
+        totalSeats: totalSeats || 43,
       });
     } catch (e) {
       res.render('home', {
         title: `${process.env.LIBRARY_NAME || 'SR Library'} - Physical Study Library & Seat Booking`,
         libraryName: process.env.LIBRARY_NAME || 'SR Library',
-        availableSeats: 35,
-        totalSeats: 40,
+        availableSeats: 38,
+        totalSeats: 43,
       });
     }
   });

@@ -5,7 +5,7 @@ const Seat = require('../models/Seat');
 const Booking = require('../models/Booking');
 const { validateStudentRegistration } = require('../middleware/validation');
 const generateStudentId = require('../utils/generateStudentId');
-const { sendStudentIdEmail } = require('../services/emailService');
+const { sendWelcomeEmail, sendPaymentConfirmationEmail } = require('../services/emailService');
 
 const getHmacSecret = () => {
   return process.env.RAZORPAY_KEY_SECRET || process.env.JWT_SECRET || 'srlibrary_secure_payment_salt';
@@ -160,10 +160,12 @@ const verifyOnlinePayment = async (req, res) => {
 
     student.paymentId = payment._id;
 
-    // Send confirmation email with Student ID & login details
+    // 1. Automatically trigger the Welcome email with generated Student ID
     try {
-      await sendStudentIdEmail(student);
-      student.emailStatus = 'sent';
+      const welcomeResult = await sendWelcomeEmail(student, { triggerEvent: 'registration' });
+      // 2. Automatically trigger the Payment Confirmation email for verified payment
+      const payResult = await sendPaymentConfirmationEmail(student, payment, { triggerEvent: 'online_payment' });
+      student.emailStatus = (welcomeResult.success || payResult.success) ? 'sent' : 'failed';
       await student.save();
     } catch (emailErr) {
       console.error('Online registration email failed:', emailErr.message);
@@ -287,10 +289,16 @@ const postRegister = async (req, res) => {
     });
     await payment.save();
 
-    student.paymentId = payment._id;
-    await student.save();
-
-    // DO NOT send approval email yet! Only send after admin verifies cash.
+    // Automatically trigger the Welcome email with generated Student ID upon registration
+    try {
+      const emailResult = await sendWelcomeEmail(student, { triggerEvent: 'registration' });
+      student.emailStatus = emailResult.success ? 'sent' : 'failed';
+      await student.save();
+    } catch (emailErr) {
+      console.error('Cash registration email notification failed:', emailErr.message);
+      student.emailStatus = 'failed';
+      await student.save();
+    }
 
     req.session.registeredStudent = {
       name: student.fullName,
@@ -517,21 +525,27 @@ const postBookSeat = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Please select a seat.' });
     }
 
-    const seat = await Seat.findOne({ seatNumber: seatNumber.toUpperCase().trim() });
-    if (!seat) {
-      return res.status(404).json({ success: false, message: 'Selected seat does not exist.' });
-    }
+    // Atomic update to prevent race conditions and duplicate bookings
+    const seat = await Seat.findOneAndUpdate(
+      { seatNumber: seatNumber.toUpperCase().trim(), status: 'available' },
+      { status: 'occupied', currentStudent: student._id },
+      { new: true }
+    );
 
-    if (seat.status !== 'available') {
+    if (!seat) {
+      const existingSeat = await Seat.findOne({ seatNumber: seatNumber.toUpperCase().trim() });
+      if (!existingSeat) {
+        return res.status(404).json({ success: false, message: 'Selected seat does not exist.' });
+      }
       return res.status(400).json({
         success: false,
-        message: `Seat ${seat.seatNumber} is currently ${seat.status}. Please choose an available seat.`,
+        message: `Seat ${existingSeat.seatNumber} is currently ${existingSeat.status}. Please choose an available green desk.`,
       });
     }
 
     // If student already has an active booking, free their previous seat
     const previousBooking = await Booking.findOne({ student: student._id, status: 'active' });
-    if (previousBooking) {
+    if (previousBooking && String(previousBooking.seat) !== String(seat._id)) {
       previousBooking.status = 'completed';
       await previousBooking.save();
       await Seat.findByIdAndUpdate(previousBooking.seat, {
@@ -561,10 +575,8 @@ const postBookSeat = async (req, res) => {
 
     await booking.save();
 
-    // Mark seat as occupied
-    seat.status = 'occupied';
+    // Link booking to seat
     seat.currentBooking = booking._id;
-    seat.currentStudent = student._id;
     await seat.save();
 
     res.json({

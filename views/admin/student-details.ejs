@@ -20,9 +20,12 @@
         <a href="/admin/students" style="color:var(--text-muted);font-weight:400;">Students</a>
         &nbsp;/&nbsp; <%= student.fullName %>
       </div>
-      <div style="display:flex;gap:10px;">
-        <a href="/admin/students/<%= student._id %>/print" target="_blank" class="btn btn-primary btn-sm" style="background:#4f46e5;display:inline-flex;align-items:center;gap:6px;">
-          <i class="fa-solid fa-print"></i> Print Registration Form
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button type="button" onclick="openEditStudentModal()" class="btn btn-primary btn-sm" style="background:#2563eb;display:inline-flex;align-items:center;gap:6px;">
+          <i class="fa-solid fa-pen-to-square"></i> Edit Student
+        </button>
+        <a href="/admin/students/<%= student._id %>/print" target="_blank" class="btn btn-ghost btn-sm" style="border:1px solid var(--border);display:inline-flex;align-items:center;gap:6px;">
+          <i class="fa-solid fa-print"></i> Print Form
         </a>
       </div>
     </div>
@@ -124,7 +127,11 @@
 
             <!-- Action Buttons Grid -->
             <div class="action-buttons-grid" style="display:flex;flex-direction:column;gap:8px;">
-              <a href="/admin/students/<%= student._id %>/print" target="_blank" class="btn btn-primary btn-block" style="background:#4f46e5;color:#fff;text-align:center;display:flex;align-items:center;justify-content:center;gap:6px;">
+              <button type="button" onclick="openEditStudentModal()" class="btn btn-primary btn-block" style="background:#2563eb;color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;">
+                <i class="fa-solid fa-pen-to-square"></i> Edit Student
+              </button>
+
+              <a href="/admin/students/<%= student._id %>/print" target="_blank" class="btn btn-ghost btn-block" style="border:1px solid var(--border);color:var(--text-primary);text-align:center;display:flex;align-items:center;justify-content:center;gap:6px;">
                 <i class="fa-solid fa-print"></i> Print Registration Form
               </a>
 
@@ -275,8 +282,225 @@
   </div>
 </div>
 
+<!-- Edit Student Modal -->
+<div id="editStudentModal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.65);backdrop-filter:blur(4px);z-index:99999;display:none;align-items:center;justify-content:center;padding:16px;">
+  <div style="background:#ffffff;border-radius:18px;max-width:680px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-xl);border:1px solid var(--border);">
+    
+    <div style="background:linear-gradient(135deg, #0d1b6e 0%, #1a237e 100%);color:#fff;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;border-top-left-radius:17px;border-top-right-radius:17px;position:sticky;top:0;z-index:10;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span style="font-size:22px;"><i class="fa-solid fa-user-pen"></i></span>
+        <div>
+          <h3 style="margin:0;font-size:18px;font-weight:700;color:#fff;">Edit Student Registration</h3>
+          <div style="font-size:12px;color:rgba(255,255,255,0.85);margin-top:2px;">Editing details for: <strong><%= student.fullName %></strong></div>
+        </div>
+      </div>
+      <button type="button" onclick="closeEditStudentModal()" style="background:rgba(255,255,255,0.15);border:none;color:#fff;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;">&times;</button>
+    </div>
+
+    <!-- Error Alert Box -->
+    <div id="editStudentError" style="display:none;background:#fef2f2;border-left:4px solid #ef4444;color:#991b1b;padding:12px 18px;margin:16px 24px 0;border-radius:8px;font-size:13.5px;"></div>
+
+    <form id="editStudentForm" onsubmit="saveStudentEdit(event)" style="padding:24px;">
+      
+      <!-- Read-only Student ID Banner -->
+      <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px 16px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+        <div>
+          <span style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#64748b;font-weight:700;display:block;">Assigned Student ID</span>
+          <strong style="font-family:monospace;font-size:17px;color:var(--primary);letter-spacing:1px;"><%= student.studentId || 'LIB (Pending)' %></strong>
+        </div>
+        <span class="badge badge-gray" style="font-size:11.5px;padding:5px 10px;">
+          <i class="fa-solid fa-lock"></i> Permanent ID (Read-only)
+        </span>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        
+        <div>
+          <label style="display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;">Full Name *</label>
+          <input type="text" name="fullName" class="form-control" value="<%= student.fullName %>" required style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13.5px;" />
+        </div>
+
+        <div>
+          <label style="display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;">Parent / Guardian Name *</label>
+          <input type="text" name="parentName" class="form-control" value="<%= student.parentName %>" required style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13.5px;" />
+        </div>
+
+        <div>
+          <label style="display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;">Mobile Number * (10 digits)</label>
+          <input type="tel" name="mobile" class="form-control" value="<%= student.mobile %>" required pattern="[0-9]{10}" maxlength="10" placeholder="10-digit number" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13.5px;" />
+        </div>
+
+        <div>
+          <label style="display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;">Email Address *</label>
+          <input type="email" name="email" class="form-control" value="<%= student.email %>" required style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13.5px;" />
+        </div>
+
+        <div>
+          <label style="display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;">Date of Birth</label>
+          <input type="date" name="dateOfBirth" class="form-control" value="<%= student.dateOfBirth ? new Date(student.dateOfBirth).toISOString().split('T')[0] : '' %>" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13.5px;" />
+        </div>
+
+        <div>
+          <label style="display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;">Gender</label>
+          <select name="gender" class="form-control" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13.5px;background:#fff;">
+            <option value="male" <%= student.gender === 'male' ? 'selected' : '' %>>Male</option>
+            <option value="female" <%= student.gender === 'female' ? 'selected' : '' %>>Female</option>
+            <option value="other" <%= student.gender === 'other' ? 'selected' : '' %>>Other</option>
+          </select>
+        </div>
+
+        <div style="grid-column:1/-1;">
+          <label style="display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;">Residential Address</label>
+          <input type="text" name="address" class="form-control" value="<%= student.address %>" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13.5px;" />
+        </div>
+
+        <div>
+          <label style="display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;">Emergency Contact</label>
+          <input type="tel" name="emergencyContact" class="form-control" value="<%= student.emergencyContact || '' %>" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13.5px;" />
+        </div>
+
+        <div>
+          <label style="display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;">ID Proof Type</label>
+          <select name="idProofType" class="form-control" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13.5px;background:#fff;">
+            <option value="Aadhaar Card" <%= student.idProofType === 'Aadhaar Card' ? 'selected' : '' %>>Aadhaar Card</option>
+            <option value="PAN Card" <%= student.idProofType === 'PAN Card' ? 'selected' : '' %>>PAN Card</option>
+            <option value="Voter ID" <%= student.idProofType === 'Voter ID' ? 'selected' : '' %>>Voter ID</option>
+            <option value="Driving License" <%= student.idProofType === 'Driving License' ? 'selected' : '' %>>Driving License</option>
+            <option value="College ID" <%= student.idProofType === 'College ID' ? 'selected' : '' %>>College ID</option>
+          </select>
+        </div>
+
+        <div>
+          <label style="display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;">ID Proof Number</label>
+          <input type="text" name="idProofNumber" class="form-control" value="<%= student.idProofNumber || '' %>" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13.5px;" />
+        </div>
+
+        <div>
+          <label style="display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;">Education Level</label>
+          <input type="text" name="educationLevel" class="form-control" value="<%= student.educationLevel || '' %>" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13.5px;" />
+        </div>
+
+        <div>
+          <label style="display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;">Preparing For</label>
+          <input type="text" name="preparingFor" class="form-control" value="<%= student.preparingFor || '' %>" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13.5px;" />
+        </div>
+
+        <div>
+          <label style="display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;">Joining Date</label>
+          <input type="date" name="joiningDate" class="form-control" value="<%= student.joiningDate ? new Date(student.joiningDate).toISOString().split('T')[0] : '' %>" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13.5px;" />
+        </div>
+
+        <div>
+          <label style="display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;">Membership Slot</label>
+          <select name="membershipSlot" class="form-control" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13.5px;background:#fff;">
+            <option value="Full Day Slot (Unlimited)" <%= (student.membershipSlot === 'Full Day Slot (Unlimited)' || student.membershipSlot === 'Full Day Slot') ? 'selected' : '' %>>Full Day Slot (Unlimited)</option>
+            <option value="Morning Shift (6:00 AM - 2:00 PM)" <%= student.membershipSlot === 'Morning Shift (6:00 AM - 2:00 PM)' ? 'selected' : '' %>>Morning Shift (6 AM - 2 PM)</option>
+            <option value="Evening Shift (2:00 PM - 10:00 PM)" <%= student.membershipSlot === 'Evening Shift (2:00 PM - 10:00 PM)' ? 'selected' : '' %>>Evening Shift (2 PM - 10 PM)</option>
+          </select>
+        </div>
+
+        <div>
+          <label style="display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;">Subscription Plan</label>
+          <select name="subscriptionPlan" class="form-control" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13.5px;background:#fff;">
+            <option value="1 Month Plan" <%= student.subscriptionPlan === '1 Month Plan' ? 'selected' : '' %>>1 Month Plan</option>
+            <option value="2 Months Plan" <%= student.subscriptionPlan === '2 Months Plan' ? 'selected' : '' %>>2 Months Plan</option>
+            <option value="3 Months Plan" <%= student.subscriptionPlan === '3 Months Plan' ? 'selected' : '' %>>3 Months Plan</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:24px;border-top:1px solid var(--border);padding-top:16px;">
+        <button type="button" class="btn btn-ghost" onclick="closeEditStudentModal()">Cancel</button>
+        <button type="submit" id="saveEditStudentBtn" class="btn btn-primary" style="display:inline-flex;align-items:center;gap:6px;">
+          <i class="fa-solid fa-floppy-disk"></i> Save Changes
+        </button>
+      </div>
+    </form>
+
+  </div>
+</div>
+
 <div class="toast-container" id="toastContainer"></div>
 
 <script src="/js/admin.js"></script>
+<script>
+  function openEditStudentModal() {
+    const modal = document.getElementById('editStudentModal');
+    const errBox = document.getElementById('editStudentError');
+    if (errBox) errBox.style.display = 'none';
+    if (modal) modal.style.display = 'flex';
+  }
+
+  function closeEditStudentModal() {
+    const modal = document.getElementById('editStudentModal');
+    if (modal) modal.style.display = 'none';
+  }
+
+  async function saveStudentEdit(e) {
+    e.preventDefault();
+    const form = document.getElementById('editStudentForm');
+    const btn = document.getElementById('saveEditStudentBtn');
+    const errBox = document.getElementById('editStudentError');
+    if (errBox) errBox.style.display = 'none';
+
+    const formData = new FormData(form);
+    const payload = {};
+    formData.forEach((value, key) => { payload[key] = value; });
+
+    // Client-side phone format validation
+    const mobileClean = (payload.mobile || '').replace(/\D/g, '');
+    if (mobileClean.length !== 10) {
+      if (errBox) {
+        errBox.textContent = '❌ Please enter a valid 10-digit mobile number.';
+        errBox.style.display = 'block';
+      }
+      return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving changes...';
+
+    try {
+      const res = await fetch('/admin/students/<%= student._id %>/edit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        showToast('✅ ' + data.message, 'success');
+        closeEditStudentModal();
+        setTimeout(() => location.reload(), 800);
+      } else {
+        const errMsg = data.message || 'Error updating student details';
+        if (errBox) {
+          errBox.textContent = '❌ ' + errMsg;
+          errBox.style.display = 'block';
+        }
+        showToast('❌ ' + errMsg, 'danger');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Changes';
+      }
+    } catch (err) {
+      if (errBox) {
+        errBox.textContent = '❌ Network or server error: ' + err.message;
+        errBox.style.display = 'block';
+      }
+      showToast('❌ Server error: ' + err.message, 'danger');
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Changes';
+    }
+  }
+
+  // Auto-open modal if URL has ?edit=1 or #edit
+  if (window.location.search.includes('edit=1') || window.location.hash === '#edit') {
+    openEditStudentModal();
+  }
+</script>
 </body>
 </html>

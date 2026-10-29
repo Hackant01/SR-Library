@@ -3,9 +3,17 @@ const Student = require('../models/Student');
 const Payment = require('../models/Payment');
 const Seat = require('../models/Seat');
 const Booking = require('../models/Booking');
+const EmailLog = require('../models/EmailLog');
 const jwt = require('jsonwebtoken');
 const generateStudentId = require('../utils/generateStudentId');
-const { sendStudentIdEmail, sendRejectionEmail } = require('../services/emailService');
+const {
+  sendWelcomeEmail,
+  sendPaymentConfirmationEmail,
+  sendStudentIdEmail,
+  sendRejectionEmail,
+  retryEmailLog,
+  isEmailConfigured,
+} = require('../services/emailService');
 
 // ─── Admin Login ────────────────────────────────────────────────────────────
 const getLogin = (req, res) => {
@@ -358,10 +366,15 @@ const markCashPaymentReceived = async (req, res) => {
 
     student.paymentId = payment._id;
 
-    // Send final approval & activation email
+    // 1. Automatically trigger Payment Confirmation Email
     try {
-      await sendStudentIdEmail(student);
-      student.emailStatus = 'sent';
+      const payEmailResult = await sendPaymentConfirmationEmail(student, payment, { triggerEvent: 'cash_verified' });
+      // If student hasn't had their welcome email accepted yet, also trigger/retry welcome email
+      const existingWelcome = await EmailLog.findOne({ studentId: student.studentId, emailType: 'welcome', status: 'accepted' });
+      if (!existingWelcome) {
+        await sendWelcomeEmail(student, { triggerEvent: 'registration', forceResend: true });
+      }
+      student.emailStatus = payEmailResult.success ? 'sent' : 'failed';
       await student.save({ validateModifiedOnly: true });
     } catch (emailErr) {
       console.error('Email send failed on cash verification:', emailErr.message);
@@ -371,7 +384,7 @@ const markCashPaymentReceived = async (req, res) => {
 
     res.json({
       success: true,
-      message: `₹150 cash payment received & verified! Account activated for ${student.fullName} (${student.studentId}). Email sent.`,
+      message: `₹150 cash payment received & verified! Account activated for ${student.fullName} (${student.studentId}). Payment confirmation email triggered.`,
       studentId: student.studentId,
       emailStatus: student.emailStatus,
     });
@@ -524,7 +537,7 @@ const deleteStudent = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Student not found or already deleted' });
     }
 
-    // Free any active seats held by this student
+    // Safe Deletion: Free any active seats held by this student
     const activeBookings = await Booking.find({ student: req.params.id, status: 'active' });
     for (const b of activeBookings) {
       if (b.seat) {
@@ -536,12 +549,21 @@ const deleteStudent = async (req, res) => {
       }
     }
 
-    await Booking.deleteMany({ student: req.params.id });
-    await Payment.deleteMany({ student: req.params.id });
+    // Mark bookings as cancelled rather than purging audit history
+    await Booking.updateMany(
+      { student: req.params.id, status: 'active' },
+      { status: 'cancelled', notes: 'Student account deleted by admin' }
+    );
+
+    // Keep payment audit history intact with student metadata note
+    await Payment.updateMany(
+      { student: req.params.id },
+      { $set: { cashVerificationNote: 'Account deleted: payment record preserved for audit' } }
+    );
 
     res.json({
       success: true,
-      message: `Student "${student.fullName}" (${student.studentId || 'N/A'}) deleted successfully`,
+      message: `Student "${student.fullName}" (${student.studentId || 'N/A'}) deleted successfully. Seat occupancy freed and financial audit history preserved.`,
     });
   } catch (err) {
     console.error('Delete student error:', err);
@@ -669,10 +691,11 @@ const resendEmail = async (req, res) => {
     if (!student) return res.status(404).json({ success: false, message: 'Student not found' });
 
     if (!student.studentId) {
-      return res.status(400).json({ success: false, message: 'Student ID not yet assigned' });
+      student.studentId = await generateStudentId();
+      await student.save();
     }
 
-    const emailResult = await sendStudentIdEmail(student);
+    const emailResult = await sendWelcomeEmail(student, { triggerEvent: 'admin_resend', forceResend: true });
     if (emailResult && emailResult.notConfigured) {
       student.emailStatus = 'failed';
       await student.save({ validateModifiedOnly: true });
@@ -680,6 +703,15 @@ const resendEmail = async (req, res) => {
         success: false,
         notConfigured: true,
         message: 'SMTP email service is not configured in .env (EMAIL_USER / EMAIL_PASSWORD). Please configure valid credentials to send real emails.',
+      });
+    }
+
+    if (!emailResult.success) {
+      student.emailStatus = 'failed';
+      await student.save({ validateModifiedOnly: true });
+      return res.status(500).json({
+        success: false,
+        message: emailResult.message || 'Email sending failed',
       });
     }
 
@@ -693,10 +725,204 @@ const resendEmail = async (req, res) => {
   }
 };
 
+// ─── Get Student JSON (for Edit Modals) ──────────────────────────────────────
+const getStudentJson = async (req, res) => {
+  try {
+    const student = await Student.findById(req.params.id).select('-password');
+    if (!student) {
+      return res.status(404).json({ success: false, message: 'Student not found' });
+    }
+    res.json({ success: true, student });
+  } catch (err) {
+    console.error('getStudentJson error:', err);
+    res.status(500).json({ success: false, message: err.message || 'Error fetching student details' });
+  }
+};
+
+// ─── Edit Student (Admin) ─────────────────────────────────────────────────────
+const updateStudent = async (req, res) => {
+  try {
+    const student = await Student.findById(req.params.id);
+    if (!student) {
+      return res.status(404).json({ success: false, message: 'Student not found' });
+    }
+
+    const body = req.body;
+
+    // 1. Validate required fields
+    if (!body.fullName || !body.fullName.trim()) {
+      return res.status(400).json({ success: false, message: 'Full name is required.' });
+    }
+    if (!body.parentName || !body.parentName.trim()) {
+      return res.status(400).json({ success: false, message: "Father's/Mother's name is required." });
+    }
+    if (!body.mobile || !body.mobile.trim()) {
+      return res.status(400).json({ success: false, message: 'Mobile number is required.' });
+    }
+    if (!body.email || !body.email.trim()) {
+      return res.status(400).json({ success: false, message: 'Email address is required.' });
+    }
+
+    // 2. Validate format: 10-digit mobile
+    const cleanedMobile = body.mobile.trim().replace(/\D/g, '');
+    if (cleanedMobile.length !== 10) {
+      return res.status(400).json({ success: false, message: 'Mobile number must be exactly 10 digits.' });
+    }
+
+    // 3. Validate format: email
+    const cleanedEmail = body.email.toLowerCase().trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(cleanedEmail)) {
+      return res.status(400).json({ success: false, message: 'Please provide a valid email address.' });
+    }
+
+    // 4. Check duplicate email (excluding this student)
+    if (cleanedEmail !== student.email) {
+      const dupEmail = await Student.findOne({ email: cleanedEmail, _id: { $ne: student._id } });
+      if (dupEmail) {
+        return res.status(400).json({
+          success: false,
+          message: `The email "${cleanedEmail}" is already in use by student ${dupEmail.studentId || dupEmail.fullName}.`,
+        });
+      }
+    }
+
+    // 5. Check duplicate mobile (excluding this student)
+    if (cleanedMobile !== student.mobile) {
+      const dupMobile = await Student.findOne({ mobile: cleanedMobile, _id: { $ne: student._id } });
+      if (dupMobile) {
+        return res.status(400).json({
+          success: false,
+          message: `The mobile number "${cleanedMobile}" is already in use by student ${dupMobile.studentId || dupMobile.fullName}.`,
+        });
+      }
+    }
+
+    // 6. Update permitted registration details only
+    student.fullName = body.fullName.trim();
+    student.parentName = body.parentName.trim();
+    student.mobile = cleanedMobile;
+    student.email = cleanedEmail;
+
+    if (body.dateOfBirth) student.dateOfBirth = new Date(body.dateOfBirth);
+    if (body.gender && ['male', 'female', 'other'].includes(body.gender)) student.gender = body.gender;
+    if (body.address) student.address = body.address.trim();
+    if (body.emergencyContact !== undefined) student.emergencyContact = body.emergencyContact.trim();
+    if (body.idProofType) student.idProofType = body.idProofType.trim();
+    if (body.idProofNumber !== undefined) student.idProofNumber = body.idProofNumber.trim();
+    if (body.educationLevel) student.educationLevel = body.educationLevel.trim();
+    if (body.preparingFor) student.preparingFor = body.preparingFor.trim();
+    if (body.membershipSlot) student.membershipSlot = body.membershipSlot.trim();
+    if (body.subscriptionPlan) student.subscriptionPlan = body.subscriptionPlan.trim();
+    if (body.slotTiming) {
+      student.slotTiming = body.slotTiming.trim();
+    } else if (!student.slotTiming) {
+      student.slotTiming = '6:00 AM - 10:00 PM (Full Day)';
+    }
+    if (body.joiningDate) student.joiningDate = new Date(body.joiningDate);
+
+    // Keep Student ID, paymentStatus, approvalStatus, accountStatus strictly untouched here!
+
+    await student.save();
+
+    // Sync student name, mobile, email in active Booking documents
+    try {
+      await Booking.updateMany(
+        { student: student._id },
+        {
+          studentName: student.fullName,
+          studentMobile: student.mobile,
+          studentEmail: student.email,
+        }
+      );
+    } catch (_) {}
+
+    res.json({
+      success: true,
+      message: `Student details for "${student.fullName}" updated successfully!`,
+      student,
+    });
+  } catch (err) {
+    console.error('Update student error:', err);
+    res.status(500).json({ success: false, message: err.message || 'Server error updating student details' });
+  }
+};
+
+// ─── Email Notifications Monitoring & Logs ──────────────────────────────────
+const getEmailLogs = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const skip = (page - 1) * limit;
+    const search = (req.query.search || '').trim();
+    const status = req.query.status || '';
+    const emailType = req.query.type || '';
+
+    const query = {};
+    if (status) query.status = status;
+    if (emailType) query.emailType = emailType;
+    if (search) {
+      query.$or = [
+        { recipientEmail: { $regex: search, $options: 'i' } },
+        { recipientName: { $regex: search, $options: 'i' } },
+        { studentId: { $regex: search, $options: 'i' } },
+      ];
+    }
+
+    const [logs, total, totalAccepted, totalFailed, totalSending, totalQueued] = await Promise.all([
+      EmailLog.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).populate('student', 'fullName studentId email mobile'),
+      EmailLog.countDocuments(query),
+      EmailLog.countDocuments({ status: 'accepted' }),
+      EmailLog.countDocuments({ status: 'failed' }),
+      EmailLog.countDocuments({ status: 'sending' }),
+      EmailLog.countDocuments({ status: 'queued' }),
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+
+    res.render('admin/emails', {
+      title: 'Email Notifications & Logs',
+      admin: req.admin,
+      logs,
+      total,
+      page,
+      totalPages,
+      limit,
+      search,
+      status,
+      emailType,
+      stats: {
+        totalEmails: await EmailLog.countDocuments(),
+        totalAccepted,
+        totalFailed,
+        totalSending,
+        totalQueued,
+      },
+      isConfigured: isEmailConfigured(),
+      libraryName: process.env.LIBRARY_NAME || 'SR Library',
+    });
+  } catch (err) {
+    console.error('Get email logs error:', err);
+    res.status(500).render('error', { title: 'Error', message: 'Failed to load email notification logs' });
+  }
+};
+
+// ─── Retry Email Sending ──────────────────────────────────────────────────────
+const retryEmail = async (req, res) => {
+  try {
+    const logId = req.params.id;
+    const result = await retryEmailLog(logId);
+    res.json(result);
+  } catch (err) {
+    console.error('Retry email error:', err);
+    res.status(500).json({ success: false, message: 'Server error retrying email: ' + err.message });
+  }
+};
+
 // ─── Seat Management ─────────────────────────────────────────────────────────
 const getSeats = async (req, res) => {
   try {
-    const [seats, totalSeats, availableSeats, occupiedSeats, lockedSeats] = await Promise.all([
+    const [seats, totalSeats, availableSeats, occupiedSeats, lockedSeats, activeStudents] = await Promise.all([
       Seat.find()
         .sort({ seatNumber: 1 })
         .populate({
@@ -708,12 +934,14 @@ const getSeats = async (req, res) => {
       Seat.countDocuments({ status: 'available' }),
       Seat.countDocuments({ status: 'occupied' }),
       Seat.countDocuments({ status: { $in: ['maintenance', 'locked'] } }),
+      Student.find({ accountStatus: 'active' }).select('fullName studentId mobile email').sort({ fullName: 1 }),
     ]);
 
     res.render('admin/seats', {
       title: 'Seat Management',
       admin: req.admin,
       seats,
+      activeStudents: activeStudents || [],
       stats: {
         totalSeats,
         availableSeats,
@@ -728,16 +956,76 @@ const getSeats = async (req, res) => {
   }
 };
 
-// ─── Update Seat Status ───────────────────────────────────────────────────────
+// ─── Update Seat Status & Reassign ────────────────────────────────────────────
 const updateSeatStatus = async (req, res) => {
   try {
-    const { status, notes } = req.body;
+    const { status, notes, reassignStudentId } = req.body;
     const seat = await Seat.findById(req.params.id);
     if (!seat) return res.status(404).json({ success: false, message: 'Seat not found' });
 
-    seat.status = status;
+    // Handle Direct Admin Seat Reassignment
+    if (reassignStudentId) {
+      let student = null;
+      if (reassignStudentId.match(/^[0-9a-fA-F]{24}$/)) {
+        student = await Student.findById(reassignStudentId);
+      }
+      if (!student) {
+        student = await Student.findOne({ studentId: reassignStudentId.toUpperCase().trim() });
+      }
 
-    // If making available or locking, clear current occupancy
+      if (!student) {
+        return res.status(404).json({ success: false, message: 'Student not found for reassignment' });
+      }
+
+      // Free previous seat held by this student if any
+      const previousBooking = await Booking.findOne({ student: student._id, status: 'active' });
+      if (previousBooking && String(previousBooking.seat) !== String(seat._id)) {
+        previousBooking.status = 'completed';
+        await previousBooking.save();
+        await Seat.findByIdAndUpdate(previousBooking.seat, {
+          status: 'available',
+          currentBooking: null,
+          currentStudent: null,
+        });
+      }
+
+      // Free previous occupant of this desk if any
+      if (seat.currentBooking && String(seat.currentStudent) !== String(student._id)) {
+        await Booking.findByIdAndUpdate(seat.currentBooking, { status: 'completed' });
+      }
+
+      const bookingCode = 'BK' + Date.now().toString().slice(-6) + Math.random().toString(36).substring(2, 5).toUpperCase();
+      const booking = new Booking({
+        bookingId: bookingCode,
+        student: student._id,
+        studentName: student.fullName,
+        studentMobile: student.mobile,
+        studentEmail: student.email,
+        seat: seat._id,
+        seatNumber: seat.seatNumber,
+        bookingDate: new Date(),
+        slot: student.membershipSlot || 'Full Day (6:00 AM - 11:00 PM)',
+        plan: student.subscriptionPlan || 'Monthly Membership',
+        status: 'active',
+        notes: notes || 'Assigned / corrected by Admin',
+      });
+      await booking.save();
+
+      seat.status = 'occupied';
+      seat.currentBooking = booking._id;
+      seat.currentStudent = student._id;
+      await seat.save();
+
+      return res.json({
+        success: true,
+        message: `Seat ${seat.seatNumber} successfully reassigned to ${student.fullName} (${student.studentId}).`,
+        seatNumber: seat.seatNumber,
+        status: seat.status,
+      });
+    }
+
+    // Status change (available, locked, maintenance)
+    seat.status = status;
     if (status === 'available' || status === 'locked' || status === 'maintenance') {
       if (seat.currentBooking) {
         await Booking.findByIdAndUpdate(seat.currentBooking, { status: 'completed' });
@@ -756,7 +1044,7 @@ const updateSeatStatus = async (req, res) => {
     });
   } catch (err) {
     console.error('Update seat status error:', err);
-    res.status(500).json({ success: false, message: 'Failed to update seat status' });
+    res.status(500).json({ success: false, message: 'Failed to update seat status: ' + err.message });
   }
 };
 
@@ -890,6 +1178,10 @@ module.exports = {
   deactivateStudent,
   deleteStudent,
   resendEmail,
+  updateStudent,
+  getStudentJson,
+  getEmailLogs,
+  retryEmail,
   getSeats,
   updateSeatStatus,
   getBookings,

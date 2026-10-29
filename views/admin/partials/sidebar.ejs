@@ -48,6 +48,11 @@
       Payments
     </a>
 
+    <a href="/admin/emails" class="sidebar-link <%= typeof currentPage !== 'undefined' && currentPage === 'emails' ? 'active' : '' %>">
+      <span class="sidebar-link-icon"><i class="fa-solid fa-envelope-circle-check"></i></span>
+      Email Notifications
+    </a>
+
     <div class="sidebar-section-label">System</div>
 
     <a href="/admin/profile" class="sidebar-link <%= typeof currentPage !== 'undefined' && currentPage === 'profile' ? 'active' : '' %>">

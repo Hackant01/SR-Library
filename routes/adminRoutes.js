@@ -26,6 +26,7 @@ router.post('/bookings/:id/cancel', adminAuth, adminController.cancelBooking);
 router.get('/api/seats', adminAuth, adminController.getSeatsApi);
 router.get('/payments', adminAuth, adminController.getPayments);
 router.get('/students/:id', adminAuth, adminController.getStudentDetail);
+router.get('/api/students/:id', adminAuth, adminController.getStudentJson);
 router.get('/students/:id/print', adminAuth, adminController.printStudentForm);
 router.post('/students/:id/assign-id', adminAuth, adminController.assignStudentId);
 router.post('/students/:id/approve', adminAuth, adminController.approveStudent);
@@ -34,7 +35,10 @@ router.post('/students/:id/reject', adminAuth, adminController.rejectStudent);
 router.post('/students/:id/activate', adminAuth, adminController.activateStudent);
 router.post('/students/:id/deactivate', adminAuth, adminController.deactivateStudent);
 router.post('/students/:id/delete', adminAuth, adminController.deleteStudent);
+router.post('/students/:id/edit', adminAuth, adminController.updateStudent);
 router.post('/students/:id/resend-email', adminAuth, adminController.resendEmail);
+router.get('/emails', adminAuth, adminController.getEmailLogs);
+router.post('/emails/:id/retry', adminAuth, adminController.retryEmail);
 router.get('/profile', adminAuth, adminController.getProfile);
 
 module.exports = router;

@@ -262,34 +262,68 @@
 
     <div style="padding:24px;">
       <!-- Occupant Info (if any) -->
-      <div id="modalOccupantCard" style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:14px;margin-bottom:18px;display:none;">
-        <div style="font-size:11.5px;font-weight:700;color:#991b1b;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Current Student Occupant</div>
-        <div style="font-size:15px;font-weight:700;color:#1e293b;" id="modalOccupantName">Student Name</div>
-        <div style="font-size:12.5px;color:#475569;margin-top:2px;">
-          <span id="modalOccupantId" style="font-family:monospace;font-weight:600;">ID</span> &nbsp;|&nbsp; 📞 <span id="modalOccupantMobile">Mobile</span>
+      <div id="modalOccupantCard" style="background:#fef2f2;border:1px solid #fecaca;border-radius:12px;padding:16px;margin-bottom:20px;display:none;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <span style="font-size:11px;font-weight:700;color:#991b1b;text-transform:uppercase;letter-spacing:0.05em;"><i class="fa-solid fa-user-check"></i> Current Occupant</span>
+          <span class="badge badge-danger" style="font-size:10.5px;">Occupied / Booked</span>
+        </div>
+        <div style="font-size:16px;font-weight:800;color:#1e293b;" id="modalOccupantName">Student Name</div>
+        <div style="font-size:13px;color:#475569;margin-top:3px;">
+          <span id="modalOccupantId" style="font-family:monospace;font-weight:700;color:var(--primary);">ID</span> &nbsp;|&nbsp; 📞 <span id="modalOccupantMobile">Mobile</span>
         </div>
         <div style="font-size:12px;color:#64748b;margin-top:4px;" id="modalOccupantBooking">
           Booking: --
         </div>
+        <div style="margin-top:12px;padding-top:10px;border-top:1px dashed #fecaca;">
+          <button type="button" onclick="freeCurrentSeat()" class="btn btn-sm btn-ghost" style="color:#b91c1c;border:1px solid #fca5a5;background:#fff;width:100%;font-size:12px;font-weight:600;">
+            <i class="fa-solid fa-user-xmark"></i> Cancel Occupancy &amp; Free Seat
+          </button>
+        </div>
       </div>
 
-      <!-- Status Toggle Form -->
+      <!-- Quick Status Toggle -->
       <form id="seatStatusForm" onsubmit="saveSeatStatus(event)">
         <input type="hidden" id="modalSeatId" />
 
         <div class="form-group" style="margin-bottom:18px;">
-          <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;">Update Seat Availability Status</label>
-          <select id="modalSeatStatusSelect" class="form-control" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;background:#fff;">
-            <option value="available">Available (Green - Ready to Book)</option>
-            <option value="locked">Locked / Unavailable (Gray - Disabled for Students)</option>
-            <option value="maintenance">Maintenance (Gray - Service / Inactive)</option>
+          <label style="display:block;font-size:13px;font-weight:700;margin-bottom:8px;">Seat Availability Status</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+            <button type="button" class="btn btn-sm" id="btnSetAvailable" onclick="setSelectStatus('available')" style="border:1px solid #bbf7d0;background:#f0fdf4;color:#15803d;font-weight:700;">
+              <i class="fa-solid fa-circle-check"></i> Available
+            </button>
+            <button type="button" class="btn btn-sm" id="btnSetLocked" onclick="setSelectStatus('locked')" style="border:1px solid #cbd5e1;background:#f1f5f9;color:#475569;font-weight:700;">
+              <i class="fa-solid fa-lock"></i> Locked / Off
+            </button>
+          </div>
+          <select id="modalSeatStatusSelect" class="form-control" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:13.5px;background:#fff;">
+            <option value="available">Available (Green — Ready for Student Reservation)</option>
+            <option value="locked">Locked / Unavailable (Gray — Disabled for Students)</option>
+            <option value="maintenance">Maintenance (Gray — Repair / Desk Servicing)</option>
+          </select>
+        </div>
+
+        <!-- Reassign Section -->
+        <div style="margin-bottom:20px;padding:14px;border:1px dashed var(--border);border-radius:10px;background:#f8fafc;">
+          <label style="display:block;font-size:12.5px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">
+            <i class="fa-solid fa-arrow-right-arrow-left" style="color:var(--primary);"></i> Assign / Reassign to Student
+          </label>
+          <span style="font-size:11.5px;color:var(--text-muted);display:block;margin-bottom:8px;">
+            Select an active student to assign this physical desk directly.
+          </span>
+          <select id="modalReassignSelect" class="form-control" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:#fff;">
+            <option value="">-- Leave Unassigned / Keep Status Only --</option>
+            <% if (typeof activeStudents !== 'undefined' && activeStudents.length > 0) { %>
+              <% activeStudents.forEach(st => { %>
+                <option value="<%= st._id %>"><%= st.fullName %> (<%= st.studentId || 'No ID' %>) - <%= st.mobile %></option>
+              <% }) %>
+            <% } %>
           </select>
         </div>
 
         <div style="display:flex;gap:10px;justify-content:flex-end;">
           <button type="button" class="btn btn-ghost" onclick="closeSeatModal()">Cancel</button>
-          <button type="submit" class="btn btn-primary" id="saveSeatStatusBtn">
-            <i class="fa-solid fa-floppy-disk"></i> Update Status
+          <button type="submit" class="btn btn-primary" id="saveSeatStatusBtn" style="font-weight:700;display:inline-flex;align-items:center;gap:6px;">
+            <i class="fa-solid fa-floppy-disk"></i> Update Seat
           </button>
         </div>
       </form>
@@ -303,6 +337,11 @@
 <script src="/js/admin.js"></script>
 <script>
   let activeSeatEl = null;
+
+  function setSelectStatus(val) {
+    document.getElementById('modalSeatStatusSelect').value = val;
+    document.getElementById('modalReassignSelect').value = '';
+  }
 
   function openSeatModal(card) {
     activeSeatEl = card;
@@ -319,13 +358,14 @@
     document.getElementById('modalSeatTitle').textContent = `Seat ${number}`;
     document.getElementById('modalSeatSection').textContent = section;
     document.getElementById('modalSeatStatusSelect').value = (status === 'maintenance' || status === 'locked') ? status : (status === 'available' ? 'available' : 'locked');
+    document.getElementById('modalReassignSelect').value = '';
 
     const occupantCard = document.getElementById('modalOccupantCard');
     if (student) {
       document.getElementById('modalOccupantName').textContent = student;
       document.getElementById('modalOccupantId').textContent = studentId || 'Assigned';
       document.getElementById('modalOccupantMobile').textContent = mobile || 'No phone';
-      document.getElementById('modalOccupantBooking').textContent = booking ? `Booking ID: ${booking}` : '';
+      document.getElementById('modalOccupantBooking').textContent = booking ? `Active Booking ID: ${booking}` : 'Direct assignment';
       occupantCard.style.display = 'block';
     } else {
       occupantCard.style.display = 'none';
@@ -338,20 +378,48 @@
     document.getElementById('seatModal').classList.remove('active');
   }
 
+  async function freeCurrentSeat() {
+    if (!confirm('Free this seat? This will complete the current booking and make the seat available.')) return;
+    const id = document.getElementById('modalSeatId').value;
+    try {
+      const res = await fetch(`/admin/seats/${id}/status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'available' })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast('✅ ' + data.message, 'success');
+        closeSeatModal();
+        setTimeout(() => location.reload(), 600);
+      } else {
+        showToast('❌ ' + (data.message || 'Error freeing seat'), 'danger');
+      }
+    } catch (err) {
+      showToast('❌ Server error: ' + err.message, 'danger');
+    }
+  }
+
   async function saveSeatStatus(e) {
     e.preventDefault();
     const id = document.getElementById('modalSeatId').value;
     const status = document.getElementById('modalSeatStatusSelect').value;
+    const reassignStudentId = document.getElementById('modalReassignSelect').value;
     const btn = document.getElementById('saveSeatStatusBtn');
 
     btn.disabled = true;
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
 
+    const payload = { status };
+    if (reassignStudentId) {
+      payload.reassignStudentId = reassignStudentId;
+    }
+
     try {
       const res = await fetch(`/admin/seats/${id}/status`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status })
+        body: JSON.stringify(payload)
       });
 
       const data = await res.json();
@@ -362,12 +430,12 @@
       } else {
         showToast('❌ ' + (data.message || 'Error updating seat'), 'danger');
         btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Update Status';
+        btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Update Seat';
       }
     } catch (err) {
       showToast('❌ Server error: ' + err.message, 'danger');
       btn.disabled = false;
-      btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Update Status';
+      btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Update Seat';
     }
   }
 </script>

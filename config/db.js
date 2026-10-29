@@ -22,7 +22,7 @@ const connectDB = async () => {
 
   try {
     const conn = await mongoose.connect(uri, {
-      serverSelectionTimeoutMS: 10000, // 10s timeout for Atlas
+      serverSelectionTimeoutMS: 30000, // 30s timeout for Atlas resilience
       socketTimeoutMS: 45000,
     });
 

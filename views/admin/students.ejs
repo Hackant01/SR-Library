@@ -191,6 +191,10 @@
                         </button>
                         <div class="action-dropdown-menu" id="action-menu-<%= s._id %>">
                           
+                          <button type="button" class="action-dropdown-item" onclick="openEditStudentModalFromTable('<%= s._id %>')" style="color:var(--primary);font-weight:600;width:100%;text-align:left;background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:8px;padding:8px 12px;font-size:13px;">
+                            <i class="fa-solid fa-pen-to-square"></i> Edit Details
+                          </button>
+
                           <!-- Pending Cash verification action -->
                           <% if (s.paymentMethod === 'cash' && s.paymentStatus === 'pending') { %>
                             <button type="button" class="action-dropdown-item text-success" onclick="openCashModal('<%= s._id %>','<%= s.fullName %>')">
@@ -260,6 +264,151 @@
   </div>
 </div>
 
+<!-- Table Edit Student Modal -->
+<div id="tableEditStudentModal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.65);backdrop-filter:blur(4px);z-index:99999;display:none;align-items:center;justify-content:center;padding:16px;">
+  <div style="background:#ffffff;border-radius:18px;max-width:680px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-xl);border:1px solid var(--border);">
+    
+    <div style="background:linear-gradient(135deg, #0d1b6e 0%, #1a237e 100%);color:#fff;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;border-top-left-radius:17px;border-top-right-radius:17px;position:sticky;top:0;z-index:10;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span style="font-size:22px;"><i class="fa-solid fa-user-pen"></i></span>
+        <div>
+          <h3 style="margin:0;font-size:18px;font-weight:700;color:#fff;">Edit Student Registration</h3>
+          <div style="font-size:12px;color:rgba(255,255,255,0.85);margin-top:2px;">Editing details for: <strong id="tableEditStudentNameTitle">Loading...</strong></div>
+        </div>
+      </div>
+      <button type="button" onclick="closeEditStudentModalTable()" style="background:rgba(255,255,255,0.15);border:none;color:#fff;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;">&times;</button>
+    </div>
+
+    <!-- Error Alert Box -->
+    <div id="tableEditStudentError" style="display:none;background:#fef2f2;border-left:4px solid #ef4444;color:#991b1b;padding:12px 18px;margin:16px 24px 0;border-radius:8px;font-size:13.5px;"></div>
+
+    <!-- Loading Spinner inside modal -->
+    <div id="tableEditStudentLoading" style="padding:48px 24px;text-align:center;color:var(--text-muted);">
+      <i class="fa-solid fa-spinner fa-spin fa-2x" style="color:var(--primary);"></i>
+      <div style="margin-top:12px;font-size:14px;font-weight:600;">Loading student details...</div>
+    </div>
+
+    <form id="tableEditStudentForm" onsubmit="saveStudentEditFromTable(event)" style="padding:24px;display:none;">
+      
+      <!-- Read-only Student ID Banner -->
+      <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px 16px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+        <div>
+          <span style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#64748b;font-weight:700;display:block;">Assigned Student ID</span>
+          <strong id="tableEditStudentIdVal" style="font-family:monospace;font-size:17px;color:var(--primary);letter-spacing:1px;">LIB</strong>
+        </div>
+        <span class="badge badge-gray" style="font-size:11.5px;padding:5px 10px;">
+          <i class="fa-solid fa-lock"></i> Permanent ID (Read-only)
+        </span>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        
+        <div>
+          <label style="display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;">Full Name *</label>
+          <input type="text" id="tableEdit_fullName" name="fullName" class="form-control" required style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13.5px;" />
+        </div>
+
+        <div>
+          <label style="display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;">Parent / Guardian Name *</label>
+          <input type="text" id="tableEdit_parentName" name="parentName" class="form-control" required style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13.5px;" />
+        </div>
+
+        <div>
+          <label style="display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;">Mobile Number * (10 digits)</label>
+          <input type="tel" id="tableEdit_mobile" name="mobile" class="form-control" required pattern="[0-9]{10}" maxlength="10" placeholder="10-digit number" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13.5px;" />
+        </div>
+
+        <div>
+          <label style="display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;">Email Address *</label>
+          <input type="email" id="tableEdit_email" name="email" class="form-control" required style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13.5px;" />
+        </div>
+
+        <div>
+          <label style="display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;">Date of Birth</label>
+          <input type="date" id="tableEdit_dateOfBirth" name="dateOfBirth" class="form-control" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13.5px;" />
+        </div>
+
+        <div>
+          <label style="display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;">Gender</label>
+          <select id="tableEdit_gender" name="gender" class="form-control" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13.5px;background:#fff;">
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <div style="grid-column:1/-1;">
+          <label style="display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;">Residential Address</label>
+          <input type="text" id="tableEdit_address" name="address" class="form-control" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13.5px;" />
+        </div>
+
+        <div>
+          <label style="display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;">Emergency Contact</label>
+          <input type="tel" id="tableEdit_emergencyContact" name="emergencyContact" class="form-control" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13.5px;" />
+        </div>
+
+        <div>
+          <label style="display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;">ID Proof Type</label>
+          <select id="tableEdit_idProofType" name="idProofType" class="form-control" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13.5px;background:#fff;">
+            <option value="Aadhaar Card">Aadhaar Card</option>
+            <option value="PAN Card">PAN Card</option>
+            <option value="Voter ID">Voter ID</option>
+            <option value="Driving License">Driving License</option>
+            <option value="College ID">College ID</option>
+          </select>
+        </div>
+
+        <div>
+          <label style="display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;">ID Proof Number</label>
+          <input type="text" id="tableEdit_idProofNumber" name="idProofNumber" class="form-control" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13.5px;" />
+        </div>
+
+        <div>
+          <label style="display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;">Education Level</label>
+          <input type="text" id="tableEdit_educationLevel" name="educationLevel" class="form-control" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13.5px;" />
+        </div>
+
+        <div>
+          <label style="display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;">Preparing For</label>
+          <input type="text" id="tableEdit_preparingFor" name="preparingFor" class="form-control" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13.5px;" />
+        </div>
+
+        <div>
+          <label style="display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;">Joining Date</label>
+          <input type="date" id="tableEdit_joiningDate" name="joiningDate" class="form-control" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13.5px;" />
+        </div>
+
+        <div>
+          <label style="display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;">Membership Slot</label>
+          <select id="tableEdit_membershipSlot" name="membershipSlot" class="form-control" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13.5px;background:#fff;">
+            <option value="Full Day Slot (Unlimited)">Full Day Slot (Unlimited)</option>
+            <option value="Morning Shift (6:00 AM - 2:00 PM)">Morning Shift (6 AM - 2 PM)</option>
+            <option value="Evening Shift (2:00 PM - 10:00 PM)">Evening Shift (2 PM - 10 PM)</option>
+          </select>
+        </div>
+
+        <div>
+          <label style="display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;">Subscription Plan</label>
+          <select id="tableEdit_subscriptionPlan" name="subscriptionPlan" class="form-control" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13.5px;background:#fff;">
+            <option value="1 Month Plan">1 Month Plan</option>
+            <option value="2 Months Plan">2 Months Plan</option>
+            <option value="3 Months Plan">3 Months Plan</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:24px;border-top:1px solid var(--border);padding-top:16px;">
+        <button type="button" class="btn btn-ghost" onclick="closeEditStudentModalTable()">Cancel</button>
+        <button type="submit" id="saveTableEditStudentBtn" class="btn btn-primary" style="display:inline-flex;align-items:center;gap:6px;">
+          <i class="fa-solid fa-floppy-disk"></i> Save Changes
+        </button>
+      </div>
+    </form>
+
+  </div>
+</div>
+
 <div class="toast-container" id="toastContainer"></div>
 
 <script src="/js/admin.js"></script>
@@ -290,6 +439,140 @@ function toggleActionMenu(id, e) {
 document.addEventListener('click', () => {
   document.querySelectorAll('.action-dropdown-menu').forEach(m => m.classList.remove('active'));
 });
+
+// ─── Table Edit Student Modal Workflow ─────────────────────────────
+let currentEditingStudentId = null;
+
+async function openEditStudentModalFromTable(studentId) {
+  currentEditingStudentId = studentId;
+  const modal = document.getElementById('tableEditStudentModal');
+  const loading = document.getElementById('tableEditStudentLoading');
+  const form = document.getElementById('tableEditStudentForm');
+  const errBox = document.getElementById('tableEditStudentError');
+
+  if (errBox) errBox.style.display = 'none';
+  if (loading) loading.style.display = 'block';
+  if (form) form.style.display = 'none';
+  if (modal) modal.style.display = 'flex';
+
+  // Close any open action menu
+  document.querySelectorAll('.action-dropdown-menu').forEach(m => m.classList.remove('active'));
+
+  try {
+    const res = await fetch(`/admin/api/students/${studentId}`);
+    const data = await res.json();
+
+    if (!data.success || !data.student) {
+      if (errBox) {
+        errBox.textContent = '❌ ' + (data.message || 'Failed to load student details.');
+        errBox.style.display = 'block';
+      }
+      if (loading) loading.style.display = 'none';
+      return;
+    }
+
+    const s = data.student;
+    document.getElementById('tableEditStudentNameTitle').textContent = s.fullName || 'Student';
+    document.getElementById('tableEditStudentIdVal').textContent = s.studentId || 'LIB (Pending)';
+
+    document.getElementById('tableEdit_fullName').value = s.fullName || '';
+    document.getElementById('tableEdit_parentName').value = s.parentName || '';
+    document.getElementById('tableEdit_mobile').value = s.mobile || '';
+    document.getElementById('tableEdit_email').value = s.email || '';
+    document.getElementById('tableEdit_dateOfBirth').value = s.dateOfBirth ? s.dateOfBirth.split('T')[0] : '';
+    document.getElementById('tableEdit_gender').value = s.gender || 'male';
+    document.getElementById('tableEdit_address').value = s.address || '';
+    document.getElementById('tableEdit_emergencyContact').value = s.emergencyContact || '';
+    document.getElementById('tableEdit_idProofType').value = s.idProofType || 'Aadhaar Card';
+    document.getElementById('tableEdit_idProofNumber').value = s.idProofNumber || '';
+    document.getElementById('tableEdit_educationLevel').value = s.educationLevel || '';
+    document.getElementById('tableEdit_preparingFor').value = s.preparingFor || '';
+    document.getElementById('tableEdit_joiningDate').value = s.joiningDate ? s.joiningDate.split('T')[0] : '';
+    
+    if (document.getElementById('tableEdit_membershipSlot')) {
+      document.getElementById('tableEdit_membershipSlot').value = s.membershipSlot || 'Full Day Slot (Unlimited)';
+    }
+    if (document.getElementById('tableEdit_subscriptionPlan')) {
+      document.getElementById('tableEdit_subscriptionPlan').value = s.subscriptionPlan || '1 Month Plan';
+    }
+
+    if (loading) loading.style.display = 'none';
+    if (form) form.style.display = 'block';
+  } catch (err) {
+    if (errBox) {
+      errBox.textContent = '❌ Network error loading student details: ' + err.message;
+      errBox.style.display = 'block';
+    }
+    if (loading) loading.style.display = 'none';
+  }
+}
+
+function closeEditStudentModalTable() {
+  const modal = document.getElementById('tableEditStudentModal');
+  if (modal) modal.style.display = 'none';
+  currentEditingStudentId = null;
+}
+
+async function saveStudentEditFromTable(e) {
+  e.preventDefault();
+  if (!currentEditingStudentId) return;
+
+  const form = document.getElementById('tableEditStudentForm');
+  const btn = document.getElementById('saveTableEditStudentBtn');
+  const errBox = document.getElementById('tableEditStudentError');
+  if (errBox) errBox.style.display = 'none';
+
+  const formData = new FormData(form);
+  const payload = {};
+  formData.forEach((value, key) => { payload[key] = value; });
+
+  const mobileClean = (payload.mobile || '').replace(/\D/g, '');
+  if (mobileClean.length !== 10) {
+    if (errBox) {
+      errBox.textContent = '❌ Please enter a valid 10-digit mobile number.';
+      errBox.style.display = 'block';
+    }
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving changes...';
+
+  try {
+    const res = await fetch(`/admin/students/${currentEditingStudentId}/edit`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+    if (data.success) {
+      showToast('✅ ' + data.message, 'success');
+      closeEditStudentModalTable();
+      setTimeout(() => location.reload(), 800);
+    } else {
+      const errMsg = data.message || 'Error updating student details';
+      if (errBox) {
+        errBox.textContent = '❌ ' + errMsg;
+        errBox.style.display = 'block';
+      }
+      showToast('❌ ' + errMsg, 'danger');
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Changes';
+    }
+  } catch (err) {
+    if (errBox) {
+      errBox.textContent = '❌ Server connection error: ' + err.message;
+      errBox.style.display = 'block';
+    }
+    showToast('❌ Server error: ' + err.message, 'danger');
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Changes';
+  }
+}
 </script>
 </body>
 </html>
